@@ -1,0 +1,17 @@
+{
+  "codigo": "rkinformatica",
+  "nome": "RK Informática",
+  "sistema": "informatica",
+  "plano": "pro",
+  "login": "rkinformatica.bancada@gmail.com",
+  "ponte": "https://bancada-ia.bancada-sistemas-277.workers.dev",
+  "suspensa": false,
+  "firebaseConfig": {
+    "apiKey": "AIzaSyBTl5QMR81I1bI_0pu9_3TAg701opQxCN8",
+    "authDomain": "informatica-rkinformatica.firebaseapp.com",
+    "projectId": "informatica-rkinformatica",
+    "storageBucket": "informatica-rkinformatica.firebasestorage.app",
+    "messagingSenderId": "441925569471",
+    "appId": "1:441925569471:web:bcfc959df5aace5d7d2f0a"
+  }
+}
