@@ -1480,6 +1480,7 @@ textarea{padding-bottom:10px}
 }
 
 /* ===== ajustes posteriores (mantidos no bloco principal) ===== */
+.ag-div{display:flex;flex-direction:column;gap:5px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:4px 0;background:var(--surface)}.ag-div .rf-chk{font-size:.92rem}
 .imp-orig{flex-wrap:wrap;margin:6px 0;display:flex}.imp-orig button{white-space:normal}
 .bt-imp-p{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px;cursor:pointer}.bt-imp-p input{margin:0;width:18px;height:18px}
 #bt-envio{background:#eef6f1;border-color:#9cc9ad;color:#123}#bt-envio svg{width:18px;height:18px;vertical-align:-3px}#ac-aviso svg{width:18px;height:18px;vertical-align:-3px;flex:none}#nuvem-tela .nv-ou{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.8rem}#nuvem-tela .nv-ou::before,#nuvem-tela .nv-ou::after{content:'';flex:1;border-top:1px solid var(--line)}#nuvem-tela #nv-pedir{width:100%;justify-content:center;white-space:normal}.ac-aviso{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 70px);background:#e8f1ff;border-color:#8bb0f0;color:#0d2a5c}.ac-row{align-items:flex-start;flex-wrap:wrap;gap:8px}.ac-row .actions{display:flex;gap:6px;flex-wrap:wrap}
@@ -1779,7 +1780,7 @@ const IC = {
 const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${IC[n] || ''}</svg>`;
 
 /* ======================= estado e armazenamento ======================= */
-const COLS = ['clientes', 'fornecedores', 'produtos', 'orcamentos', 'vendas', 'alugueis', 'caixas', 'os', 'fotos', 'equipe', 'convites', 'despesas', 'ajustes', 'receber', 'agenda', 'contratos', 'atendimentos', 'lixeira', 'logs', 'checklists'];
+const COLS = ['clientes', 'fornecedores', 'produtos', 'orcamentos', 'vendas', 'alugueis', 'caixas', 'os', 'fotos', 'equipe', 'convites', 'despesas', 'ajustes', 'receber', 'agenda', 'contratos', 'atendimentos', 'lixeira', 'logs', 'checklists', 'autorizacoes'];
 const S = {
   clientes: [], fornecedores: [], produtos: [], orcamentos: [], vendas: [], alugueis: [], caixas: [], os: [], fotos: [], equipe: [], convites: [], despesas: [], ajustes: [], receber: [], agenda: [], contratos: [], atendimentos: [], lixeira: [], empresa: {}, acessos: {}, pagamentos: {}, cfgTab: 'pagamentos',
   mode: 'local', loaded: false, canWrite: true, canAdmin: true, isAdmin: true, userReady: true, me: null, names: {},
@@ -1805,10 +1806,10 @@ function failMsg(e) {
   return 'Não foi possível salvar agora. Verifique a conexão e tente de novo.';
 }
 async function save(col, id, data) {
-  data = JSON.parse(JSON.stringify(data)); delete data.id;
+  data = JSON.parse(JSON.stringify(data)); delete data.id; const _agSync = !!data._agSync; delete data._agSync;
   const _ant = col !== 'logs' && col !== 'config' && S[col] ? (S[col].find(x => x.id === id) || null) : null; try { if (col !== 'logs') setTimeout(() => logSalvo(col, id, data, _ant), 0); } catch { }
   if (DB) {
-    try { await (col === 'config' ? DB.doc('config/' + id) : DB.collection(col).doc(id)).set(data); return true; }
+    try { await (col === 'config' ? DB.doc('config/' + id) : DB.collection(col).doc(id)).set(data); if (col === 'clientes' && !_agSync) setTimeout(() => { try { agAoSalvar(id, data, _ant); } catch { } }, 0); return true; }
     catch (e) { toast(failMsg(e)); return false; }
   }
   if (col === 'config') { if (id === 'empresa') S.empresa = data; else if (id === 'pagamentos') S.pagamentos = data; else if (id === 'criador') S.criador = data; else S.acessos = data; }
@@ -1845,7 +1846,7 @@ function avisoSemNuvem() {
   d.innerHTML = `<span class="grow"><b>Os dados da nuvem não foram carregados.</b> Nada foi perdido. Recarregue a página (botão ↻ do navegador) para conectar de novo.</span><button type="button" class="btn sm primary" onclick="location.reload()">Recarregar</button>`;
   document.body.appendChild(d);
 }
-const APP_VER = 309;
+const APP_VER = 310;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -5013,6 +5014,9 @@ const FORMS = {
     if (!d.nome.trim()) { toast('Informe o nome do cliente.'); fnTab('dados'); return; }
     if (f.querySelector('#fn-cont')) { fnContLer(); const cs = (M.fnCont || []).filter(x => (x.nome || '').trim() || (x.tel || '').trim() || x.email || x.nasc || x.foto).map(x => ({ ...x, nome: (x.nome || '').trim(), tel: (x.tel || '').trim() })); d.contatos = cs; d.contato = cs[0] ? cs[0].nome : ''; d.contatoTel = cs[0] ? cs[0].tel : ''; }
     const id = f.dataset.id || uid(), old = get('clientes', id) || {};
+    /* telefone de cliente que já está na agenda do Google: trocar ou apagar pede autorização superior */
+    if (!M.agTelOk && agPrecisaAut(old, d)) { pedirSenha('agendaTel', 'Trocar ou apagar o telefone de um cliente que está na agenda do Google', () => { M.agTelOk = true; Promise.resolve(FORMS.cliente(f, d)).finally(() => { M.agTelOk = false; }); }); return; }
+    if (M.agTelOk && old.googleId) setTimeout(() => { const c = get('clientes', id); if (c && c.googleId) agChamar('tels', { id: c.googleId, tels: agTelsCli(c), autorizadoPor: AUT || OPID() }).then(() => { AG.lista = null; toast('Telefone trocado também na agenda do Google.'); }).catch(() => { }); }, 600);
     if (f.querySelector('#cl-rec')) { fuRecLer('#cl-rec'); d.recebimento = recLimpa((M.rec || {})['#cl-rec']); }
     d.uf = (d.uf || '').toUpperCase();
     if (!(await save('clientes', id, { ...old, ...d, limiteCredito: num(d.limiteCredito), nome: d.nome.trim(), at: old.at || Date.now(), por: old.por || OPID() }))) return;
@@ -5504,6 +5508,8 @@ const PERMS = [
   ['remoto', 'Ver senhas de acesso remoto dos equipamentos'],
   ['aditivo', 'Mudar equipamento entre contrato original e aditivo, ou retirá-lo do parque (sempre com senha)'],
   ['aparelhos', 'Autorizar aparelhos novos à distância (funcionários e filiais), sempre com senha'],
+  ['agenda', 'Agenda Google: ligar, comparar com os clientes e escolher o nome que fica'],
+  ['agendaTel', 'Agenda Google: trocar ou apagar telefone de contato e desligar a agenda (sempre com senha)'],
   ['listas', 'Adicionar e excluir opções das listas de escolha (botões + e ×)'],
   ['clientes', 'Cadastrar e editar clientes'],
   ['produtos', 'Cadastrar produtos e ajustar estoque'],
@@ -6246,7 +6252,7 @@ Object.assign(ACT, {
   }
 });
 /* ======================= senha para cancelar e editar ======================= */
-let SENHA_CB = null, SENHA_PERM = null, AUT = null;
+let SENHA_CB = null, SENHA_PERM = null, AUT = null, SENHA_TIT = '';
 /* nível de qualquer usuário da equipe (não só de quem está usando) */
 function papelDe(id) {
   if (id === 'pin') return 'admin';
@@ -6262,7 +6268,7 @@ function podeUser(id, perm) {
 const nomeUser = id => id === 'pin' ? 'Administrador (senha do administrador)' : ((get('equipe', id) || {}).nome || quem(id) || 'Usuário');
 /* pede senha mostrando quem está usando; dá para trocar para outro usuário (ex.: o gerente autoriza o pedido do vendedor) */
 /* excluir e cancelar sempre exigem senha: se ninguém tiver senha, pede para criar a senha de autorização antes */
-const SENHA_OBRIG = ['excluir', 'cancelar', 'aditivo', 'aparelhos'];
+const SENHA_OBRIG = ['excluir', 'cancelar', 'aditivo', 'aparelhos', 'agendaTel'];
 let SENHA_PEND = null;
 function pedirSenha(perm, titulo, fn) {
   /* quem entrou com senha e tem a liberação no nível dele segue direto (excluir e cancelar sempre confirmam com senha) */
@@ -6287,14 +6293,14 @@ function pedirSenha(perm, titulo, fn) {
       `<button type="button" class="btn" data-act="close">Voltar</button><button type="button" class="btn primary" data-act="senha-ok-sem">Confirmar</button>`);
     return;
   }
-  SENHA_CB = fn; SENHA_PERM = perm;
+ SENHA_CB = fn; SENHA_PERM = perm; SENHA_TIT = titulo;
   const ini = (podeUser(eu, perm) && minha ? eu : ops.find(id => id !== eu && podeUser(id, perm))) || ops.find(id => podeUser(id, perm)) || eu;
   const euPode = podeUser(eu, perm);
   openModal(titulo, `<div class="banner info" style="font-size:.88rem"><span class="grow">${precisaLogin() ? 'Ninguém entrou ainda. Para continuar, um usuário com liberação digita a senha dele.' : `Você está usando como <b>${esc(nomeUser(eu))}</b> (${esc(nivelNome(meuPapel()))}).${euPode ? '' : ' Seu nível não permite esta operação: chame quem pode autorizar (por exemplo, o gerente).'}`}</span></div>
     ${field('Usuário que autoriza', `<select id="sn-user" name="user">${ops.map(id => `<option value="${esc(id)}"${id === ini ? ' selected' : ''}>${esc(nomeUser(id))}${id === eu ? ' — você' : ''}${podeUser(id, perm) ? '' : ' (sem permissão)'}</option>`).join('')}</select>`)}
     ${field('Senha de quem autoriza', '<input id="sn-pin" name="pin" type="password" inputmode="numeric" autocomplete="off">')}
     <p class="muted" style="font-size:.82rem">A troca vale só para esta autorização. Depois, o sistema continua com o seu acesso.</p>`,
-    `<button type="button" class="btn" data-act="close">Voltar</button><button class="btn primary" type="submit">Autorizar</button>`, { form: 'senha' });
+    `<button type="button" class="btn" data-act="close">Voltar</button>${DB ? `<button type="button" class="btn" data-act="aut-remota" title="Quem pode autorizar não está aqui? Envie o pedido para o aparelho dele">${ic('lock')}Pedir à distância</button>` : ''}<button class="btn primary" type="submit">Autorizar</button>`, { form: 'senha' });
   setTimeout(() => $('#sn-pin')?.focus(), 50);
 }
 async function cancelarVenda(id) {
@@ -6768,10 +6774,10 @@ function cfgImpressoras() {
     <div id="bt-imps">${btImpsHTML()}</div></section>`;
 }
 V.config = () => {
-  const t = S.cfgTab, tabs = [['pagamentos', 'Formas de pagamento'], ['fornecedores', 'Fornecedores e favorecidos'], ['itens', 'Produtos e serviços'], ['checklists', 'Checklists de entrada'], ['testes', 'Laudo técnico'], ['mensagens', 'Mensagens do WhatsApp'], ['modelos', 'Modelos de documentos'], ['aparencia', 'Aparência e atalhos'], ['impressoras', 'Impressoras'], ['dados', 'Dados: importar, exportar e excluir']];
+  const t = S.cfgTab, tabs = [['pagamentos', 'Formas de pagamento'], ['fornecedores', 'Fornecedores e favorecidos'], ['itens', 'Produtos e serviços'], ['checklists', 'Checklists de entrada'], ['testes', 'Laudo técnico'], ['mensagens', 'Mensagens do WhatsApp'], ['modelos', 'Modelos de documentos'], ['aparencia', 'Aparência e atalhos'], ['impressoras', 'Impressoras'], ['agenda', 'Agenda Google'], ['dados', 'Dados: importar, exportar e excluir']];
   return `<div class="page-head"><div><p class="eyebrow">Ajustes do sistema</p><h1>Configurações</h1></div><div class="actions"><button class="btn" data-act="cfg-print">${ic('print')}Imprimir relatório</button></div></div>
   <div class="seg cfg-tabs" role="tablist">${tabs.map(([k, l]) => `<button data-act="cfg-tab" data-t="${k}" class="${t === k ? 'on' : ''}">${l}</button>`).join('')}</div>
-  ${t === 'fornecedores' ? cfgFornecedores() : t === 'itens' ? cfgItens() : t === 'checklists' ? cfgChecklists() : t === 'testes' ? cfgTestes() : t === 'mensagens' ? cfgMensagens() : t === 'modelos' ? cfgModelos() : t === 'aparencia' ? cfgAparencia() : t === 'impressoras' ? cfgImpressoras() : t === 'importar' || t === 'dados' ? cfgDados() : cfgPagamentos()}`;
+  ${t === 'fornecedores' ? cfgFornecedores() : t === 'itens' ? cfgItens() : t === 'checklists' ? cfgChecklists() : t === 'testes' ? cfgTestes() : t === 'mensagens' ? cfgMensagens() : t === 'modelos' ? cfgModelos() : t === 'aparencia' ? cfgAparencia() : t === 'impressoras' ? cfgImpressoras() : t === 'agenda' ? cfgAgenda() : t === 'importar' || t === 'dados' ? cfgDados() : cfgPagamentos()}`;
 };
 function cfgPagamentos() {
   const c = cfgPag();
@@ -14652,6 +14658,203 @@ Object.assign(ACT, {
 });
 Object.assign(ACT_PERM, { 'ac-pedidos': 'aparelhos', 'ac-autorizar': 'aparelhos', 'ac-recusar': 'aparelhos', 'ac-bloquear': 'aparelhos', 'ac-religar': 'aparelhos' });
 setTimeout(() => { try { Object.assign(AJUDA, { 'ac-pedidos': 'Mostra os pedidos de acesso de aparelhos novos (funcionários e filiais) e os aparelhos já autorizados.', 'ac-autorizar': 'Libera o aparelho que pediu acesso. Pede a sua senha, aqui no seu aparelho.', 'ac-recusar': 'Não libera o aparelho. Dá para autorizar depois, em Recusados.', 'ac-bloquear': 'Tira o acesso do aparelho na hora. Dá para liberar de novo.', 'ac-religar': 'Libera de novo um aparelho bloqueado. Pede a sua senha.' }); } catch { } }, 0);
+/* ======================= Agenda Google da empresa (contatos do celular e do WhatsApp) =======================
+   O WhatsApp mostra os contatos da agenda do celular. Com a agenda Google da empresa ligada (pela ponte da Bancada),
+   cada cliente novo vira contato no Gmail da empresa e aparece sozinho no celular e no WhatsApp.
+   Trocar ou apagar telefone de um contato que já está na agenda sempre pede a senha de quem tem a permissão. */
+const AG = { lista: null, t: 0, est: null, carregando: null };
+const agTel8 = v => { let d = String(v || '').replace(/\D/g, ''); if (d.length >= 12 && d.startsWith('55')) d = d.slice(2); return d.length >= 8 ? d.slice(-8) : ''; };
+const agTelsCli = c => [c.whatsapp, c.telefone, c.telFixo, c.tel2].map(x => String(x || '').trim()).filter((x, i, A) => x && agTel8(x) && A.findIndex(y => agTel8(y) === agTel8(x)) === i);
+const agCfg = () => (typeof get === 'function' && get('ajustes', 'agenda-google')) || {};
+const agDisponivel = () => !!(typeof FB_USER !== 'undefined' && FB_USER && EMP_COD);
+const agPonte = () => String((EMP_CFG || {}).ponte || PONTE_PADRAO).replace(/\/+$/, '');
+async function agChamar(acao, dados = {}) {
+  if (!agDisponivel()) throw Object.assign(new Error('A agenda Google funciona no endereço da empresa (GitHub), com o login da empresa.'), { code: 'sem-nuvem' });
+  const idToken = await firebase.auth().currentUser.getIdToken();
+  const r = await fetch(agPonte() + '/google/api?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken, acao, dados }) });
+  let j = null; try { j = await r.json(); } catch { }
+  if (!r.ok || !j || j.erro) throw Object.assign(new Error((j && j.erro) || 'A ponte não respondeu (' + r.status + ').'), { code: (j && j.code) || 'ponte' });
+  return j;
+}
+async function agEstado(forcar) { if (AG.est && !forcar && Date.now() - AG.est.t < 60e3) return AG.est; try { const j = await agChamar('estado'); AG.est = { ...j, t: Date.now() }; } catch (e) { AG.est = { ligado: false, erro: e.message, code: e.code, t: Date.now() }; } return AG.est; }
+async function agListar(forcar) {
+  if (AG.lista && !forcar && Date.now() - AG.t < 5 * 60e3) return AG.lista;
+  if (AG.carregando) return AG.carregando;
+  AG.carregando = (async () => { try { const j = await agChamar('listar'); AG.lista = j.contatos || []; AG.t = Date.now(); return AG.lista; } finally { AG.carregando = null; } })();
+  return AG.carregando;
+}
+const agPorTel = (L, tels) => { const ks = tels.map(agTel8).filter(Boolean); return L.find(g => (g.tels || []).some(t => ks.includes(agTel8(t)))) || null; };
+const agMarcarCliente = async (c, g) => { if (!g || (c.googleId === g.id)) return; await save('clientes', c.id, { ...c, googleId: g.id, googleEm: Date.now(), _agSync: 1 }); };
+/* cliente salvo: se a agenda estiver ligada e no automático, cria o contato que ainda não existe; nome diferente vira divergência para resolver */
+async function agAoSalvar(id, novo, ant) {
+  try {
+    if (!agDisponivel() || !agCfg().auto || (novo && novo._agSync)) return;
+    const c = get('clientes', id); if (!c || c.exemplo || c.excluido) return;
+    const tels = agTelsCli(c); if (!tels.length) return;
+    const L = await agListar(); const gi = c.googleId ? L.find(x => x.id === c.googleId) : null;
+    if (c.googleId && !gi) return; /* foi apagado por fora: aparece em Comparar para recriar com autorização */
+    const g = gi || agPorTel(L, tels);
+    if (!g) { const j = await agChamar('criar', { nome: c.nome, tels, email: c.email || '' }); if (j && j.contato) { AG.lista = [...(AG.lista || []), j.contato]; await agMarcarCliente(c, j.contato); toast(`“${c.nome}” foi para a agenda do Google da empresa (aparece no celular e no WhatsApp).`, 5000); } return; }
+    await agMarcarCliente(c, g);
+    if (norm(g.nome || '') !== norm(c.nome || '')) agAvisoDiv();
+  } catch (e) { if (e && e.code !== 'sem-nuvem') console.warn('[agenda]', e); }
+}
+function agAvisoDiv() { if (typeof pode === 'function' && !pode('agenda')) return; toast('Há nomes diferentes entre o Bancada e a agenda do Google. Abra Configurações → Agenda Google → Comparar para escolher qual fica.', 7000); }
+/* troca de telefone de cliente que já está na agenda: pede autorização superior */
+function agPrecisaAut(old, d) {
+  if (!old || !old.googleId || !agDisponivel()) return false;
+  const antes = agTelsCli(old).map(agTel8), depois = agTelsCli({ ...old, ...d }).map(agTel8);
+  return antes.some(t => !depois.includes(t));
+}
+/* ---------- tela: Configurações → Agenda Google ---------- */
+function cfgAgenda() {
+  if (!agDisponivel()) return `<section class="panel"><h2>Agenda Google da empresa</h2><p class="muted">Funciona no endereço da empresa (bancada-sistemas.github.io/…?empresa=…), entrando com o login da empresa. Aqui dentro do Claude não há ligação com a agenda.</p></section>`;
+  const C = agCfg(), E = AG.est;
+  setTimeout(async () => { if (!AG.est || Date.now() - AG.est.t > 60e3) { await agEstado(true); if (S.route === 'config' && S.cfgTab === 'agenda') scheduleRender(true); } }, 0);
+  const st = !E ? '<span class="chip">Conferindo…</span>' : E.ligado ? `<span class="chip ok">Ligada</span> <span class="muted">${esc(E.email || '')}</span>` : E.code === 'sem-google' ? '<span class="chip warn">Falta configurar a ponte (Google)</span>' : `<span class="chip warn">Desligada</span>`;
+  return `<section class="panel"><div class="panel-head"><div><h2>Agenda Google da empresa</h2><p class="muted" style="font-size:.85rem">Os clientes viram contatos no Gmail da empresa e aparecem sozinhos no celular e no WhatsApp da empresa. Nada é apagado da agenda sem a senha de quem tem permissão.</p></div>
+    <div class="actions">${E && E.ligado ? `<button type="button" class="btn sm primary" data-act="ag-comparar" title="Compara os clientes do Bancada com a agenda do Google">${ic('search')}Comparar com a agenda</button><button type="button" class="btn sm ghost" data-act="ag-desligar" title="Desliga a agenda do Google (pede senha)">Desligar</button>` : `<button type="button" class="btn sm primary" data-act="ag-ligar" title="Entrar com o Gmail da empresa e autorizar a agenda">${ic('lock')}Ligar agenda do Google</button>`}</div></div>
+    <p>Situação: ${st}</p>${E && E.erro && !E.ligado && E.code !== 'desligada' ? `<p class="banner" style="font-size:.85rem"><span class="grow">${esc(E.erro)}</span></p>` : ''}
+    <label class="rf-chk" style="margin:8px 0"><input type="checkbox" data-act="ag-auto"${C.auto ? ' checked' : ''}${E && E.ligado ? '' : ' disabled'}> Enviar sozinho para a agenda cada cliente novo ou alterado (número que ainda não está lá)</label>
+    <div class="banner info" style="font-size:.85rem;margin-top:8px"><span class="grow"><b>Segurança:</b> trocar ou apagar o telefone de um cliente que já está na agenda, apagar contato da agenda e desligar a agenda pedem a senha de quem tem a permissão <b>Agenda Google: trocar ou apagar telefone</b>. Contatos apagados por fora (direto no celular ou no Gmail) aparecem em <b>Comparar</b> para recriar. O Google também guarda as alterações da agenda por 30 dias (contacts.google.com → Desfazer alterações).</span></div>
+    <details class="imp-dica" style="margin-top:10px" open><summary>Como os contatos chegam ao celular e ao WhatsApp da empresa</summary>
+      <p><b>Android:</b> Configurações → <b>Contas</b> (ou Senhas e contas) → toque no Gmail da empresa → <b>Sincronizar conta</b> → deixe <b>Contatos</b> ligado. No app Contatos, em ⋮ → Configurações → <b>Conta padrão para novos contatos</b>, escolha o Gmail da empresa.</p>
+      <p><b>iPhone:</b> Ajustes → <b>Contatos</b> → <b>Contas</b> → <b>Adicionar Conta</b> → <b>Google</b> → entre com o Gmail da empresa → ligue <b>Contatos</b> → Salvar. Depois, em Ajustes → Contatos → <b>Conta Padrão</b>, escolha <b>Gmail</b> (assim o que for salvo no iPhone também vem para o Bancada).</p>
+      <p><b>WhatsApp (Android e iPhone):</b> não precisa fazer nada — ele usa os contatos do celular. Se um contato novo demorar a aparecer, abra o WhatsApp → nova conversa → ⋮ → <b>Atualizar</b> (no iPhone, puxe a lista para baixo).</p>
+      <p><b>Contatos antigos que estão só no iCloud (iPhone):</b> em icloud.com/contacts selecione todos → ⚙ → <b>Exportar vCard</b> e, em contacts.google.com, <b>Importar</b> esse arquivo. Assim eles passam a ser comparados aqui.</p></details></section>`;
+}
+Object.assign(ACT, {
+  'ag-ligar': () => pedirSenha('agenda', 'Ligar a agenda do Google da empresa', async () => {
+    try { const idToken = await firebase.auth().currentUser.getIdToken(); const r = await fetch(agPonte() + '/google/inicio?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken, volta: location.href.split('#')[0] }) }); const j = await r.json(); if (!j.url) throw new Error(j.erro || 'A ponte não respondeu.'); toast('Entre com o Gmail da empresa e toque em Permitir.', 6000); location.href = j.url; }
+    catch (e) { toast('Não foi possível ligar a agenda: ' + (e.message || e), 8000); }
+  }),
+  'ag-desligar': el => arm(el, 'Confirmar: desligar', () => pedirSenha('agendaTel', 'Desligar a agenda do Google', async () => { try { await agChamar('desligar'); await save('ajustes', 'agenda-google', { ...agCfg(), auto: false, desligadaEm: Date.now(), por: OPID() }); AG.est = null; AG.lista = null; toast('Agenda do Google desligada. Os contatos continuam na agenda.'); scheduleRender(true); } catch (e) { toast(e.message); } })),
+  'ag-auto': el => { const on = el.checked; pedirSenha('agenda', on ? 'Ligar o envio automático para a agenda' : 'Desligar o envio automático', async () => { await save('ajustes', 'agenda-google', { ...agCfg(), auto: on, alteradoEm: Date.now(), por: OPID() }); toast(on ? 'Cada cliente novo vai para a agenda do Google sozinho.' : 'Envio automático desligado.'); scheduleRender(true); }); setTimeout(() => { el.checked = !!agCfg().auto; }, 0); },
+  'ag-comparar': async () => {
+    toast('Lendo a agenda do Google…');
+    let L; try { L = await agListar(true); } catch (e) { toast('Não foi possível ler a agenda: ' + e.message, 8000); return; }
+    const cli = S.clientes.filter(c => !c.excluido && !c.exemplo), porId = new Map(L.map(g => [g.id, g])), usados = new Set();
+    const faltam = [], difNome = [], sumiram = [], difTel = [];
+    for (const c of cli) {
+      const tels = agTelsCli(c); const gId = c.googleId && porId.get(c.googleId); const g = gId || (tels.length ? agPorTel(L, tels) : null);
+      if (g) usados.add(g.id);
+      if (!g) { if (c.googleId) sumiram.push({ c }); else if (tels.length) faltam.push({ c, tels }); continue; }
+      if (norm(g.nome || '') !== norm(c.nome || '')) difNome.push({ c, g });
+      const kc = tels.map(agTel8), kg = (g.tels || []).map(agTel8).filter(Boolean);
+      if (gId && kc.length && !kc.some(k => kg.includes(k))) difTel.push({ c, g });
+    }
+    const soAgenda = L.filter(g => !usados.has(g.id) && (g.tels || []).length);
+    M.agCmp = { faltam, difNome, sumiram, difTel, soAgenda };
+    const linha = (k, i, ttl, sub, extra = '') => `<label class="imp-r"><input type="checkbox" class="ag-ck" data-k="${k}" data-i="${i}" checked><span class="grow"><b>${esc(ttl)}</b><small class="muted">${esc(sub)}</small></span>${extra}</label>`;
+    const sec = (t, n, corpo, dica) => n ? `<h3 style="margin:14px 0 4px">${t} <span class="chip">${n}</span></h3>${dica ? `<p class="muted" style="margin:0 0 6px;font-size:.84rem">${dica}</p>` : ''}<div class="imp-lista">${corpo}</div>` : '';
+    openModal('Comparar com a agenda do Google', `<p class="muted" style="margin-top:0">${cli.length} clientes no Bancada · ${L.length} contatos na agenda do Google da empresa.</p>
+      ${sec('Mesmo número, nome diferente', difNome.length, difNome.map((x, i) => `<div class="ag-div"><b>${esc(agTelsCli(x.c)[0] || '')}</b><label class="rf-chk"><input type="radio" name="agn-${i}" value="b" checked> No Bancada: <b>${esc(x.c.nome)}</b></label><label class="rf-chk"><input type="radio" name="agn-${i}" value="g"> Na agenda: <b>${esc(x.g.nome || '(sem nome)')}</b></label><label class="rf-chk"><input type="radio" name="agn-${i}" value="n"> Deixar como está</label></div>`).join(''), 'Escolha qual nome fica. O nome escolhido é gravado nos dois lados.')}
+      ${difNome.length > 1 ? '<p style="margin:6px 0"><button type="button" class="btn sm" data-act="ag-todos-n" data-v="b">Usar todos os nomes do Bancada</button> <button type="button" class="btn sm" data-act="ag-todos-n" data-v="g">Usar todos os nomes da agenda</button></p>' : ''}
+      ${sec('Clientes que ainda não estão na agenda', faltam.length, faltam.map((x, i) => linha('f', i, x.c.nome, x.tels.join(' · '))).join(''), 'Marcados: serão criados na agenda do Google (aparecem no celular e no WhatsApp).')}
+      ${sec('Apagados da agenda por fora do sistema', sumiram.length, sumiram.map((x, i) => linha('s', i, x.c.nome, agTelsCli(x.c).join(' · ') || 'sem telefone')).join(''), 'Estes clientes estavam na agenda e foram apagados direto no celular ou no Gmail. Marcados: serão criados de novo.')}
+      ${sec('Telefone diferente (precisa de autorização)', difTel.length, difTel.map((x, i) => `<div class="ag-div"><b>${esc(x.c.nome)}</b><label class="rf-chk"><input type="radio" name="agt-${i}" value="b"> Telefone do Bancada: <b>${esc(agTelsCli(x.c).join(' · '))}</b></label><label class="rf-chk"><input type="radio" name="agt-${i}" value="g"> Telefone da agenda: <b>${esc((x.g.tels || []).join(' · '))}</b></label><label class="rf-chk"><input type="radio" name="agt-${i}" value="n" checked> Deixar como está</label></div>`).join(''), 'Trocar telefone pede a senha de quem tem a permissão.')}
+      ${sec('Contatos da agenda que não são clientes', soAgenda.length, `<p class="muted" style="margin:4px 0">Para trazer como clientes, use <b>Clientes → Importar</b>: <button type="button" class="btn sm" data-act="ag-importar">Importar da agenda (${soAgenda.length})</button></p>`)}
+      ${!faltam.length && !difNome.length && !sumiram.length && !difTel.length ? '<p class="banner info"><span class="grow">Tudo igual: os clientes do Bancada e a agenda do Google estão de acordo.</span></p>' : ''}`,
+      `<button type="button" class="btn" data-act="close">Fechar</button>${faltam.length || difNome.length || sumiram.length || difTel.length ? '<button type="button" class="btn primary" data-act="ag-aplicar">Aplicar escolhas</button>' : ''}`, { wide: true });
+  },
+  'ag-todos-n': el => { document.querySelectorAll(`.ag-div input[name^="agn-"][value="${el.dataset.v}"]`).forEach(r => r.checked = true); },
+  'ag-importar': () => { const X = M.agCmp; if (!X) return; closeModal(); impPrevia(X.soAgenda.map(g => ({ _orig: 'tel', nome: g.nome || '', telefone: (g.tels || [])[0] || '', email: g.email || '', obs: (g.tels || []).length > 1 ? 'Outro telefone: ' + g.tels.slice(1).join(', ') : '' })), 'Agenda do Google'); },
+  'ag-aplicar': async el => {
+    const X = M.agCmp; if (!X) return;
+    const marc = k => [...document.querySelectorAll(`.ag-ck[data-k="${k}"]:checked`)].map(c => +c.dataset.i);
+    const nomes = X.difNome.map((x, i) => ({ ...x, v: (document.querySelector(`input[name="agn-${i}"]:checked`) || {}).value })).filter(x => x.v === 'b' || x.v === 'g');
+    const tels = X.difTel.map((x, i) => ({ ...x, v: (document.querySelector(`input[name="agt-${i}"]:checked`) || {}).value })).filter(x => x.v === 'b' || x.v === 'g');
+    const criar = [...marc('f').map(i => X.faltam[i].c), ...marc('s').map(i => X.sumiram[i].c)];
+    const fazer = async () => {
+      el.disabled = true; let ok = 0, err = 0;
+      for (const c of criar) { try { const j = await agChamar('criar', { nome: c.nome, tels: agTelsCli(c), email: c.email || '' }); if (j.contato) await agMarcarCliente(c, j.contato); ok++; } catch { err++; } }
+      for (const x of nomes) { try { if (x.v === 'b') await agChamar('nome', { id: x.g.id, nome: x.c.nome }); else await save('clientes', x.c.id, { ...x.c, nome: x.g.nome, googleId: x.g.id, _agSync: 1 }); ok++; } catch { err++; } }
+      for (const x of tels) { try { if (x.v === 'b') await agChamar('tels', { id: x.g.id, tels: agTelsCli(x.c), autorizadoPor: AUT || OPID() }); else { const t = x.g.tels || []; await save('clientes', x.c.id, { ...x.c, telefone: t[0] || '', whatsapp: t[0] || x.c.whatsapp || '', tel2: t[1] || x.c.tel2 || '', _agSync: 1 }); } ok++; } catch { err++; } }
+      AG.lista = null; closeModal(); toast(`${ok} alteraç${ok === 1 ? 'ão feita' : 'ões feitas'}${err ? ` · ${err} com erro (tente de novo)` : ''}.`, 6000);
+    };
+    if (tels.length) pedirSenha('agendaTel', 'Trocar telefone na agenda do Google', fazer); else fazer();
+  }
+});
+Object.assign(ACT_PERM, { 'ag-ligar': 'agenda', 'ag-desligar': 'agenda', 'ag-auto': 'agenda', 'ag-comparar': 'agenda', 'ag-aplicar': 'agenda', 'ag-todos-n': 'agenda', 'ag-importar': 'clientes' });
+setTimeout(() => { try { Object.assign(AJUDA, { 'ag-ligar': 'Entra com o Gmail da empresa e autoriza o Bancada a gravar os clientes na agenda do Google (que vai para o celular e o WhatsApp).', 'ag-comparar': 'Compara clientes e agenda: quem falta, nomes diferentes, contatos apagados por fora e telefones diferentes.', 'ag-desligar': 'Desliga a agenda do Google. Pede senha. Os contatos continuam na agenda.', 'ag-aplicar': 'Grava as escolhas: cria os contatos marcados, acerta os nomes e, com senha, os telefones.', 'ag-auto': 'Liga ou desliga o envio automático de clientes novos para a agenda do Google.' }); } catch { } }, 0);
+/* volta do Google: mostra o resultado e abre a tela da agenda */
+setTimeout(() => { try { const h = location.hash || ''; if (/google=ok/.test(h)) { history.replaceState(null, '', location.href.split('#')[0]); setTimeout(() => { S.cfgTab = 'agenda'; try { go('config'); } catch { } toast('Agenda do Google ligada. Toque em Comparar com a agenda.', 7000); }, 2500); } else if (/google=erro/.test(h)) { const m = decodeURIComponent((h.match(/msg=([^&]+)/) || [, ''])[1]); history.replaceState(null, '', location.href.split('#')[0]); setTimeout(() => toast('Não foi possível ligar a agenda do Google' + (m ? ': ' + m : '.'), 9000), 2500); } } catch { } }, 0);
+/* ======================= autorização à distância =======================
+   Quem não tem permissão (ou não está perto de quem tem) pede a autorização pelo sistema; o pedido aparece no aparelho
+   de quem pode autorizar, que confere o que foi pedido e confirma com a senha dele, no aparelho dele. O pedido vale 20 minutos. */
+const AUTR = { fns: {}, iv: 0, vistos: new Set() };
+const AUTR_VALIDADE = 20 * 60e3;
+const autrAtivo = x => x && x.status === 'pendente' && Date.now() - num(x.at) < AUTR_VALIDADE;
+ACT['aut-remota'] = () => {
+  const perm = SENHA_PERM, fn = SENHA_CB, tit = SENHA_TIT || 'Autorização';
+  if (!fn) return; if (!DB) { toast('A autorização à distância precisa do sistema na nuvem.'); return; }
+  const quem = contasLogin().filter(c => c.id !== OPID() && podeUser(c.id, perm));
+  if (!quem.length) { toast('Ninguém da equipe com senha tem esta permissão. Peça ao administrador para cadastrar.'); return; }
+  closeModal(); AUTR.pend = { perm, fn, tit };
+  openModal('Pedir autorização à distância', `<p style="margin-top:0"><b>${esc(tit)}</b></p>
+    ${field('Pedir para', `<select id="ar-para"><option value="">Qualquer um que possa autorizar (${quem.length})</option>${quem.map(c => `<option value="${esc(c.id)}">${esc(c.nome)}</option>`).join('')}</select>`)}
+    ${field('Explique o pedido (aparece para quem vai autorizar)', '<textarea id="ar-det" rows="3" placeholder="Ex.: o cliente trocou de número; o novo é (81) 9…"></textarea>')}
+    <p class="muted" style="font-size:.84rem">Quem autorizar recebe um aviso no aparelho dele e confirma com a senha dele. O pedido vale 20 minutos; deixe esta tela aberta.</p>`,
+    `<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="aut-enviar">${ic('lock')}Enviar pedido</button>`);
+  setTimeout(() => $('#ar-det')?.focus(), 60);
+};
+ACT['aut-enviar'] = async () => {
+  const P = AUTR.pend; if (!P) return; const id = uid();
+  const det = ($('#ar-det') || {}).value || '', para = ($('#ar-para') || {}).value || '';
+  const doc = { perm: P.perm, titulo: P.tit, det: det.trim().slice(0, 500), para, pedidoPor: OPID() || '', pedidoNome: nomeUser(OPID() || 'local'), aparelho: (typeof acAparelhoDesc === 'function' ? acAparelhoDesc() : ''), at: Date.now(), status: 'pendente' };
+  if (!(await save('autorizacoes', id, doc))) return;
+  AUTR.fns[id] = P.fn; AUTR.pend = null; closeModal(); autrEsperar(id);
+};
+function autrEsperar(id) {
+  const ov = openModal('Aguardando autorização', `<div style="display:flex;gap:12px;align-items:center"><div class="nv-spin" style="width:28px;height:28px;flex:none"></div><p style="margin:0">Pedido enviado. Assim que alguém autorizar no aparelho dele, a operação continua aqui sozinha.</p></div><p class="muted" id="ar-tempo" style="font-size:.84rem"></p>`,
+    `<button type="button" class="btn" data-act="aut-cancelar" data-id="${esc(id)}">Cancelar pedido</button>`);
+  ov.dataset.autr = id;
+  const t = setInterval(async () => {
+    const x = get('autorizacoes', id); const el = $('#ar-tempo');
+    if (!x || !document.querySelector(`[data-autr="${id}"]`)) { clearInterval(t); return; }
+    if (el) el.textContent = 'Vale até ' + new Date(num(x.at) + AUTR_VALIDADE).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + '.';
+    if (x.status === 'aprovado') {
+      clearInterval(t); document.querySelector(`[data-autr="${id}"]`)?.remove(); try { histSync(); } catch { }
+      const fn = AUTR.fns[id]; delete AUTR.fns[id];
+      await save('autorizacoes', id, { ...x, status: 'usado', usadoEm: Date.now() });
+      AUT = { uid: x.por, nome: x.porNome || nomeUser(x.por) }; toast(`Autorizado à distância por ${AUT.nome}.`, 5000);
+      try { if (fn) await fn(); } finally { AUT = null; }
+    } else if (x.status === 'recusado' || (x.status === 'pendente' && Date.now() - num(x.at) > AUTR_VALIDADE)) {
+      clearInterval(t); document.querySelector(`[data-autr="${id}"]`)?.remove(); try { histSync(); } catch { } delete AUTR.fns[id];
+      if (x.status === 'pendente') await save('autorizacoes', id, { ...x, status: 'vencido' });
+      toast(x.status === 'recusado' ? `Pedido recusado por ${x.porNome || 'quem autoriza'}${x.motivo ? ': ' + x.motivo : ''}.` : 'O pedido venceu (20 minutos) sem resposta.', 7000);
+    }
+  }, 1000);
+}
+ACT['aut-cancelar'] = async el => { const id = el.dataset.id, x = get('autorizacoes', id); delete AUTR.fns[id]; closeModal(); if (x && x.status === 'pendente') await save('autorizacoes', id, { ...x, status: 'cancelado', canceladoEm: Date.now() }); toast('Pedido cancelado.'); };
+/* lado de quem autoriza: aviso no aparelho dele */
+const autrParaMim = () => { const eu = OPID(); if (!eu || !S.op) return []; return (S.autorizacoes || []).filter(x => autrAtivo(x) && x.pedidoPor !== eu && (!x.para || x.para === eu) && podeUser(eu, x.perm)).sort((a, b) => num(a.at) - num(b.at)); };
+function autrAviso() {
+  let d = document.getElementById('aut-aviso'); const L = (() => { try { return autrParaMim(); } catch { return []; } })();
+  if (!L.length || document.getElementById('autr-lista')) { if (d) d.remove(); return; }
+  const txt = L.length === 1 ? `<b>${esc(L[0].pedidoNome || 'Alguém')}</b> pede autorização: ${esc(L[0].titulo || '')}` : `<b>${L.length} pedidos</b> de autorização aguardando você.`;
+  if (!d) { d = document.createElement('div'); d.id = 'aut-aviso'; d.className = 'ver-nova ac-aviso'; d.setAttribute('role', 'alertdialog'); document.body.appendChild(d); }
+  const h = `<span class="grow">${ic('lock')} ${txt}</span><button type="button" class="btn sm primary" data-act="aut-ver" title="Ver o pedido e autorizar ou recusar">Ver pedido</button>`;
+  if (d.dataset.h !== h) { d.innerHTML = h; d.dataset.h = h; }
+  if (L.some(x => !AUTR.vistos.has(x.id))) { L.forEach(x => AUTR.vistos.add(x.id)); try { navigator.vibrate && navigator.vibrate([150, 80, 150]); } catch { } }
+}
+setInterval(() => { try { autrAviso(); } catch { } }, 2500);
+function autrListaHTML() {
+  const L = autrParaMim(); if (!L.length) return '<p class="muted">Nenhum pedido aguardando.</p>';
+  return L.map(x => `<div class="ag-div"><b>${esc(x.titulo || 'Autorização')}</b><span>Pedido por <b>${esc(x.pedidoNome || '—')}</b> · ${tsBR(x.at)}${x.aparelho ? ' · ' + esc(x.aparelho) : ''}</span>${x.det ? `<span class="muted" style="white-space:pre-wrap">“${esc(x.det)}”</span>` : ''}<span class="muted" style="font-size:.82rem">Permissão: ${esc(((typeof PERMS !== 'undefined' && PERMS.find(p => p[0] === x.perm)) || [, x.perm])[1])}</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span style="flex:0 1 230px;min-width:150px;display:block"><input type="password" class="autr-pin" data-id="${esc(x.id)}" placeholder="Sua senha" autocomplete="off" style="width:100%"></span><button type="button" class="btn sm primary" data-act="aut-aprovar" data-id="${esc(x.id)}">Autorizar</button><button type="button" class="btn sm" data-act="aut-recusar" data-id="${esc(x.id)}">Recusar</button></div></div>`).join('');
+}
+ACT['aut-ver'] = () => { document.getElementById('aut-aviso')?.remove(); openModal('Pedidos de autorização', `<div id="autr-lista">${autrListaHTML()}</div>`, '<button type="button" class="btn" data-act="close">Fechar</button>', { wide: true }); };
+ACT['aut-aprovar'] = async el => {
+  const id = el.dataset.id, x = get('autorizacoes', id), eu = OPID(); if (!x || !autrAtivo(x)) { toast('Este pedido não está mais aguardando.'); const b = $('#autr-lista'); if (b) b.innerHTML = autrListaHTML(); return; }
+  const pin = (document.querySelector(`.autr-pin[data-id="${id}"]`) || {}).value || '', ct = contaPorId(eu);
+  if (!ct || (await hashPin(pin)) !== ct.hash) { toast('Senha incorreta.'); return; }
+  if (!podeUser(eu, x.perm)) { toast('Você não tem esta permissão.'); return; }
+  if (await save('autorizacoes', id, { ...x, status: 'aprovado', por: eu, porNome: nomeUser(eu), em: Date.now() })) { toastOk('Autorizado. A operação continua no aparelho de ' + (x.pedidoNome || 'quem pediu') + '.'); const b = $('#autr-lista'); if (b) b.innerHTML = autrListaHTML(); }
+};
+ACT['aut-recusar'] = async el => { const id = el.dataset.id, x = get('autorizacoes', id); if (!x) return; const motivo = (prompt('Motivo da recusa (opcional):') || '').trim(); if (await save('autorizacoes', id, { ...x, status: 'recusado', por: OPID(), porNome: nomeUser(OPID()), em: Date.now(), motivo })) { toast('Pedido recusado.'); const b = $('#autr-lista'); if (b) b.innerHTML = autrListaHTML(); } };
+Object.assign(ACT_PERM, { 'aut-remota': '', 'aut-enviar': '', 'aut-cancelar': '', 'aut-ver': '', 'aut-aprovar': '', 'aut-recusar': '' });
+setTimeout(() => { try { Object.assign(AJUDA, { 'aut-remota': 'Envia o pedido para quem pode autorizar, no aparelho dele. Ele confere e confirma com a senha dele.', 'aut-ver': 'Mostra os pedidos de autorização que aguardam você.', 'aut-aprovar': 'Autoriza o pedido com a sua senha. A operação continua no aparelho de quem pediu.', 'aut-recusar': 'Recusa o pedido.', 'aut-cancelar': 'Cancela o pedido de autorização.' }); } catch { } }, 0);
 const nuvemSairBtn = () => (EMP_CFG && FB_USER) ? `<button type="button" class="btn ghost lg-nuvem-sair" data-act="nuvem-sair" data-ajuda="Desconecta este aparelho da conta da empresa ${esc(EMP_CFG.nome || '')}. Para voltar, entre de novo com o Gmail da empresa e a senha do sistema.">${ic('lock')}Sair da conta da empresa</button>` : '';
 ACT['nuvem-sair'] = el => arm(el, 'Confirmar: sair da conta da empresa', async () => { try { await firebase.auth().signOut(); } catch { } location.reload(); });
 ACT_PERM['nuvem-sair'] = '';
