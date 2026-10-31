@@ -1105,6 +1105,13 @@ tr.click{cursor:pointer}tr.click:hover>td{background:var(--surface-2)}
 .agt .agt-d{white-space:nowrap}.agt .agt-t small{font-size:.8rem}.agt tr.late td:first-child{box-shadow:inset 3px 0 0 var(--red)}.agt tfoot td{font-weight:600;border-top:2px solid var(--line);border-bottom:0}
 .agt-tp{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}.agt-tp::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}
 .agt .chip{white-space:nowrap}
+.et-modelo{display:flex;flex-direction:column;gap:6px;margin-top:6px}.et-mres{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}.et-mtxt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:.84rem;line-height:1.35}.et-mtxt span{color:var(--muted)}.et-mres .btn{flex:none}
+.et-ajw{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface-2)}.et-top2{display:flex!important;flex-wrap:wrap;gap:8px;align-items:flex-end}.et-aj-f{display:flex;justify-content:flex-end;margin-top:8px}
+.et-row{grid-template-columns:auto minmax(0,1fr) 64px!important;padding:8px 10px!important;gap:10px!important;align-items:center}.et-row .nm{line-height:1.25}.et-sub{display:block;font-size:.74rem;color:var(--muted);overflow-wrap:anywhere}.et-sub .mono{font-size:.72rem}.et-tam{color:var(--accent)}.et-av{margin:8px 0 0;font-size:.84rem}
+.et-tp{display:flex;flex-direction:column;gap:6px}.et-tp-r{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.et-tp-r .grow{display:flex;flex-direction:column;min-width:0}.et-tp-r input[type=checkbox]{width:18px;height:18px;flex:none}.et-tp-q{width:64px!important;text-align:right;flex:none}
+.frac-fs{min-width:0}.frac-dica{font-size:.8rem;margin:0 0 8px}.frac-r{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)}.frac-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px 10px}.frac-q{display:flex;gap:4px}.frac-q input{width:70px;flex:none;text-align:right}.frac-q select{flex:1;min-width:0}.frac-b{display:flex;align-items:center;gap:8px}.frac-b small{flex:1;font-size:.78rem;overflow-wrap:anywhere}.frac-b .neg{color:var(--red)}.frac-orig{margin:0 0 6px;font-size:.84rem}.frac-comp{margin-bottom:10px}.frac-tot{font-weight:700}
+.fr-l{display:flex;flex-direction:column;gap:6px}.fr-r{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.fr-r .grow{display:flex;flex-direction:column;min-width:0}.fr-q{width:76px!important;text-align:right;flex:none}.fr-bar{height:10px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin:12px 0 4px}.fr-bar div{height:100%;background:var(--accent);transition:width .15s}.fr-bar div.neg{background:var(--red)}.fr-res{font-size:.86rem;margin:0}.fr-res .neg{color:var(--red)}
+.fr-hist{margin-top:12px;font-size:.84rem}.fr-hist summary{cursor:pointer;font-weight:600}.fr-h{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}.fr-h .grow{display:flex;flex-direction:column;min-width:0}
 .mk-ext{display:flex;flex-direction:column;gap:12px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)}.mk-lin{display:flex;flex-direction:column;gap:5px;min-width:0}.mk-t{font-size:.8rem;font-weight:600;color:var(--muted)}.mk-t small{font-weight:500}
 .mk-par{display:grid;grid-template-columns:minmax(0,130px) auto minmax(0,1fr);gap:6px;align-items:center}.mk-pc{display:flex;align-items:stretch;min-width:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface-2)}.mk-pc input{border:0!important;border-radius:0!important;min-width:0;width:100%;text-align:right;padding-left:4px!important;padding-right:4px!important;background:transparent}.mk-u{flex:none;display:grid;place-items:center;padding:0 8px;font-weight:700;color:var(--muted);background:var(--surface);border-left:1px solid var(--line)}.mk-u:first-child{border-left:0;border-right:1px solid var(--line)}
 .mk-eq{color:var(--muted);font-weight:700}.mk-vl{min-width:0}.mk-vl input{width:100%;text-align:right}.mk-qt{display:flex;align-items:center;gap:6px;font-size:.84rem;color:var(--muted);flex-wrap:wrap}.mk-qt input{width:76px;text-align:right}
@@ -2011,7 +2018,7 @@ function avisoSemNuvem() {
   d.innerHTML = `<span class="grow"><b>Os dados da nuvem não foram carregados.</b> Nada foi perdido. Recarregue a página (botão ↻ do navegador) para conectar de novo.</span><button type="button" class="btn sm primary" onclick="location.reload()">Recarregar</button>`;
   document.body.appendChild(d);
 }
-const APP_VER = 365;
+const APP_VER = 366;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -3333,6 +3340,7 @@ function prodForm(id, preset = {}) {
   PF_FOTOS = [...((id && (get('produtos', id) || {}).fotos) || [])];
   M.comp = JSON.parse(JSON.stringify(((id && get('produtos', id)) || {}).composicao || [])).map(c => c.un ? c : { ...c, uq: num(c.qtd), un: 'un' });
   M.med = medDe((id && get('produtos', id)) || preset || {});
+  M.tam = JSON.parse(JSON.stringify(((id && get('produtos', id)) || {}).tamanhos || []));
   const p = id ? get('produtos', id) : { tipo: 'produto', unidade: 'un', ...preset };
   openModal(id ? 'Editar item' : 'Novo item', `<div class="it-lay"><div class="it-top">
     ${field('Tipo de item', `<div class="seg" id="p-tipo-seg">${Object.entries(TIPOS).map(([k, l]) => `<button type="button" data-act="ptipo" data-v="${k}" class="${p.tipo === k ? 'on' : ''}">${l}</button>`).join('')}</div><input type="hidden" name="tipo" id="p-tipo" value="${esc(p.tipo)}">`)}
@@ -3352,6 +3360,7 @@ function prodForm(id, preset = {}) {
         ${field('Modelo', inp('p-modelo', 'modelo', p.modelo), 'w2')}${field('Cor', inp('p-cor', 'cor', p.cor))}${field('Tamanho / capacidade', inp('p-tam', 'tamanho', p.tamanho))}${field('Voltagem', inp('p-volt', 'voltagem', p.voltagem))}${field('Linha', `<select id="p-orig" name="linha"><option value="">—</option>${['Original', 'Compatível', 'Remanufaturado'].map(x => `<option${p.linha === x ? ' selected' : ''}>${x}</option>`).join('')}</select>`)}${field('Rendimento (páginas)', inp('p-rend', 'rendimento', p.rendimento || '', 'placeholder="Ex.: 1.600"'))}<input type="hidden" id="p-peso" name="peso" value="${esc(p.peso || '')}">${field('Material', inp('p-mat', 'material', p.material))}${field('Garantia', inp('p-gar', 'garantia', p.garantia))}</div>
         <datalist id="dl-cor">${['Preto', 'Branco', 'Prata', 'Cinza', 'Azul', 'Vermelho', 'Verde', 'Rosa', 'Dourado', 'Grafite'].map(x => `<option value="${x}">`).join('')}</datalist><datalist id="dl-volt">${['Bivolt', '110 V', '127 V', '220 V', '12 V', '5 V (USB)', 'Bateria'].map(x => `<option value="${x}">`).join('')}</datalist></fieldset>
       ${medFsHTML(p)}
+      ${fracFsHTML(p)}
       ${field('Fornecedor', `<select id="p-forn" name="fornecedorId"><option value="">Nenhum</option>${[...S.fornecedores].sort(byNome).map(x => `<option value="${esc(x.id)}"${x.id === p.fornecedorId ? ' selected' : ''}>${esc(x.nome)}</option>`).join('')}</select>`)}
       ${field('Observações', `<textarea id="p-det" name="detalhes" placeholder="Outras informações do item">${esc(p.detalhes || '')}</textarea>`, 'full')}
     </div></div><div class="it-ext">
@@ -3390,8 +3399,8 @@ function prodForm(id, preset = {}) {
       ${field('Valor de reposição (R$)', money('p-vr', 'valorReposicao', p.valorReposicao))}
       ${field('Acessórios que acompanham', inp('p-acc', 'acessorios', p.acessorios, 'placeholder="Fonte, cabo HDMI, mouse"'), 'full')}
     </div><p class="muted" style="font-size:.82rem">O valor de reposição entra no contrato como valor a ser pago em caso de perda, roubo ou dano sem conserto.</p></fieldset></div></div>`,
-    `${id ? `<button type="button" class="btn danger" data-act="prod-del" data-id="${id}" style="margin-right:auto">Excluir</button><button type="button" class="btn" data-act="aj-abrir" data-id="${id}" title="Ajustar o estoque deste produto (contagem, perda, quebra)">Ajustar estoque</button><button type="button" class="btn" data-act="prod-dup" data-id="${id}" title="Cria outro item igual a este, com todas as características e fotos; o nome ganha “(cópia)”">${ic('copy')}Duplicar</button><button type="button" class="btn" data-act="prod-ficha" data-id="${id}" title="Imprime a ficha deste item (A4, 80 mm ou 58 mm)">${ic('print')}Imprimir</button><button type="button" class="btn" data-act="prod-etq" data-id="${id}" title="Imprime a etiqueta só deste item, com ou sem preço">${ic('print')}Etiqueta</button>` : ''}<button type="button" class="btn" data-act="close">Cancelar</button><button class="btn primary" type="submit">Salvar</button>`, { form: 'produto', id: id || '' });
-  prodTipoShow(p.tipo); compRecalc(); medDesenha(); perfilAplicar(); pfRe();
+    `${id ? `<button type="button" class="btn danger" data-act="prod-del" data-id="${id}" style="margin-right:auto">Excluir</button><button type="button" class="btn" data-act="aj-abrir" data-id="${id}" title="Ajustar o estoque deste produto (contagem, perda, quebra)">Ajustar estoque</button>${(p.tamanhos || []).length ? `<button type="button" class="btn" data-act="frac-abrir" data-id="${id}" title="Fracionar em tamanhos menores (ex.: galão em garrafas)">Fracionar</button>` : ''}<button type="button" class="btn" data-act="prod-dup" data-id="${id}" title="Cria outro item igual a este, com todas as características e fotos; o nome ganha “(cópia)”">${ic('copy')}Duplicar</button><button type="button" class="btn" data-act="prod-ficha" data-id="${id}" title="Imprime a ficha deste item (A4, 80 mm ou 58 mm)">${ic('print')}Imprimir</button><button type="button" class="btn" data-act="prod-etq" data-id="${id}" title="Imprime a etiqueta só deste item, com ou sem preço">${ic('print')}Etiqueta</button>` : ''}<button type="button" class="btn" data-act="close">Cancelar</button><button class="btn primary" type="submit">Salvar</button>`, { form: 'produto', id: id || '' });
+  prodTipoShow(p.tipo); compRecalc(); medDesenha(); perfilAplicar(); pfRe(); fracDesenha();
 }
 function prodTipoShow(t) { document.querySelectorAll('#modals [data-show]').forEach(el => el.hidden = !el.dataset.show.split(' ').includes(t)); }
 
@@ -5769,7 +5778,8 @@ const FORMS = {
     o.medidas = medLer(); o.fracionado = !!(f.querySelector('#med-frac') || {}).checked && o.medidas.some(m => m.principal && MED_CONV[m.un]); o.peso = medPesoTxt(o.medidas) || (o.medidas.length ? '' : (d.peso || old.peso || ''));
     if (d.tipo === 'produto') Object.assign(o, { uso: d.uso || 'venda', embNome: (d.embNome || '').trim(), embQtd: num(d.embQtd) > 1 ? num(d.embQtd) : 0, custoEmb: r2(num(d.custoEmb)) });
     if (d.tipo !== 'aluguel') Object.assign(o, { preco: num(d.preco), custo: num(d.custo), markupValor: num(d.markupValor), markupTipo: d.markupTipo || 'val' }, d.tipo === 'produto' ? { estoque: num(d.estoque), minimo: num(d.minimo), unidade: d.unidade || 'un', precoAtacado: num(d.precoAtacado), precoPrazo: num(d.precoPrazo), atacadoMin: num(d.atacadoMin), lote: (d.lote || '').trim(), validade: d.validade || '' } : {});
-    if (await save('produtos', id, o)) { if (M.prodVolta) { try { M.prodVolta({ ...o, id }); } catch { } M.prodVolta = null; } closeModal(); scheduleRender(true); toast('Item salvo.'); }
+    if (d.tipo === 'produto') o.tamanhos = fracLer();
+    if (await save('produtos', id, o)) { try { if (d.tipo === 'produto' && (o.tamanhos || []).length) await fracSincronizar({ ...o, id }); } catch (e) { console.warn(e); } if (M.prodVolta) { try { M.prodVolta({ ...o, id }); } catch { } M.prodVolta = null; } closeModal(); scheduleRender(true); toast('Item salvo.'); }
   },
   async empresa(f, d) {
     if (!d.fantasia.trim()) { toast('Informe o nome fantasia.'); return; }
@@ -6727,6 +6737,8 @@ const LABEL_CSS = `
 .lb .cd{font-family:"Courier New",monospace;font-size:6.5pt;text-align:center;letter-spacing:.05em;white-space:nowrap;overflow:hidden;margin-top:auto}
 .lb-60x40 .nm{font-size:8.5pt}.lb-60x40 .pr{font-size:13pt}.lb-60x40 .cd{font-size:7pt}
 .lb-100x50 .nm{font-size:11pt}.lb-100x50 .pr{font-size:18pt}.lb-100x50 .em{font-size:7pt}.lb-100x50 .cd{font-size:8.5pt}
+.lb .ex{font-size:6pt;line-height:1.15;overflow-wrap:anywhere}.lb .exi+.exi::before{content:" · "}.lb .pr2{font-size:5.6pt;line-height:1.15;font-weight:600}
+.lb-50x30 .pr{font-size:9.5pt}.lb-60x40 .ex{font-size:7pt}.lb-60x40 .pr2{font-size:7pt}.lb-100x50 .ex{font-size:9pt}.lb-100x50 .pr2{font-size:9pt}.lb-xs .ex,.lb-xs .pr2{font-size:4.6pt}
 `;
 const codeOf = p => String(p.codigo || (p.tipo === 'aluguel' ? p.serie : '') || '').trim();
 function eanCheck(d12) { let s = 0; for (let i = 0; i < 12; i++) s += (+d12[i]) * (i % 2 ? 3 : 1); return (10 - s % 10) % 10; }
@@ -6778,16 +6790,17 @@ let ET_SZ = null;
 function labelHTML(p) {
   const o = M.et, code = codeOf(p);
   const bc = o.tipo !== 'qr' && code ? barcodeSVG(code) : '', qr = o.tipo !== 'barras' && code ? qrSVG(code) : '';
-  const pt = o.precoTipo || (o.preco ? 'vista' : 'nenhum'), PL = [];
+  const pt = o.precoTipo || (o.preco ? 'vista' : 'nenhum'), PL = [], szc = ET_SZ ? ET_SZ.cls : 'lb-' + o.tam, peq = /lb-xs|lb-50x30/.test(szc), gde = /lb-100x50/.test(szc);
   if (p.tipo !== 'aluguel' && pt !== 'nenhum') {
     const v = num(p.preco), pz = num(p.precoPrazo), at = num(p.precoAtacado), dois = pt === 'vista_prazo' || pt === 'todos';
-    if ((pt === 'vista' || dois) && v) PL.push((dois && (pz || at) ? 'À vista ' : '') + brl(v));
-    if ((pt === 'prazo' || dois) && pz) PL.push((pt === 'prazo' ? '' : 'A prazo ') + brl(pz));
-    if ((pt === 'atacado' || pt === 'todos') && at) PL.push((pt === 'atacado' ? '' : 'Atacado ') + brl(at) + (num(p.atacadoMin) > 1 ? ' (a partir de ' + fmtQ(num(p.atacadoMin)) + ')' : ''));
+    const vals = []; if ((pt === 'vista' || dois) && v) vals.push(['v', v]); if ((pt === 'prazo' || dois) && pz) vals.push(['p', pz]); if ((pt === 'atacado' || pt === 'todos') && at) vals.push(['a', at]);
+    const mn = num(p.atacadoMin) > 1 ? (peq || !gde ? ` (${fmtQ(num(p.atacadoMin))}+)` : ` (a partir de ${fmtQ(num(p.atacadoMin))})`) : '';
+    const rot = { v: peq ? 'Vista' : 'À vista', p: peq ? 'Prazo' : 'A prazo', a: peq ? 'Atac.' : 'Atacado' };
+    vals.forEach(([k, x], i) => { const um = vals.length === 1; PL.push(um ? brl(x) + (k === 'a' ? mn : '') : i === 0 ? (peq ? `${rot[k]} ${fmtNum(x)}` : `${rot[k]} ${brl(x)}`) + (k === 'a' ? mn : '') : `${rot[k]} ${gde ? brl(x) : fmtNum(x)}` + (k === 'a' ? mn : '')); });
   }
-  const price = p.tipo === 'aluguel' ? (p.serie ? 'Patrimônio' : '') : PL.join(' · ');
-  return `<div class="lb ${ET_SZ ? ET_SZ.cls : 'lb-' + o.tam}"${ET_SZ ? ` style="${ET_SZ.st}"` : ''}>${o.empresa && S.empresa.fantasia ? `<div class="em">${esc(S.empresa.fantasia)}</div>` : ''}<div class="nm">${esc(p.nome)}</div>${etExtras(p)}${price ? `<div class="pr">${esc(price)}</div>` : ''}
-    <div class="cds">${qr ? `<div class="qr">${qr}</div>` : ''}${bc ? `<div class="bcw"><div class="bc">${bc}</div><div class="cd">${esc(code)}</div></div>` : `<div class="bcw"><div class="cd">${esc(code || 'SEM CÓDIGO')}</div></div>`}</div></div>`;
+  const price = p.tipo === 'aluguel' ? (p.serie ? 'Patrimônio' : '') : (PL[0] || ''), price2 = p.tipo === 'aluguel' ? '' : PL.slice(1).join(' · ');
+  return `<div class="lb ${ET_SZ ? ET_SZ.cls : 'lb-' + o.tam}"${ET_SZ ? ` style="${ET_SZ.st}"` : ''}>${o.empresa && S.empresa.fantasia ? `<div class="em">${esc(S.empresa.fantasia)}</div>` : ''}<div class="nm">${esc(p.nome)}</div>${etExtras(p)}${price ? `<div class="pr">${esc(price)}</div>` : ''}${price2 ? `<div class="pr2">${esc(price2)}</div>` : ''}
+    <div class="cds">${bc ? `<div class="bcw"><div class="bc">${bc}</div><div class="cd">${esc(code)}</div></div>` : `<div class="bcw"><div class="cd">${esc(code || 'SEM CÓDIGO')}</div></div>`}${qr ? `<div class="qr">${qr}</div>` : ''}</div></div>`;
 }
 function etSelecionados() { return Object.entries(M.et.sel).map(([id, q]) => [get('produtos', id), Math.max(0, Math.round(num(q)))]).filter(([p, q]) => p && q > 0); }
 function etList() {
@@ -6795,7 +6808,7 @@ function etList() {
   const est = p => p.tipo === 'produto' ? num(p.estoque) : (num(p.estoque) || 1);
   const ps = [...S.produtos].filter(p => p.tipo !== 'servico' && (!M.et.soEstoque || est(p) > 0) && (!q || norm(p.nome).includes(q) || norm(codeOf(p)).includes(q))).sort((a, b) => (est(b) > 0) - (est(a) > 0) || byNome(a, b));
   if (!ps.length) return `<p class="muted" style="padding:12px">Nenhum produto encontrado.</p>`;
-  return ps.map(p => { const c = codeOf(p), on = p.id in M.et.sel; return `<label class="et-row" for="et-c-${p.id}"><input type="checkbox" class="et-chk" data-id="${p.id}" id="et-c-${p.id}"${on ? ' checked' : ''}><span class="nm"><b>${esc(p.nome)}</b><br><span class="mono muted" style="font-size:.75rem">${c ? esc(c) : '<span style="color:var(--amber)">sem código</span>'}</span></span><span class="mono" style="font-size:.85rem;text-align:right">${p.tipo === 'aluguel' ? 'Aluguel' : brl(p.preco)}<br><span class="est ${p.tipo === 'produto' && num(p.estoque) <= 0 ? 'res-bad' : 'muted'}">${p.tipo === 'produto' ? 'Estoque: ' + fmtQ(num(p.estoque)) : (num(p.estoque) || 1) + ' un.'}</span></span><input class="et-qtd mono" data-id="${p.id}" id="et-q-${p.id}" inputmode="numeric" value="${on ? esc(M.et.sel[p.id]) : 1}" aria-label="Quantidade de etiquetas"></label>`; }).join('');
+  return ps.map(p => { const c = codeOf(p), on = p.id in M.et.sel; return `<label class="et-row" for="et-c-${p.id}"><input type="checkbox" class="et-chk" data-id="${p.id}" id="et-c-${p.id}"${on ? ' checked' : ''}><span class="nm"><b>${esc(p.nome)}</b><small class="et-sub"><span class="mono">${c ? esc(c) : '<span style="color:var(--amber)">sem código</span>'}</span> · ${p.tipo === 'aluguel' ? 'Aluguel' : brl(p.preco)} · <span class="est ${p.tipo === 'produto' && num(p.estoque) <= 0 ? 'res-bad' : ''}">${p.tipo === 'produto' ? 'estoque ' + fmtQ(num(p.estoque)) : (num(p.estoque) || 1) + ' un.'}</span>${(p.tamanhos || []).length ? ' · <b class="et-tam">tamanhos ▸</b>' : ''}</small></span><input class="et-qtd mono" data-id="${p.id}" id="et-q-${p.id}" inputmode="numeric" value="${on ? esc(M.et.sel[p.id]) : 1}" aria-label="Quantidade de etiquetas"></label>`; }).join('');
 }
 function etRefresh() {
   const sel = etSelecionados(), tot = sum(sel, s => s[1]), sem = sel.filter(([p]) => !codeOf(p)).length;
@@ -6814,13 +6827,12 @@ function etiquetasForm() {
   try { M.et.campos = JSON.parse(lsGet('bancada-etcampos') || 'null') || { cor: true, cap: true, compat: false, marca: false, val: false }; } catch { M.et.campos = { cor: true, cap: true }; }
   M.job = () => etJob();
   openModal('Etiquetas de produtos', `
-    <div class="fg et-top">
-      <div id="et-ctl" style="display:contents">${etControles()}</div>
-    </div>
     <div class="toolbar"><div class="search">${ic('search')}<input id="et-q" placeholder="Buscar produto ou código" autocomplete="off"></div><label class="btn sm" style="cursor:pointer"><input type="checkbox" id="et-soest" style="width:auto;margin:0">Só com estoque</label><button type="button" class="btn sm" data-act="et-todos">Marcar todos</button><button type="button" class="btn sm ghost" data-act="et-nenhum">Desmarcar</button><button type="button" class="btn sm ghost" data-act="et-estoque" title="Uma etiqueta por unidade em estoque">Qtd. = estoque</button></div>
-    <p class="muted" style="font-size:.82rem">Marque os itens e informe quantas etiquetas de cada um.</p><div class="et-list" id="et-list">${etList()}</div>
+<div class="et-list" id="et-list">${etList()}</div>
     <div id="et-gerar-w" class="banner" hidden><span class="grow"><b id="et-gerar-n">0</b> produto(s) selecionado(s) não têm código. Gere um código interno para eles.</span><button type="button" class="btn sm primary" data-act="et-gerar">Gerar códigos</button></div>
-    <div><p class="eyebrow" style="margin-bottom:6px">Prévia</p><div class="et-prev" id="et-prev"></div></div>`,
+    <div class="et-modelo"><div class="et-mres"><div class="et-mtxt" id="et-resumo"></div><button type="button" class="btn sm" data-act="et-ajustar" aria-expanded="false" id="et-aj-b">Ajustar etiqueta ›</button></div>
+    <div class="et-ajw" id="et-ajw" hidden><div class="fg et-top et-top2"><div id="et-ctl" style="display:contents">${etControles()}</div></div><div class="et-aj-f"><button type="button" class="btn primary sm" data-act="et-ajustar">Pronto</button></div></div>
+    <p class="eyebrow" style="margin:10px 0 6px">Prévia</p><div class="et-prev" id="et-prev"></div><div id="et-fitav"></div></div>`,
     `<span id="et-count" class="muted" style="margin-right:auto;align-self:center;font-size:.88rem"></span>${DL ? `<button type="button" class="btn" data-act="et-full" id="et-dl" disabled>${ic('eye')}Prévia / PDF</button>` : ''}<button type="button" class="btn primary" data-act="prev-print" id="et-print" disabled>${ic('print')}Imprimir etiquetas</button>`, { full: true });
   etRefresh();
   loadEtLibs().then(() => etRefresh()).catch(() => { M.et && (M.et.libErr = true); etRefresh(); });
@@ -6993,7 +7005,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const t = e.target; if (!M.et) return;
-  if (t.matches('.et-chk')) { const id = t.dataset.id; if (t.checked) M.et.sel[id] = Math.max(1, Math.round(num($('#et-q-' + id)?.value)) || 1); else delete M.et.sel[id]; etRefresh(); }
+  if (t.matches('.et-chk')) { const id = t.dataset.id; if (t.checked && etTemTam(id)) { t.checked = false; etTamPick(id); return; } if (t.checked) M.et.sel[id] = Math.max(1, Math.round(num($('#et-q-' + id)?.value)) || 1); else delete M.et.sel[id]; etRefresh(); }
   if (t.matches('.et-ctl')) { etSet(t.dataset.k, t.type === 'checkbox' ? t.checked : t.value); return; }
   if (t.id === 'et-soest') { M.et.soEstoque = t.checked; $('#et-list').innerHTML = etList(); }
 
@@ -11214,7 +11226,7 @@ document.addEventListener('input', e => { const t = e.target; if (!t || !t.close
   if (['comp-min', 'comp-val', 'p-preco'].includes(t.id)) compRecalc();
 });
 document.addEventListener('change', e => { const t = e.target; if (!t) return; if (t.matches && t.matches('.comp-u')) { const it = (M.comp || [])[+t.dataset.i]; if (it) { it.un = t.value; it.qtd = compQtd(it); compRecalc(); } return; } if (['comp-modo', 'comp-func', 'comp-usar'].includes(t.id)) { if (t.id === 'comp-modo') document.querySelectorAll('[data-mo]').forEach(x => x.hidden = x.dataset.mo !== t.value); compRecalc(); } });
-const insumoCusto = it => { const p = it.produtoId && get('produtos', it.produtoId); return p ? num(p.custo) : 0; };
+const insumoCusto = it => { const p = it.produtoId && get('produtos', it.produtoId); return p ? num(p.custo) : num(it.valor); };
 function compFsHTML(p) {
   const ins = S.produtos.filter(x => x.tipo === 'produto' && (x.uso === 'interno' || x.uso === 'ambos')).sort(byNome), md = p.moModo || 'nao', eqs = (S.equipe || []).filter(x => !x.desligado);
   return `<fieldset data-show="servico" class="comp-fs"><legend>Composição do custo do serviço (opcional)</legend><i class="sem-colunas" hidden></i>
@@ -11676,12 +11688,12 @@ document.addEventListener('change', e => { if (e.target && ['p-nome', 'p-cat', '
 document.addEventListener('click', e => { if (e.target && e.target.closest && e.target.closest('[data-act="ptipo"]')) setTimeout(perfilAplicar, 50); });
 /* etiqueta: características que podem sair (cor, capacidade, compatível, marca/modelo, validade) */
 function etExtras(p) { const c = (M.et && M.et.campos) || {}, L = [];
-  if (c.cor && p.cor) { const k = norm(p.cor).trim(), cc = CMYK_COR[k]; L.push(`${cc ? `<span class="lb-dot" style="background:${cc}"></span>` : ''}${esc(p.cor)}`); }
-  if (c.cap) { const m = medPrinc(p) || (p.medidas || [])[0]; const t = m ? medTxt(m) : (p.tamanho || ''); if (t) L.push(esc(t)); }
-  if (c.marca && (p.marca || p.modelo)) L.push(esc([p.marca, p.modelo].filter(Boolean).join(' ')));
-  if (c.compat && p.compativel) L.push('Compatível: ' + esc(p.compativel));
-  if (c.val && (p.validade || p.lote)) L.push(esc([p.validade ? 'Val. ' + dBR(p.validade) : '', p.lote ? 'Lote ' + p.lote : ''].filter(Boolean).join(' · ')));
-  return L.length ? `<div class="ex" style="font-size:.78em;line-height:1.2;margin:1px 0;overflow-wrap:anywhere">${L.join(' · ')}</div>` : ''; }
+  if (c.cor && p.cor) { const k = norm(p.cor).trim(), cc = CMYK_COR[k]; L.push(['cor', `${cc ? `<span class="lb-dot" style="background:${cc}"></span>` : ''}${esc(p.cor)}`]); }
+  if (c.cap) { const m = medPrinc(p) || (p.medidas || [])[0]; const t = m ? medTxt(m) : (p.tamanho || ''); if (t) L.push(['cap', esc(t)]); }
+  if (c.marca && (p.marca || p.modelo)) L.push(['marca', esc([p.marca, p.modelo].filter(Boolean).join(' '))]);
+  if (c.val && (p.validade || p.lote)) L.push(['val', esc([p.validade ? 'Val. ' + dBR(p.validade) : '', p.lote ? 'Lote ' + p.lote : ''].filter(Boolean).join(' · '))]);
+  if (c.compat && p.compativel) L.push(['compat', 'Compatível: ' + esc(p.compativel)]);
+  return L.length ? `<div class="ex">${L.map(([d, h]) => `<span class="exi" data-d="${d}">${h}</span>`).join('')}</div>` : ''; }
 const ET_CAMPOS = [['empresa', 'Empresa'], ['cor', 'Cor'], ['cap', 'Capacidade / medida'], ['marca', 'Marca e modelo'], ['compat', 'Compatível com'], ['val', 'Validade e lote']];
 /* ======================= v363: lista (▾) sempre inteira e visível; rodapé enxuto no celular ======================= */
 function cbPopCaber(pop) {
@@ -11808,6 +11820,112 @@ function atacadoAvisoHTML() {
 }
 ACT['atac-off'] = () => { S.cart.semAtacado = true; refreshCart(); };
 ACT['atac-on'] = () => { S.cart.semAtacado = false; refreshCart(); };
+/* ======================= v366: etiquetas — produtos primeiro, modelo junto da prévia; etiqueta encaixada no tamanho ======================= */
+function etResumo() { const o = M.et; if (!o) return ''; const P = etPapel(), n = 1 * !!o.empresa + Object.values(o.campos || {}).filter(Boolean).length;
+  const pr = { nenhum: 'Sem preço', vista: 'À vista', prazo: 'A prazo', atacado: 'Atacado', vista_prazo: 'À vista + prazo', todos: 'Todos os preços' }[o.precoTipo || 'vista'];
+  return `<b>${esc((ET_IMPS.find(x => x[0] === o.layout) || [, ''])[1])} · ${P ? `${P.per} por folha` : esc(LBL_SIZES[o.tam][2])}</b><span>${{ barras: 'Barras', qr: 'QR code', ambos: 'Barras + QR' }[o.tipo]} · ${pr} · ${n} informaç${n === 1 ? 'ão' : 'ões'}</span>`; }
+ACT['et-ajustar'] = () => { const w = $('#et-ajw'), b = $('#et-aj-b'); if (!w) return; w.hidden = !w.hidden; if (b) { b.setAttribute('aria-expanded', String(!w.hidden)); b.textContent = w.hidden ? 'Ajustar etiqueta ›' : 'Fechar ‹'; } (w.hidden ? $('#et-resumo') : w).scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+let ET_FITC = {}, ET_FITN = 0;
+function etFitBox() { let b = document.getElementById('et-fitbox'); if (!b) { b = document.createElement('div'); b.id = 'et-fitbox'; b.setAttribute('aria-hidden', 'true'); b.style.cssText = 'position:absolute;left:-10000px;top:0;visibility:hidden;pointer-events:none;background:#fff'; b.innerHTML = `<style>${LABEL_CSS}</style><div class="fb"></div>`; document.body.appendChild(b); } return b.querySelector('.fb'); }
+function etFit(html) {
+  if (ET_FITC[html]) return ET_FITC[html]; if (++ET_FITN > 400) { ET_FITC = {}; ET_FITN = 0; }
+  const box = etFitBox(); box.innerHTML = html; const lb = box.firstElementChild; if (!lb || !lb.clientHeight) return html;
+  const T = [...lb.querySelectorAll('.em,.nm,.ex,.pr,.pr2,.cd')], base = T.map(e => parseFloat(getComputedStyle(e).fontSize) || 8), cds = lb.querySelector('.cds'), H = lb.clientHeight;
+  const ok = () => !(lb.scrollHeight > lb.clientHeight + 1) && ![...lb.querySelectorAll('.nm,.ex,.pr,.pr2')].some(n => n.scrollHeight > n.clientHeight + 1 || n.scrollWidth > n.clientWidth + 1) && (!cds || cds.getBoundingClientRect().height >= H * .34);
+  const setK = v => T.forEach((e, i) => { e.style.fontSize = (base[i] * v).toFixed(2) + 'px'; });
+  const tenta = () => { for (const v of [1, .92, .85, .78, .72]) { setK(v); if (ok()) return true; } return false; };
+  let cabe = tenta(); const fora = [];
+  if (!cabe) for (const d of ['compat', 'val', 'marca', 'cap', 'cor']) { const x = lb.querySelector(`.exi[data-d="${d}"]`); if (!x) continue; x.remove(); fora.push(d); const ex = lb.querySelector('.ex'); if (ex && !ex.children.length) ex.remove(); if ((cabe = tenta())) break; }
+  if (fora.length) lb.dataset.fora = fora.join(','); if (!cabe) lb.dataset.naocabe = '1';
+  const out = lb.outerHTML; box.innerHTML = ''; return ET_FITC[html] = out;
+}
+const labelHTML0 = labelHTML; labelHTML = p => { const h = labelHTML0(p); try { return etFit(h); } catch { return h; } };
+const ET_FORA_NOME = { compat: 'Compatível com', val: 'Validade e lote', marca: 'Marca e modelo', cap: 'Capacidade', cor: 'Cor' };
+const etRefresh0 = etRefresh; etRefresh = () => { etRefresh0(); try {
+  const rs = $('#et-resumo'); if (rs) rs.innerHTML = etResumo(); const av = $('#et-fitav'); if (!av || !M.et || !(window.JsBarcode && window.qrcode)) return;
+  const sel = etSelecionados().map(s => s[0]), fora = {}; let nao = 0; sel.forEach(p => { const h = labelHTML(p), m = /data-fora="([^"]+)"/.exec(h); if (m) m[1].split(',').forEach(d => fora[d] = (fora[d] || 0) + 1); if (/data-naocabe/.test(h)) nao++; });
+  const ks = Object.keys(fora), maior = M.et.tam === '50x30' ? '60 × 40 mm' : '100 × 50 mm';
+  av.innerHTML = ks.length || nao ? `<p class="banner et-av"><span class="grow">${ks.length ? `Não coube neste tamanho: <b>${ks.map(k => ET_FORA_NOME[k]).join(', ')}</b>${sel.length > 1 ? ` (em ${Math.max(...Object.values(fora))} produto${Math.max(...Object.values(fora)) > 1 ? 's' : ''})` : ''}.` : 'O nome ficou grande para este tamanho.'} Use ${maior} ou desmarque em “Ajustar etiqueta”.</span></p>` : '';
+} catch { } };
+/* fracionado: ao marcar um produto com tamanhos, pergunta quais tamanhos imprimir */
+const etTemTam = id => { const p = get('produtos', id); return !!(p && (p.tamanhos || []).some(t => get('produtos', t.id))); };
+function etTamPick(id) {
+  const p = get('produtos', id), L = [p, ...(p.tamanhos || []).map(t => get('produtos', t.id)).filter(Boolean)];
+  openModal('Quais tamanhos imprimir?', `<p class="muted" style="margin-top:0">${esc(p.nome)} tem tamanhos fracionados. Marque os que vão ter etiqueta e quantas de cada.</p>
+    <div class="et-tp">${L.map((x, i) => `<label class="et-tp-r"><input type="checkbox" class="et-tp-c" data-id="${x.id}"${i ? ' checked' : ''}><span class="grow"><b>${esc(i ? x.nome : x.nome + ' (o próprio)')}</b><small class="muted">${brl(x.preco)} · estoque ${fmtQ(num(x.estoque))}</small></span><input class="et-tp-q mono" data-id="${x.id}" inputmode="numeric" value="${Math.max(1, Math.round(num(x.estoque)) || 1)}" aria-label="Quantidade de etiquetas"></label>`).join('')}</div>`,
+    `<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="et-tp-ok">Usar estes</button>`);
+}
+ACT['et-tp-ok'] = () => { if (!M.et) { closeModal(); return; } document.querySelectorAll('.et-tp-c').forEach(c => { const q = Math.max(1, Math.round(num(($(`.et-tp-q[data-id="${c.dataset.id}"]`) || {}).value)) || 1); if (c.checked) M.et.sel[c.dataset.id] = q; else delete M.et.sel[c.dataset.id]; }); closeModal(); const l = $('#et-list'); if (l) l.innerHTML = etList(); etRefresh(); };
+/* ======================= v366: fracionar em tamanhos (galão → garrafas) ======================= */
+const fracMed = () => (M.med || []).find(m => m.principal && MED_CONV[m.un] && num(m.valor) > 0);
+function fracFsHTML(p) {
+  return `<fieldset class="frac-fs" data-show="produto" style="grid-column:1/-1"><legend>Tamanhos para fracionar</legend>
+    ${p.origemId && get('produtos', p.origemId) ? `<p class="banner info frac-orig"><span class="grow">Fracionado de <b>${esc(get('produtos', p.origemId).nome)}</b>. Custo pela composição abaixo.</span></p>${fracCompHTML(p)}` : ''}
+    <p class="muted frac-dica">Para vender em tamanhos menores: ex. galão de 5 L em garrafas de 1 L, 500 ml, 250 ml. Cada tamanho vira um produto próprio, com código, preço e estoque. Embalagem com custo 0 = sem custo.</p>
+    <div id="frac-l"></div><button type="button" class="btn sm ghost" data-act="frac-add">${ic('plus')}Adicionar tamanho</button></fieldset>`;
+}
+function fracCompHTML(p) { const C = p.composicao || []; if (!C.length) return ''; const tot = r2(sum(C, c => insumoCusto(c) * num(c.qtd)));
+  return `<ul class="comp-det frac-comp">${C.map(c => `<li><span>${esc(c.nome)} · ${fmtQ(num(c.uq) || num(c.qtd))} ${esc(c.un || 'un')}</span><b class="mono">${brl(r2(insumoCusto(c) * num(c.qtd)))}</b></li>`).join('')}<li class="frac-tot"><span>Custo do produto</span><b class="mono">${brl(tot)}</b></li></ul>`; }
+function fracCusto(t) { const m = fracMed(), c = num(($('#p-custo') || {}).value); if (!m || !MED_CONV[t.un]) return null; const base = num(m.valor) * MED_CONV[m.un][1], vb = num(t.v) * MED_CONV[t.un][1], e = t.embId && get('produtos', t.embId), ce = e ? num(e.custo) : num(t.emb); return { tinta: r2(c / base * vb), emb: r2(ce), tot: r2(c / base * vb + ce) }; }
+function fracInfo(i) { const t = (M.tam || [])[i], x = $('#frac-i-' + i); if (!t || !x) return; const k = fracCusto(t); if (!k) { x.textContent = ''; return; } const pr = num(t.preco), g = r2(pr - k.tot);
+  x.innerHTML = `Custo <b>${brl(k.tot)}</b>${k.emb ? ` (conteúdo ${brl(k.tinta)} + embalagem ${brl(k.emb)})` : ''}${pr ? ` · ganho <b class="${g < 0 ? 'neg' : ''}">${brl(g)}</b>` : ''}`; }
+function fracDesenha() {
+  const w = $('#frac-l'); if (!w) return; const m = fracMed();
+  if (!m) { w.innerHTML = `<p class="muted" style="margin:0 0 6px;font-size:.84rem">Primeiro informe em Medidas a medida principal (ex.: Volume 5 L).</p>`; return; }
+  const U = Object.keys(MED_CONV).filter(u => MED_CONV[u][0] === MED_CONV[m.un][0]).sort((a, b) => MED_CONV[a][1] - MED_CONV[b][1]), ins = S.produtos.filter(x => x.tipo === 'produto' && (x.uso === 'interno' || x.uso === 'ambos')).sort(byNome);
+  w.innerHTML = (M.tam || []).map((t, i) => `<div class="frac-r"><input class="frac-in" data-i="${i}" data-k="nome" value="${esc(t.nome || '')}" placeholder="Ex.: Garrafa 1 L" aria-label="Nome do tamanho">
+    <div class="frac-g"><label class="f"><span>Quanto leva</span><div class="frac-q"><input class="frac-in" data-i="${i}" data-k="v" inputmode="decimal" value="${num(t.v) ? fmtQ(num(t.v)) : ''}" placeholder="1"><select class="frac-in" data-i="${i}" data-k="un">${U.map(u => `<option${u === (t.un || U[0]) ? ' selected' : ''}>${u}</option>`).join('')}</select></div></label>
+    <label class="f"><span>Embalagem</span><select class="frac-in" data-i="${i}" data-k="embId"><option value="">Só o valor</option>${ins.map(x => `<option value="${esc(x.id)}"${x.id === t.embId ? ' selected' : ''}>${esc(x.nome)}</option>`).join('')}</select></label>
+    <label class="f"${t.embId ? ' hidden' : ''}><span>Custo da embalagem (R$)</span>${money('frac-e-' + i, '', t.emb || '').replace('<input', `<input class="frac-in" data-i="${i}" data-k="emb"`)}</label>
+    <label class="f"><span>Preço de venda (R$)</span>${money('frac-p-' + i, '', t.preco || '').replace('<input', `<input class="frac-in" data-i="${i}" data-k="preco"`)}</label></div>
+    <div class="frac-b"><small class="muted" id="frac-i-${i}"></small><button type="button" class="icon-btn" data-act="frac-del" data-i="${i}" aria-label="Remover este tamanho" title="Remover este tamanho">${ic('x')}</button></div></div>`).join('') || '<p class="muted" style="margin:0 0 6px;font-size:.84rem">Nenhum tamanho. Toque em “Adicionar tamanho”.</p>';
+  (M.tam || []).forEach((t, i) => fracInfo(i));
+}
+document.addEventListener('input', e => { const t = e.target; if (!t || !t.matches) return; if (t.matches('.frac-in')) { const it = (M.tam || [])[+t.dataset.i]; if (!it) return; const k = t.dataset.k; it[k] = ['v', 'preco', 'emb'].includes(k) ? num(t.value) : t.value; if (k === 'embId') { fracDesenha(); return; } fracInfo(+t.dataset.i); } else if (t.id === 'p-custo') (M.tam || []).forEach((x, i) => fracInfo(i)); else if (t.matches('.med-v, .med-u, .med-t')) setTimeout(fracDesenha, 0); });
+document.addEventListener('change', e => { const t = e.target; if (!t || !t.matches) return; if (t.matches('.frac-in')) { const it = (M.tam || [])[+t.dataset.i]; if (it) { it[t.dataset.k] = t.value; if (t.dataset.k === 'embId' || t.dataset.k === 'un') fracDesenha(); } } else if (t.matches('[name="med-princ"], .med-u, .med-t')) setTimeout(fracDesenha, 0); });
+ACT['frac-add'] = () => { const m = fracMed(); if (!m) { toast('Informe primeiro a medida principal em Medidas (ex.: Volume 5 L).'); return; } M.tam = [...(M.tam || []), { nome: '', v: 0, un: MED_CONV[m.un][0] === 'volume' ? 'ml' : MED_CONV[m.un][0] === 'peso' ? 'g' : m.un, preco: 0, emb: 0, embId: '' }]; fracDesenha(); const n = document.querySelectorAll('.frac-in[data-k="nome"]'); n[n.length - 1]?.focus(); };
+ACT['frac-del'] = el => { (M.tam || []).splice(+el.dataset.i, 1); fracDesenha(); };
+const fracLer = () => (M.tam || []).filter(t => (t.nome || '').trim() && num(t.v) > 0).map(t => { if (!t.id) t.id = uid(); return { id: t.id, nome: t.nome.trim(), v: num(t.v), un: t.un, preco: r2(num(t.preco)), emb: r2(num(t.emb)), embId: t.embId || '' }; });
+async function fracSincronizar(o) {
+  const m = medPrinc(o); if (!m) return; const base = num(m.valor) * MED_CONV[m.un][1], cpb = num(o.custo) / base;
+  for (const t of o.tamanhos || []) { if (!MED_CONV[t.un]) continue; const vb = t.v * MED_CONV[t.un][1], e = t.embId && get('produtos', t.embId), ce = e ? num(e.custo) : num(t.emb), custo = r2(cpb * vb + ce), old = get('produtos', t.id);
+    const comp = [{ produtoId: o.id, nome: o.nome, qtd: r4(vb / base), uq: t.v, un: t.un }, ...(e ? [{ produtoId: e.id, nome: e.nome, qtd: 1, uq: 1, un: 'un' }] : ce > 0 ? [{ produtoId: '', nome: 'Embalagem', qtd: 1, uq: 1, un: 'un', valor: ce }] : [])];
+    await save('produtos', t.id, { ...(old || {}), id: t.id, tipo: 'produto', codigo: (old && old.codigo) || gerarCodigo(), nome: old ? old.nome : `${o.nome} · ${t.nome}`, categoria: o.categoria || '', subcategoria: o.subcategoria || '', marca: o.marca || '', modelo: o.modelo || '', cor: o.cor || '', linha: o.linha || '', compativel: o.compativel || '', foto: (old && old.foto) || o.foto || '', unidade: 'un', preco: num(t.preco), custo, markupTipo: 'val', markupValor: r2(num(t.preco) - custo), estoque: old ? num(old.estoque) : 0, minimo: old ? num(old.minimo) : 0, uso: 'venda', origemId: o.id, fracV: t.v, fracUn: t.un, composicao: comp, medidas: old && (old.medidas || []).length ? old.medidas : [{ tipo: MED_CONV[t.un][0], un: t.un, valor: t.v, principal: true }], at: (old && old.at) || Date.now() }); }
+}
+const fracDoc = ym => get('ajustes', 'frac-' + ym) || { lista: [] };
+function fracAbrir(id) {
+  const p = get('produtos', id), m = p && medPrinc(p); if (!p || !m) return; const T = (p.tamanhos || []).map(t => ({ t, d: get('produtos', t.id) })).filter(x => x.d && MED_CONV[x.t.un]);
+  if (!T.length) { toast('Cadastre os tamanhos em “Tamanhos para fracionar” e salve o produto.'); return; }
+  const base = num(m.valor) * MED_CONV[m.un][1], disp = r4(num(p.estoque) * base), ub = MED_CONV[m.un][0] === 'volume' ? 'ml' : MED_CONV[m.un][0] === 'peso' ? 'g' : m.un;
+  const hist = []; for (let k = 0; k < 3; k++) { const d = new Date(); d.setMonth(d.getMonth() - k); const ym = d.toISOString().slice(0, 7); (fracDoc(ym).lista || []).filter(x => x.origemId === id).forEach(x => hist.push({ ...x, ym })); } hist.sort((a, b) => b.at - a.at);
+  M.frac = { id, base, disp, ub };
+  openModal('Fracionar · ' + p.nome, `<p class="muted" style="margin-top:0">Disponível: <b>${fmtQ(num(p.estoque))} ${esc(p.unidade || 'un')}</b> de ${esc(medTxt(m))} = <b>${fmtQ(disp / MED_CONV[ub][1])} ${ub}</b></p>
+    <div class="fr-l">${T.map(({ t, d }) => `<div class="fr-r"><span class="grow"><b>${esc(t.nome)}</b><small class="muted">${fmtQ(t.v)} ${esc(t.un)} · estoque ${fmtQ(num(d.estoque))}</small></span><input class="fr-q mono" data-id="${d.id}" data-vb="${t.v * MED_CONV[t.un][1]}" data-emb="${esc(t.embId || '')}" inputmode="numeric" placeholder="0" aria-label="Quantidade de ${esc(t.nome)}"></div>`).join('')}</div>
+    <div class="fr-bar"><div id="fr-fill"></div></div><p id="fr-res" class="fr-res"></p>
+    ${hist.length ? `<details class="fr-hist"><summary>Fracionamentos feitos (${hist.length})</summary>${hist.slice(0, 12).map(x => `<div class="fr-h"><span class="grow">${new Date(x.at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} · ${x.itens.map(i => `${fmtQ(i.q)} × ${esc(i.nome)}`).join(', ')}<small class="muted">${esc(x.quem || '')}${x.desfeito ? ' · desfeito' : ''}</small></span>${x.desfeito ? '' : `<button type="button" class="btn sm ghost" data-act="frac-desf" data-ym="${x.ym}" data-id="${x.id}">Desfazer</button>`}</div>`).join('')}</details>` : ''}`,
+    `<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="frac-ok">Fracionar</button>`);
+  fracCalc();
+}
+function fracCalc() { const F = M.frac; if (!F) return; let u = 0; document.querySelectorAll('.fr-q').forEach(i => { u += Math.max(0, Math.round(num(i.value))) * num(i.dataset.vb); }); const r = $('#fr-res'), f = $('#fr-fill'), k = MED_CONV[F.ub][1], so = r4(F.disp - u);
+  if (f) f.style.width = Math.min(100, F.disp ? u / F.disp * 100 : 0) + '%'; if (f) f.classList.toggle('neg', so < 0);
+  const nq = x => r4(x).toLocaleString('pt-BR'); if (r) r.innerHTML = so < 0 ? `<span class="neg">Passou ${nq(-so / k)} ${F.ub} do disponível.</span>` : `Usa <b>${nq(u / k)} ${F.ub}</b> · sobra <b>${nq(so / k)} ${F.ub}</b>${so > 0 && u ? ' (continua no produto para vender a granel ou fracionar depois)' : ''}.`; }
+document.addEventListener('input', e => { if (e.target && e.target.matches && e.target.matches('.fr-q')) fracCalc(); });
+async function fracAplicar(itens, usado, sinal, origemId) { const p = get('produtos', origemId), F = { base: num(medPrinc(p).valor) * MED_CONV[medPrinc(p).un][1] };
+  await save('produtos', p.id, { ...p, estoque: r4(num(p.estoque) - sinal * usado / F.base) });
+  for (const x of itens) { const d = get('produtos', x.id); if (d) await save('produtos', d.id, { ...d, estoque: r4(num(d.estoque) + sinal * x.q) }); if (x.emb) { const e = get('produtos', x.emb); if (e) await save('produtos', e.id, { ...e, estoque: r4(num(e.estoque) - sinal * x.q) }); } } }
+ACT['frac-ok'] = async () => { const F = M.frac; if (!F) return; const itens = []; let u = 0; document.querySelectorAll('.fr-q').forEach(i => { const q = Math.max(0, Math.round(num(i.value))); if (q) { const d = get('produtos', i.dataset.id); itens.push({ id: i.dataset.id, nome: d ? d.nome : '', q, emb: i.dataset.emb || '' }); u += q * num(i.dataset.vb); } });
+  if (!itens.length) { toast('Informe quantas unidades de cada tamanho.'); return; } if (u > F.disp + 1e-6) { toast('A quantidade passa do que tem no estoque.'); return; }
+  const p = get('produtos', F.id), ym = today().slice(0, 7), D = fracDoc(ym), quemF = (S.op && (contaPorId(S.op.id) || {}).nome) || quem(OPID()) || '';
+  await fracAplicar(itens, u, 1, F.id);
+  await save('ajustes', 'frac-' + ym, { ...D, lista: [...(D.lista || []), { id: uid(), at: Date.now(), origemId: F.id, nome: p.nome, itens, usado: u, por: OPID() || '', quem: quemF }] });
+  try { logReg('alterou', 'estoque', '', `Fracionou ${p.nome}: ${itens.map(i => i.q + ' × ' + i.nome).join(', ')} por ${quemF}`); } catch { }
+  closeModal(); scheduleRender(true); toastOk(`Fracionado: ${itens.map(i => i.q + ' × ' + i.nome).join(', ')}.`); };
+ACT['frac-desf'] = el => { const ym = el.dataset.ym, hid = el.dataset.id; pedirSenha('excluir', 'Desfazer fracionamento', async () => { const D = fracDoc(ym), x = (D.lista || []).find(y => y.id === hid); if (!x || x.desfeito) return;
+  const falta = x.itens.find(i => num((get('produtos', i.id) || {}).estoque) < i.q - 1e-6); if (falta) { toast(`Não dá para desfazer: “${falta.nome}” já não tem ${falta.q} no estoque.`); return; }
+  await fracAplicar(x.itens, x.usado, -1, x.origemId); await save('ajustes', 'frac-' + ym, { ...D, lista: D.lista.map(y => y.id === hid ? { ...y, desfeito: true, desfeitoPor: OPID() || '', desfeitoAt: Date.now() } : y) });
+  closeModal(); scheduleRender(true); toastOk('Fracionamento desfeito: o estoque voltou como estava.'); }); };
+ACT['frac-abrir'] = el => { const id = el.dataset.id, p = get('produtos', id); if (!p || !(p.tamanhos || []).length) { toast('Salve o produto com os tamanhos antes de fracionar.'); return; } if (el.closest('form[data-form="produto"]')) closeModal(); fracAbrir(id); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'frac-add': 'produtos', 'frac-del': 'produtos', 'frac-abrir': 'produtos', 'frac-ok': 'produtos', 'frac-desf': 'produtos' }); } catch { } }, 0);
 /* limite de crédito na hora de lançar saldo na conta do cliente */
 function cliLimiteCheck(cid, novo) {
   const c = get('clientes', cid); if (!c) return null; const lim = num(c.limiteCredito); if (!lim) return null;
