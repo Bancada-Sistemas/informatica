@@ -3866,7 +3866,7 @@ function docOrc(o) {
       ${o.prazo ? `<div><b>Prazo de execução:</b> ${esc(o.prazo)}</div>` : ''}
       ${o.garantia ? `<div><b>Garantia:</b> ${esc(o.garantia)}</div>` : ''}
       ${o.condicoes ? `<div><b>Pagamento:</b> ${esc(o.condicoes)}</div>` : ''}
-      ${pixDocBloco(0, 'ORC' + pad(o.numero))}
+      ${o.vendaId ? '' : pixDocBloco(num(o.total), 'ORC' + pad(o.numero)) + (num(o.total) > 0 ? pixCopiaCola(num(o.total), 'ORC' + pad(o.numero)) : '')}
       ${o.obs ? `<div><b>Observações:</b> ${esc(o.obs)}</div>` : ''}</div>
     <div class="sig"><div>${empAss()}${esc(S.empresa.fantasia || 'Empresa')}</div><div>${cliAss(o, 'orc')}De acordo — ${esc(c ? c.nome : 'Cliente')}</div></div>
     ${docFoot()}</div>`;
@@ -3888,7 +3888,7 @@ function docVenda(v) {
     ${(v.recebimentosPost || []).map(p => `<div><span>${esc(p.forma)} em ${dBR(dayISO(p.at))}</span><span class="m">${brl(p.valor)}</span></div>`).join('')}
     ${num(v.saldoAberto) ? `<div class="g" style="color:#a8231a"><span>Saldo em aberto${v.saldoVenc ? ' · vence ' + dBR(v.saldoVenc) : ''}</span><span class="m">${brl(v.saldoAberto)}</span></div>` : ''}</div>
     ${v.cancelada ? '<p style="margin-top:12px"><span class="stamp" style="color:#a00;border-color:#a00">Venda cancelada</span></p>' : ''}
-    ${v.carneId ? docCrnSec(v) : v.cancelada ? '' : pixDocBloco(num(v.saldoAberto), 'VENDA' + pad(v.numero)) + pixCopiaCola(num(v.saldoAberto), 'VENDA' + pad(v.numero))}
+    ${v.carneId ? docCrnSec(v) : v.cancelada || !(num(v.saldoAberto) > 0.004) ? '' : pixDocBloco(num(v.saldoAberto), 'VENDA' + pad(v.numero)) + pixCopiaCola(num(v.saldoAberto), 'VENDA' + pad(v.numero))}
     ${cliAss(v, 'venda') ? `<div class="sig"><div>${empAss()}${esc(S.empresa.fantasia || 'Empresa')}</div><div>${cliAss(v, 'venda')}Cliente — ${esc((cliente(v.clienteId) || {}).nome || '')}</div></div>` : ''}
     ${docFoot()}</div>`;
 }
@@ -6296,6 +6296,7 @@ function docLaudo(o) {
     ${L.obsFim ? `<h3>Observação</h3><div class="box">${esc(L.obsFim).replace(/\n/g, '<br>')}</div>` : ''}
     <p class="cl" style="margin-top:18px">${cidadeData()}</p>
     <div class="sig"><div>${tecAss(L.tecnico || o.tecnico)}${esc(L.tecnico || o.tecnico || 'Técnico responsável')}<br>Técnico responsável</div><div>${empAss()}${esc(e.fantasia || 'Empresa')}${e.cnpj ? '<br>' + esc(e.cnpj) : ''}</div><div>${cliAss(o, 'laudo')}Cliente — ${esc(c ? c.nome : '')}<br>Ciente do laudo</div></div>
+    ${!o.vendaId && num(o.total) > 0 ? pixDocBloco(num(o.total), 'OS' + pad(o.numero)) + pixCopiaCola(num(o.total), 'OS' + pad(o.numero)) : ''}
     ${docFoot()}</div>`;
 }
 
@@ -12604,13 +12605,13 @@ function docCrnSec(v) {
   const L = crnParcs(v.carneId), I = v.carneInfo || ((crnParcs(v.carneId)[0] || {}).carne || {}).info || {}, c0 = (L[0] || {}).carne || {}, num0 = v.carneNum || c0.num || I.num;
   const P = L.length ? L.map(r => ({ k: r.carne.k, n: r.carne.n, venc: r.vencimento, valor: num(r.valor), pago: !!r.recebido })) : (I.parcelas || []).map(p => ({ ...p, n: I.n }));
   const jur = I.jurosPct ?? num(c0.juros), tipo = (I.tipoJuros || c0.tipoJuros) === 'simples' ? 'juros simples' : 'parcelas iguais (Price)', taxa = I.taxa ?? num(c0.taxa), multa = I.multa ?? num(c0.multa), mora = I.mora ?? num(c0.mora), dA = I.descAnt ?? num(crnCfg().descAnt);
-  const tot = r2(sum(P, p => p.valor)), base = I.base || r2(tot - taxa - (I.juros || 0)), prox = P.find(p => !p.pago) || P[0];
+  const tot = r2(sum(P, p => p.valor)), base = I.base || r2(tot - taxa - (I.juros || 0)), prox = P.find(p => !p.pago);
   const desc = jur > 0 ? 'Pagando uma parcela antes do vencimento, você tem desconto: os juros dos meses que faltam saem do valor.' : dA > 0 ? `Pagando uma parcela antes do vencimento, você tem ${pctTxt(dA)}% de desconto.` : '';
   const tx = 'CRN' + pad(num0) + 'P' + String(prox ? prox.k : 1).padStart(2, '0');
   return `<h3>Crediário — carnê nº ${pad(num0)}</h3><table><thead><tr><th>Parcela</th><th>Vencimento</th><th class="r">Valor</th></tr></thead><tbody>${P.map(p => `<tr><td>${p.k}/${p.n || P.length}${p.pago ? ' · paga' : ''}</td><td>${dBR(p.venc)}</td><td class="r m">${brl(p.valor)}</td></tr>`).join('')}</tbody></table>
     <div class="tot">${num(I.entrada) > 0 ? `<div><span>Entrada paga${I.entradaForma ? ' (' + esc(I.entradaForma) + ')' : ''}</span><span class="m">${brl(I.entrada)}</span></div>` : ''}<div><span>Valor financiado no carnê</span><span class="m">${brl(base)}</span></div>${taxa ? `<div><span>Taxa do carnê</span><span class="m">+ ${brl(taxa)}</span></div>` : ''}<div><span>${jur > 0 ? `Juros do parcelamento (${pctTxt(jur)}% ao mês, ${tipo})` : 'Juros do parcelamento'}</span><span class="m">${jur > 0 ? '+ ' + brl(I.juros ?? r2(tot - base - taxa)) : 'sem juros'}</span></div><div class="g"><span>Total a pagar no carnê</span><span class="m">${brl(tot)}</span></div></div>
-    <p class="cl" style="font-size:.9em;margin-top:8px">Após o vencimento: multa de ${pctTxt(multa)}% e juros de ${pctTxt(mora)}% ao mês (proporcional aos dias).${desc ? ' ' + desc : ''} Para consultar ou pagar uma parcela sem o carnê em mãos, use este recibo${(S.empresa || {}).pix ? `: o Pix abaixo já vem com o valor da ${prox ? prox.k + 'ª parcela' : 'parcela'}` : ''}.</p>
-    ${pixDocBloco(prox ? prox.valor : 0, tx)}${pixCopiaCola(prox ? prox.valor : 0, tx)}`;
+    <p class="cl" style="font-size:.9em;margin-top:8px">Após o vencimento: multa de ${pctTxt(multa)}% e juros de ${pctTxt(mora)}% ao mês (proporcional aos dias).${desc ? ' ' + desc : ''} Para consultar ou pagar uma parcela sem o carnê em mãos, use este recibo${prox && (S.empresa || {}).pix ? `: o Pix abaixo já vem com o valor da ${prox.k}ª parcela` : ''}.${prox ? '' : ' <b>Carnê quitado: todas as parcelas pagas.</b>'}</p>
+    ${prox ? pixDocBloco(prox.valor, tx) + pixCopiaCola(prox.valor, tx) : ''}`;
 }
 /* ======================= v370: caixa fechado na hora de vender, receber ou pagar =======================
    Em vez de mandar abrir o caixa (e perder o que estava fazendo), abre por cima uma janela: abrir o caixa no nome de quem está usando
@@ -12682,7 +12683,7 @@ setTimeout(async () => { try { for (const v of (S.vendas || []).filter(v => v.ex
 /* v371: exemplos sem CPF real — troca o CPF antigo dos clientes de exemplo por um CPF fictício */
 setTimeout(async () => { try { for (const c of (S.clientes || []).filter(c => c.exemplo && c.doc === '123.456.789-09')) await save('clientes', c.id, { ...c, doc: '529.982.247-25' }); } catch { } }, 4000);
 /* v371 REGRA: todo recibo/documento de cobrança traz o Pix. Sem chave Pix cadastrada, a janela do documento avisa (só na tela) e leva direto ao cadastro. */
-setTimeout(() => { try { const sd0 = showDoc; showDoc = function (kind, x) { const r = sd0.apply(this, arguments); try { if (!(S.empresa || {}).pix && ['venda', 'orc', 'recibo', 'carne', 'crn', 'os', 'contrato', 'ctrext'].some(k => String(kind).startsWith(k))) setTimeout(() => { const ov = document.querySelector('#modals .ov:last-child'), b = ov && ov.querySelector('.sheet-b'); if (!b || b.querySelector('.pix-falta')) return; const d = document.createElement('div'); d.className = 'banner warn pix-falta'; d.innerHTML = `<span class="grow"><b>Este documento sai sem Pix</b>: a chave Pix da empresa não está cadastrada, então não há QR Code nem copia e cola.</span>${pode('empresa') ? `<button type="button" class="btn sm" data-act="empresa-edit" title="Abre Dados da empresa para cadastrar a chave Pix. Ex.: e-mail, CNPJ ou celular da empresa.">${ic('config')}Cadastrar chave Pix</button>` : '<small class="muted">Peça a quem tem acesso a Empresa para cadastrar.</small>'}`; b.prepend(d); }, 60); } catch { } return r; }; } catch { } }, 0);
+setTimeout(() => { try { const sd0 = showDoc; showDoc = function (kind, x) { const r = sd0.apply(this, arguments); try { if (!(S.empresa || {}).pix) setTimeout(() => { const ov = document.querySelector('#modals .ov:last-child'), b = ov && ov.querySelector('.sheet-b'); if (!b || b.querySelector('.pix-falta') || !b.querySelector('.pix-precisa')) return; const d = document.createElement('div'); d.className = 'banner warn pix-falta'; d.innerHTML = `<span class="grow"><b>Este documento sai sem Pix</b>: a chave Pix da empresa não está cadastrada, então não há QR Code nem copia e cola.</span>${pode('empresa') ? `<button type="button" class="btn sm" data-act="empresa-edit" title="Abre Dados da empresa para cadastrar a chave Pix. Ex.: e-mail, CNPJ ou celular da empresa.">${ic('config')}Cadastrar chave Pix</button>` : '<small class="muted">Peça a quem tem acesso a Empresa para cadastrar.</small>'}`; b.prepend(d); }, 60); } catch { } return r; }; } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -18859,7 +18860,7 @@ function pixQRsvg(valor, txid) { try { const p = pixPayload(valor || 0, txid); i
 function recTexto(r) { const t = r.tipo || ''; if (t === 'PIX') return `PIX${r.tipoChave ? ' (' + r.tipoChave + ')' : ''}: ${r.chave || ''}${r.titular ? ' · ' + r.titular : ''}`; if (/^Conta/.test(t)) return `${t}: ${[r.banco, r.agencia && 'ag. ' + r.agencia, r.conta && 'conta ' + r.conta, r.titular].filter(Boolean).join(' · ')}`; return [t, r.banco, r.obs].filter(Boolean).join(': '); }
 function pixDocBloco(valor, txid) {
   const e = S.empresa || {}, outras = (e.recebimento || []).filter(r => !(r.tipo === 'PIX' && pixChave(r.chave) === pixChave(e.pix)));
-  if (!e.pix && !outras.length) return '';
+  if (!e.pix && !outras.length) return '<span class="pix-precisa" hidden></span>';
   const q = e.pix ? pixQRsvg(valor, txid) : '';
   return `<div class="pix-bloco">${e.pix ? `<div class="pix-t"><b>Chave PIX:</b> ${esc(e.pix)}${e.pixNome ? '<br><span class="muted">' + esc(e.pixNome) + '</span>' : ''}${outras.length ? '' : ''}</div>` : ''}${outras.length ? `<div class="pix-o">${outras.map(r => `<div>${esc(recTexto(r))}</div>`).join('')}</div>` : ''}${q ? `<div class="pix-qr">${q}<small>Pague com PIX</small></div>` : ''}</div>`;
 }
