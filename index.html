@@ -2039,7 +2039,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 15, APP_BUILD = 376;
+const APP_VER = 16, APP_BUILD = 377;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -6677,6 +6677,7 @@ async function lerCodigoFoto(file, aviso) {
 function codigoLido(target, code) {
   code = String(code).trim();
   if (String(target).startsWith('eq:')) { eqPorCodigo(target.slice(3), code); return; }
+  if (target === 'ia-teste') { iaTesteProduto({ codigo: code }); return; }
   if (target === 'os-ler') { const o = osPorCodigo(code); if (o) { osView(o.id); toast(`OS ${pad(o.numero)} encontrada pelo QR code.`); } else toast('Este código não é de uma OS deste sistema. Leia o QR code da OS (documento ou etiqueta).', 6000); return; }
   if (target === 'pdv') {
     const p = S.produtos.find(x => x.tipo !== 'aluguel' && String(x.codigo || '') === code);
@@ -11228,7 +11229,7 @@ function iaErroMsg(e) { const m = String((e && e.message) || ''), st = e && e.st
   if (e.code === 'ia_cota' || /RESOURCE_EXHAUSTED|quota/i.test(m)) return 'O limite de uso gratuito da IA do Google acabou por agora. Tente de novo mais tarde (o limite volta sozinho).';
   if (/API_KEY_INVALID|API key not valid|API key expired|PERMISSION_DENIED/i.test(m)) return 'A chave de IA cadastrada na ponte não vale mais (vencida ou apagada no Google). O suporte do aplicativo precisa gerar uma chave nova.';
   if (/location is not supported/i.test(m)) return 'O Google não liberou a IA para esta região.';
-  if (/not.found|no longer available|is not supported for generateContent/i.test(m) || st === 404) return 'O modelo de IA usado pela ponte (Gemini) não está disponível para esta chave. É preciso trocar o modelo na ponte (variável MODELO no Cloudflare).';
+  if (/not.found|no longer available|is not supported for generateContent/i.test(m) || st === 404) return 'O modelo de IA usado pela ponte (Gemini) não está disponível para esta chave. A ponte versão 7 troca de modelo sozinha: atualize o código da ponte no Cloudflare (manual da nuvem, passo A4.2) ou coloque gemini-flash-latest na variável MODELO.';
   if (e.code === 'nada') return 'A IA não achou dados deste produto.';
   return 'A IA respondeu com erro' + (st ? ' ' + st : '') + (m ? ': ' + m.replace(/[{}"\n]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140) : '') + '.'; }
 const fotoErroMsg = e => !e ? 'Não consegui ler a foto.' : /^ia_/.test(e.code || '') ? iaErroMsg(e) : e.code === 'not_granted' ? 'A leitura não foi permitida. Ela usa o Claude da sua conta: toque de novo e responda “Permitir”.' : e.code === 'sem_texto' ? 'Não achei texto legível na foto. Fotografe mais de perto a etiqueta ou a caixa, com boa luz e sem reflexo.' : e.code === 'ocr_falhou' || e.code === 'ocr_lento' ? 'Neste aparelho a foto não pode ser lida automaticamente.' : e.code === 'sem_claude' ? 'O texto foi lido, mas o Claude não respondeu neste aparelho. Preencha à mão.' : 'Não consegui ler a foto. Tente mais de perto, com boa luz e a etiqueta inteira.';
@@ -12807,16 +12808,35 @@ setTimeout(() => { try { Object.assign(ACT_PERM, { 'diag-ver': '', 'diag-limpar'
 /* v14: Testar a IA — mostra, passo a passo, se a ponte e a IA do Google respondem e o motivo exato quando não respondem */
 ACT['ia-testar'] = async () => {
   const s = await iaSample();
-  openModal('Testar a IA', `<p class="muted" style="margin-top:0">Confere a ligação com a IA usada para identificar produtos pelo código de barras e pela foto. Ex.: se a chave venceu, aparece aqui o motivo.</p><div class="list" id="iat-l"></div>`, `<button type="button" class="btn primary" data-act="close">Fechar</button>`);
+  openModal('Testar a IA', `<p class="muted" style="margin-top:0">Confere a ligação com a IA usada para identificar produtos pelo código de barras e pela foto. Ex.: se a chave venceu, aparece aqui o motivo.</p><div class="list" id="iat-l"></div>
+    <h3 style="margin:14px 0 6px">Testar com um produto</h3><p class="muted" style="margin:0 0 8px;font-size:.85rem">Leia o código de barras, tire a foto da embalagem ou digite o código. Ex.: cartucho HP, caixa de remédio. Nada é cadastrado: só mostra o que foi encontrado.</p>
+    <div class="actions" style="justify-content:flex-start;flex-wrap:wrap"><button type="button" class="btn sm" data-act="cam-scan" data-target="ia-teste">${ic('camera')}Ler código de barras</button><label class="btn sm" style="cursor:pointer">${ic('camera')}Foto do produto<input type="file" accept="image/*" capture="environment" class="vh iat-foto"></label><label class="btn sm" style="cursor:pointer">${ic('down')}Foto da galeria<input type="file" accept="image/*" class="vh iat-foto"></label></div>
+    <div class="p-desc" style="margin-top:8px"><input id="iat-cod" inputmode="text" autocomplete="off" placeholder="Ex.: 7891234567895"><button type="button" class="btn sm primary" data-act="iat-cod-ok">Testar código</button></div>
+    <div class="list" id="iat-p"></div>`, `<button type="button" class="btn primary" data-act="close">Fechar</button>`);
   const L = $('#iat-l'), linha = (ok, t, d) => { if (L) L.insertAdjacentHTML('beforeend', `<div class="row"><div class="grow"><b>${ok === null ? '⏳' : ok ? '✅' : '❌'} ${esc(t)}</b>${d ? `<div class="muted" style="font-size:.82rem;word-break:break-word">${esc(d)}</div>` : ''}</div></div>`); };
   if (!s) { linha(false, 'IA não disponível neste aparelho', 'O aplicativo não está ligado à conta da empresa (nuvem).'); return; }
   if (s !== IA_PONTE) { try { const r = await comPrazo(s.json('Responda só {"ok": true}'), 30000, 'ia_lenta'); linha(!!r, 'IA do Claude respondeu'); } catch (e) { linha(false, 'IA do Claude não respondeu', fotoErroMsg(e)); } return; }
-  const t0 = Date.now(); try { const r = await comPrazo(IA_PONTE.json('Teste de ligação. Responda só o JSON {"ok": true}.'), 40000, 'ia_lenta'); linha(!!(r && r.ok), 'IA respondeu (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s)'); }
+  const t0 = Date.now(); try { const r = await comPrazo(IA_PONTE.json('Teste de ligação. Responda só o JSON {"ok": true}.'), 40000, 'ia_lenta'); linha(!!(r && r.ok), 'IA respondeu (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s)', IA_MODELO ? 'Modelo em uso: ' + IA_MODELO.nome + (IA_MODELO.auto ? ' (a ponte trocou sozinha, porque o Google desligou o modelo anterior para esta chave)' : '') : 'A ponte não informou o modelo (ponte antiga, anterior à versão 7: ela não troca de modelo sozinha).'); }
   catch (e) { linha(false, 'A IA não respondeu', iaErroMsg(e) + (e && e.message ? ' — detalhe técnico: ' + String(e.message).replace(/\s+/g, ' ').slice(0, 300) : '')); return; }
   const t1 = Date.now(); try { const r = await comPrazo(IA_PONTE.buscar('Pesquise na internet o produto "cartucho HP 664 preto" e responda SOMENTE um JSON {"nome": "", "marca": ""}.'), 60000, 'ia_lenta'); linha(!!(r && r.nome), 'Pesquisa na internet funcionando (' + ((Date.now() - t1) / 1000).toFixed(1) + ' s)', r && r.nome ? 'Exemplo encontrado: ' + r.nome : ''); }
   catch (e) { linha(false, 'A pesquisa na internet não funcionou (a identificação usa só a IA)', iaErroMsg(e) + (e && e.message ? ' — detalhe técnico: ' + String(e.message).replace(/\s+/g, ' ').slice(0, 300) : '')); }
 };
 setTimeout(() => { try { ACT_PERM['ia-testar'] = ''; AJUDA['ia-testar'] = 'Confere se a IA que identifica produtos está respondendo e mostra o motivo quando não está. Ex.: chave vencida ou limite do Google esgotado.'; } catch { } }, 0);
+/* Testar a IA com um produto real: código lido, digitado ou foto (não cadastra nada) */
+async function iaTesteProduto(o) {
+  const L = $('#iat-p'); if (!L) return;
+  const id = 'iat-' + Date.now(); L.insertAdjacentHTML('afterbegin', `<div class="row" id="${id}"><div class="grow"><b>⏳ ${o.file ? 'Foto do produto' : 'Código ' + esc(o.codigo)}</b><div class="muted iat-m" style="font-size:.82rem">Procurando…</div></div></div>`);
+  const row = document.getElementById(id), m = t => { const x = row && row.querySelector('.iat-m'); if (x) x.textContent = t; }, fim = (ok, tit, det) => { if (!row) return; row.querySelector('b').textContent = (ok ? '✅ ' : '❌ ') + tit; m(det || ''); };
+  const nome = o.file ? 'Foto' : 'Código ' + o.codigo;
+  if (o.codigo && /^\d{8,14}$/.test(o.codigo)) { m('Procurando nas bases públicas de códigos…'); try { const r = await buscarProdutoNet(o.codigo); if (r && r.nome) { fim(true, nome + ': ' + r.nome, 'Encontrado na base pública ' + r.fonte + (r.marca ? ' · marca ' + r.marca : '') + '.'); return; } } catch { } }
+  try { const r = normIA(await prodBuscarIA({ ...o, aviso: m })); if (!r.nome && !r.modelo) throw { code: 'nada' };
+    const f = (r._fontes || [])[0]; fim(true, nome + ': ' + (r.nome || r.modelo), [r.marca && 'Marca: ' + r.marca, r.modelo && 'Modelo: ' + r.modelo, r.categoria && 'Categoria: ' + r.categoria, (r.fonte || (f && f.titulo)) && 'Fonte: ' + (r.fonte || f.titulo)].filter(Boolean).join(' · ')); }
+  catch (e) { fim(false, nome + ': não identificado', e && e.code === 'nada' ? 'A IA respondeu, mas não achou dados deste produto.' : iaErroMsg(e && e.code ? e : { code: 'ia_erro', message: String((e && e.message) || e || '') })); }
+}
+ACT['iat-cod-ok'] = () => { const v = (($('#iat-cod') || {}).value || '').trim(); if (v.length < 4) { toast('Digite o código do produto.'); return; } iaTesteProduto({ codigo: v }); };
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'iat-cod') { e.preventDefault(); ACT['iat-cod-ok'](); } });
+document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.iat-foto') && t.files && t.files[0]) { const f = t.files[0]; t.value = ''; iaTesteProduto({ file: f }); } });
+setTimeout(() => { try { ACT_PERM['iat-cod-ok'] = ''; AJUDA['iat-cod-ok'] = 'Procura o código digitado nas bases públicas e na IA, sem cadastrar nada. Ex.: 7891234567895.'; } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -18569,6 +18589,8 @@ ACT_PERM['nuvem-sair'] = '';
 AJUDA['nuvem-sair'] = 'Desconecta este aparelho da conta da empresa. Para voltar, entre de novo com o Gmail da empresa e a senha do sistema.';
 /* IA fora do Claude: usa a ponte da Bancada (Cloudflare) com a chave da empresa */
 const blobB64 = b => new Promise((ok, er) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1] || ''); r.onerror = er; r.readAsDataURL(b); });
+let IA_MODELO = null; /* v16: modelo que a ponte usou (a ponte versão 7 troca sozinha quando o Google desliga um modelo) */
+const iaModeloAnotar = r => { try { const m = r.headers.get('X-Bancada-Modelo'); if (m) IA_MODELO = { nome: m, auto: r.headers.get('X-Bancada-Modelo-Auto') === '1' }; } catch { } };
 const IA_PONTE = {
   limits: async () => ({ images: true }),
   async json(pedido, o = {}) {
@@ -18578,7 +18600,7 @@ const IA_PONTE = {
     let r;
     try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], generationConfig: { responseMimeType: 'application/json' } }), signal: o.signal }); }
     catch (e) { if (e && e.name === 'AbortError') throw e; throw { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
-    const t = await r.text();
+    const t = await r.text(); iaModeloAnotar(r);
     if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
     let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
     const txt = ((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join('').trim();
@@ -18592,7 +18614,7 @@ IA_PONTE.buscar = async function (pedido, o = {}) {
   const url = String(EMP_CFG.ponte || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
   let r; try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], tools: [{ google_search: {} }] }), signal: o.signal }); }
   catch (e) { if (e && e.name === 'AbortError') throw e; throw { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
-  const t = await r.text(); if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
+  const t = await r.text(); iaModeloAnotar(r); if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
   let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
   const c = (j.candidates || [])[0] || {}, txt = ((c.content || {}).parts || []).map(p => p.text || '').join('').trim();
   const fontes = (((c.groundingMetadata || {}).groundingChunks) || []).map(g => g.web).filter(Boolean).map(w => ({ titulo: w.title || '', url: w.uri || '' }));
