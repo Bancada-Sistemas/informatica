@@ -365,6 +365,9 @@ table.mx input{width:18px;height:18px}
 .big-photo{max-width:100%;max-height:65vh;display:block;margin:0 auto;border-radius:8px}
 .steps{display:flex;flex-wrap:wrap;gap:4px}
 .steps span{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.fe-dados{margin:0 0 8px;padding:0!important}.fe-dados .f{grid-column:1/-1}
+.ftc{position:relative;background:#000;border-radius:12px;overflow:hidden}.ftc video{display:block;width:100%;max-height:68vh;object-fit:contain;background:#000}.ftc-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.ftc-flash.on{animation:ftcfl .35s}@keyframes ftcfl{0%{opacity:.8}100%{opacity:0}}
+.osv-steps{gap:6px;margin:4px 0 2px}.osv-steps button{font:inherit;font-size:.85rem;font-weight:700;padding:7px 12px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line);cursor:pointer}.osv-steps button:hover{border-color:var(--accent);color:var(--ink)}.osv-steps button.now{background:var(--accent);color:#fff;border-color:var(--accent)}.osv-steps button.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}.osv-steps button.st-canc.now{background:var(--bad,#b3261e);border-color:var(--bad,#b3261e)}
 .steps span.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}
 .steps span.now{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .tests{display:flex;flex-direction:column;gap:6px}
@@ -533,7 +536,7 @@ table.mx input{width:18px;height:18px}
 .fe-area.mover canvas{cursor:grab}
 .fe-dica{font-size:.82rem;text-align:center;margin:6px 0}
 .fe-linha{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-bottom:8px}
-.ft-th{position:relative;padding:0;border:2px solid var(--line);border-radius:8px;overflow:hidden;background:none;cursor:pointer;width:72px;height:72px}.ft-th img{width:100%;height:100%;object-fit:cover;display:block}
+.ft-th{position:relative;padding:0;border:2px solid var(--line);border-radius:10px;overflow:hidden;background:none;cursor:pointer;width:calc(50% - 6px);max-width:240px;aspect-ratio:4/3;height:auto}#ft-thumbs{display:flex;flex-wrap:wrap;gap:8px}.ft-th img{width:100%;height:100%;object-fit:cover;display:block}
 .ft-th span{position:absolute;right:3px;bottom:3px;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;padding:2px;display:flex}.ft-th span .i{width:14px;height:14px}.ft-th.editada{border-color:var(--accent)}
 .eq-ler .actions{display:grid!important;grid-template-columns:1fr 1fr;gap:6px}.eq-ler .actions .btn{width:100%;justify-content:center;white-space:normal;text-align:center}.eq-ler .eq-st{margin-top:4px}
 
@@ -2036,7 +2039,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 13, APP_BUILD = 374;
+const APP_VER = 14, APP_BUILD = 375;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -2400,7 +2403,10 @@ function histInit() {
   window.addEventListener('popstate', () => {
     if (histIgnorar > 0) { histIgnorar--; return; }
     const m = $('#modals');
-    if (m.lastElementChild) { m.lastElementChild.remove(); histHave = Math.max(0, histHave - 1); if (renderPending) scheduleRender(); return; }
+    if (m.lastElementChild) { const top = m.lastElementChild, tit = ((top.querySelector('.sheet-h h2') || {}).textContent || '').trim();
+      /* v14: janela com dados digitados não fecha num toque só do Voltar do celular (era assim que um cadastro sumia no meio) */
+      if (top.dataset.sujo && !(top.dataset.voltarOk && Date.now() - +top.dataset.voltarOk < 5000)) { try { history.pushState({ bancada: 'm' }, ''); } catch { } top.dataset.voltarOk = Date.now(); diagReg('Botão Voltar do celular: janela “' + tit + '” não foi fechada (tinha dados digitados)'); toast('Esta janela tem dados digitados. Para fechar sem salvar, toque em Voltar de novo ou no ×.', 5000); return; }
+      diagReg('Janela “' + tit + '” fechada pelo botão Voltar do celular'); top.remove(); histHave = Math.max(0, histHave - 1); if (renderPending) scheduleRender(); return; }
     try { history.pushState({ bancada: 'guard' }, ''); } catch { }
     if (S.route !== 'inicio') { voltarTela(); return; }
     toast('Para fechar o aplicativo, use o botão Sair.');
@@ -3139,7 +3145,7 @@ function fotoEditor(src, opts = {}) {
         <span class="seg fe-enq" title="Enquadrar a foto no quadro"><button type="button" data-act="fe-cent" title="Põe a foto no centro do quadro">◎ Centralizar</button></span>
         <span class="seg fe-setas" title="Mover a foto dentro do quadro"><button type="button" data-act="fe-nud" data-x="-1" data-y="0" aria-label="Mover para a esquerda">←</button><button type="button" data-act="fe-nud" data-x="0" data-y="-1" aria-label="Mover para cima">↑</button><button type="button" data-act="fe-nud" data-x="0" data-y="1" aria-label="Mover para baixo">↓</button><button type="button" data-act="fe-nud" data-x="1" data-y="0" aria-label="Mover para a direita">→</button></span>
         <button type="button" class="btn sm" data-act="fe-limpar">Limpar marcações</button><button type="button" class="btn sm" data-act="fe-nocrop">Tirar recorte</button><button type="button" class="btn sm ghost" data-act="fe-reset">Restaurar</button></div>
-      <div class="fg">${field('Brilho', '<input type="range" id="fe-br" min="40" max="180" value="100">')}${field('Contraste', '<input type="range" id="fe-ct" min="40" max="180" value="100">')}${field('Tamanho final da foto', `<select id="fe-esc"><option value="100">Original (melhor qualidade)</option><option value="75">Reduzir para 75%</option><option value="50">Reduzir para 50%</option><option value="35">Reduzir para 35%</option></select>`)}</div>
+      ${opts.extra || ''}<div class="fg">${field('Brilho', '<input type="range" id="fe-br" min="40" max="180" value="100">')}${field('Contraste', '<input type="range" id="fe-ct" min="40" max="180" value="100">')}${field('Tamanho final da foto', `<select id="fe-esc"><option value="100">Original (melhor qualidade)</option><option value="75">Reduzir para 75%</option><option value="50">Reduzir para 50%</option><option value="35">Reduzir para 35%</option></select>`)}</div>
       ${opts.trocar ? `<div class="picks" style="justify-content:center">${pickBtn('Trocar por outra foto', 'camera', 'class="fe-in"')}</div>` : ''}</div>`,
       `${opts.onDelete ? `<button type="button" class="btn danger" data-act="fe-del" style="margin-right:auto">Apagar foto</button>` : ''}<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="fe-save">${esc(opts.salvarTxt || 'Salvar foto')}</button>`, { wide: true });
     /* janela da edição em tela cheia: ferramentas na barra do título e a foto ocupando o resto */
@@ -3306,10 +3312,14 @@ const FE_ACT = {
   'fe-del': el => arm(el, 'Confirmar: apagar foto', async () => { const o = FE.opts || {}; if (o.onDelete && (await o.onDelete()) !== false) closeModal(); }),
   'foto-edit': el => {
     const f = get('fotos', el.dataset.id); if (!f) return;
-    fotoEditor(fotoSrc(f), { titulo: `${ETAPAS[f.etapa] || 'Foto'}${f.legenda ? ' · ' + f.legenda : ''}`, max: 1600,
+    /* v14: na edição da foto também dá para mudar a etapa e a legenda (sem mexer na imagem, só os dados são salvos) */
+    const extra = `<div class="fg fe-dados">${field('Etapa', `<select id="fe-et">${Object.entries(ETAPAS).map(([k, l]) => `<option value="${k}"${k === f.etapa ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`)}${field('Legenda (opcional)', `<input id="fe-leg" value="${esc(f.legenda || '')}" placeholder="Ex.: trinca no canto da tela" autocomplete="off">`, 'full')}</div>`;
+    fotoEditor(fotoSrc(f), { titulo: `${ETAPAS[f.etapa] || 'Foto'}${f.legenda ? ' · ' + f.legenda : ''}`, max: 1600, extra, salvarTxt: 'Salvar',
       onSave: async cv => {
         if (!pode('os')) { toast('Seu nível de acesso não permite alterar fotos.'); return false; }
-        const n = { ...f, editadaEm: Date.now(), editadaPor: OPID() }; let novo = null;
+        const et = ($('#fe-et') || {}).value || f.etapa, lg = String(($('#fe-leg') || {}).value || '').trim();
+        if (!feMudou()) { if (et === f.etapa && lg === (f.legenda || '')) return true; return await save('fotos', f.id, { ...f, etapa: et, legenda: lg, editadaEm: Date.now(), editadaPor: OPID() }); }
+        const n = { ...f, etapa: et, legenda: lg, editadaEm: Date.now(), editadaPor: OPID() }; let novo = null;
         if (ASSETS) { try { const blob = await toBlob(cv, .82); novo = (await ASSETS.upload(blob, { type: 'image/jpeg' })).id; } catch { } }
         if (novo) { n.assetId = novo; delete n.data; } else { n.data = cv.toDataURL('image/jpeg', .7); delete n.assetId; }
         if (!(await save('fotos', f.id, n))) return false;
@@ -5246,6 +5256,7 @@ ACT['sobre'] = () => {
       return `<div class="dev-card"><div class="dev-id">${temNome ? `<div><span class="dev-k">Desenvolvedor</span><b>${esc(c.nome)}</b></div>` : ''}${temDoc ? `<div><span class="dev-k">${String(c.cnpj).replace(/\D/g, '').length > 11 ? 'CNPJ' : 'CPF'}</span><b class="mono">${esc(c.cnpj)}</b></div>` : ''}</div>
         ${temEnd ? `<div class="dev-end">${ic('mapa')}<div class="grow"><span class="dev-k">Endereço</span>${c.logradouro || c.cidade ? `${l1 ? `<b>${esc(l1)}</b>` : ''}${l2 ? `<span>${esc(l2)}</span>` : ''}${c.cep ? `<span class="muted">CEP ${esc(c.cep)}</span>` : ''}${c.referencia ? `<span class="muted dev-ref">Ponto de referência: ${esc(c.referencia)}</span>` : ''}` : `<b>${esc(c.endereco)}</b>`}</div><a class="btn sm" href="${esc(mapa)}" target="_blank" rel="noopener">${ic('mapa')}Ver no mapa</a></div>` : ''}</div>`;
     })()}
+    ${(() => { const n = diagLer().length; return n ? `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">${n} fechamento${n === 1 ? '' : 's'} inesperado${n === 1 ? '' : 's'} anotado${n === 1 ? '' : 's'} neste aparelho · ver</button>` : `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">Fechamentos neste aparelho</button>`; })()}
     ${op ? `<p class="muted" style="margin:0;font-size:.85rem">Usando agora: <b style="color:var(--ink)">${esc(op)}</b> · ${esc(nivelNome(meuPapel()))} · ${esc(empresaNome())}</p>` : ''}
     <div class="sobre-col2"><h3 style="margin:0">Contato e suporte do desenvolvedor</h3>
     <div class="sobre-links"><button type="button" class="sobre-l" data-act="manual-ver" data-ajuda="Abre o manual do aplicativo numa janela nova do navegador: todas as funções explicadas em abas, com imagens dos exemplos, busca por palavra e as novidades de cada versão. Use ← e → para mudar de aba, ↑ e ↓ para rolar e Esc para fechar.">${ic('info')}<span class="grow"><b>Manual do aplicativo</b><small>Todas as funções em abas, com imagens dos exemplos e as novidades</small></span><span class="muted">›</span></button>${links}<button type="button" class="sobre-l sobre-l-sup" data-act="sup-remoto">${ic('suporte')}<span class="grow"><b>Suporte remoto</b><small>${supWa ? 'AnyDesk: o técnico acessa este computador' : 'WhatsApp de suporte ainda não cadastrado'}</small></span><span class="muted">›</span></button></div>
@@ -6135,10 +6146,9 @@ function osBody(o) {
   const idx = OS_ST.findIndex(x => x[0] === o.status);
   const steps = o.status === 'cancelada' ? `<div class="steps"><span class="now">Devolvido sem reparo</span></div>` : `<div class="steps">${OS_ST.slice(0, 7).map((s, i) => `<span class="${i === idx ? 'now' : i < idx ? 'done' : ''}">${s[1]}</span>`).join('')}</div>`;
   return `<div class="card-top"><span class="chip ${st.c}">${st.t}</span>${o.statusObs ? `<span class="chip" style="text-transform:none;letter-spacing:0">${esc(o.statusObs)}</span>` : ''}${o.prioridade === 'urgente' ? '<span class="chip bad">Urgente</span>' : ''}${osAtrasada(o) ? '<span class="chip bad">Previsão vencida</span>' : ''}${exChip(o)}<span class="muted" style="font-size:.85rem">Entrada ${tsBR(o.at)}${o.previsao ? ' · previsão ' + dBR(o.previsao) : ''}${o.entregueEm ? ' · entregue ' + tsBR(o.entregueEm) : ''}</span></div>
-  ${steps}
-  <div class="fg osv-stf" style="align-items:end">${field('Status', `<select id="osv-st" data-id="${o.id}">${OS_ST.map(s => `<option value="${s[0]}"${s[0] === o.status ? ' selected' : ''}>${s[1]}</option>`).join('')}</select>`)}
-    ${field('Observação do status (opcional)', `<input id="osv-obs" data-id="${o.id}" value="${esc(o.statusObs || '')}" placeholder="Ex.: aguardando chegar a tela" autocomplete="off">`)}</div>
-  <p class="muted" id="osv-salvo" style="font-size:.78rem;margin:-6px 0 0">Muda e salva sozinho. A observação fica na OS até o status mudar.</p>
+  ${osStBotoes(o)}<input type="hidden" id="osv-st" data-id="${o.id}" value="${esc(o.status)}">
+  <div class="fg osv-stf">${field('Observação do status (opcional)', `<input id="osv-obs" data-id="${o.id}" value="${esc(o.statusObs || '')}" placeholder="Ex.: aguardando chegar a tela" autocomplete="off">`, 'full')}</div>
+  <p class="muted" id="osv-salvo" style="font-size:.78rem;margin:-6px 0 0">Toque no status para mudar; salva sozinho. A observação fica na OS até o status mudar.</p>
   <section class="osv-sec"><div class="panel-head"><h3>Cliente e equipamento</h3><button type="button" class="btn sm" data-act="os-edit" data-id="${o.id}">Editar entrada</button></div>
     <div class="dl"><div><span class="k">Cliente</span><span class="v">${esc(c ? c.nome : '—')}</span></div><div><span class="k">Telefone</span><span class="v">${esc((c && c.telefone) || '—')}</span></div>
       <div><span class="k">Equipamento</span><span class="v">${esc(osEquip(o))}</span></div><div><span class="k">Nº de série</span><span class="v mono">${esc(o.serie || '—')}</span></div>
@@ -6226,17 +6236,18 @@ function fotoForm(id) {
   const def = o.status === 'recebido' ? 'entrada' : o.status === 'pronto' || o.status === 'entregue' ? 'saida' : o.status === 'execucao' ? 'reparo' : 'diagnostico';
   openModal('Adicionar fotos', `<div class="fg">${field('Etapa', `<select id="ft-et" name="etapa">${Object.entries(ETAPAS).map(([k, l]) => `<option value="${k}"${k === def ? ' selected' : ''}>${l}</option>`).join('')}</select>`)}
     ${field('Legenda (opcional)', inp('ft-leg', 'legenda', '', 'placeholder="Ex.: trinca no canto da tela"'), 'w2')}</div>
-    <div class="picks">${pickBtn('Tirar foto', 'camera', 'class="ft-in" capture="environment"')}${pickBtn('Escolher da galeria', 'down', 'class="ft-in" multiple')}</div>
+    <div class="picks">${ftCamOk() ? `<button type="button" class="btn pick" data-act="ft-cam" title="Abre a câmera aqui dentro do aplicativo; tire várias fotos seguidas. Ex.: frente, lateral e número de série.">${ic('camera')}<span>Tirar foto</span></button>` : pickBtn('Tirar foto', 'camera', 'class="ft-in" capture="environment"')}${pickBtn('Escolher da galeria', 'down', 'class="ft-in" multiple')}</div>
     <div class="thumbs" id="ft-thumbs"></div><p class="muted" id="ft-dica" hidden style="font-size:.82rem;margin:0">Toque numa foto para editar: cortar, ampliar, girar ou marcar com lápis.</p>
     <p class="muted" style="font-size:.85rem">Pode tirar várias fotos seguidas: cada uma entra na lista acima. As fotos são reduzidas para ocupar menos espaço.</p>${appHint()}
     <p id="ft-prog" class="muted" role="status"></p>`,
-    `<button type="button" class="btn" data-act="close">Cancelar</button><button class="btn primary" type="submit">${ic('camera')}Enviar fotos</button>`, { form: 'fotos', id });
+    `<button type="button" class="btn" data-act="ft-cancelar">Cancelar</button><button class="btn primary" type="submit">${ic('camera')}Enviar fotos</button>`, { form: 'fotos', id });
+  FT_OS = id; FT_REST = true;
+  ftRascunhoLer(id).then(r => { FT_REST = false; if (r && (r.files || []).length && FT_OS === id) ftRestaurar(r, true); }).catch(() => { FT_REST = false; });
 }
 let FT_FILES = [];
 document.addEventListener('change', e => {
   const t = e.target; if (!t.matches('input.ft-in') || !t.files) return;
-  for (const f of t.files) { FT_FILES.push(f); const u = URL.createObjectURL(f), i = FT_FILES.length - 1; $('#ft-thumbs')?.insertAdjacentHTML('beforeend', `<button type="button" class="ft-th" data-act="ft-editar" data-i="${i}" title="Toque para editar: cortar, ampliar, marcar"><img src="${u}" alt="Foto ${i + 1}"><span>${ic('edit')}</span></button>`); }
-  const dc = $('#ft-dica'); if (dc) dc.hidden = !FT_FILES.length;
+  for (const f of t.files) ftAdd(f);
   t.value = '';
 });
 function loadImg(file) { return new Promise((res, rej) => { const u = URL.createObjectURL(file); const img = new Image(); img.onload = () => res(img); img.onerror = () => rej(new Error('imagem')); img.src = u; }); }
@@ -6315,7 +6326,7 @@ Object.assign(ACT, {
   },
   'os-doc-entrada': el => { const o = get('os', el.dataset.id); if (o) showDoc('entrada', o); },
   'os-doc-laudo': el => { const o = get('os', el.dataset.id); if (o && o.laudo) showDoc('laudo', o); },
-  'os-doc-ficha': el => { const o = get('os', el.dataset.id); if (!o) return; const tmp = document.createElement('div'); tmp.innerHTML = osBody(o); const t = 'Ficha da OS ' + pad(o.numero); tmp.querySelectorAll('.fg, .field, label.f').forEach(x => { if (x.querySelector('select, input, textarea')) x.remove(); }); tmp.querySelectorAll('p.muted').forEach(x => x.remove()); closeModal(); previewRel(t, `<div class="doc">${docHead('Ordem de serviço — ficha interna', 'OS ' + pad(o.numero) + ' · ' + esc(osSt(o).t), 'Entrada ' + tsBR(o.at))}${afpGeral(tmp)}${docFoot()}</div>`, RT_CSS + AFP_G_CSS, semAcento(t).replace(/\W+/g, '-') + '.pdf'); },
+  'os-doc-ficha': el => { const o = get('os', el.dataset.id); if (!o) return; const tmp = document.createElement('div'); tmp.innerHTML = osBody(o); tmp.querySelectorAll('.osv-steps, #osv-st').forEach(x => x.remove()); const t = 'Ficha da OS ' + pad(o.numero); tmp.querySelectorAll('.fg, .field, label.f').forEach(x => { if (x.querySelector('select, input, textarea')) x.remove(); }); tmp.querySelectorAll('p.muted').forEach(x => x.remove()); closeModal(); previewRel(t, `<div class="doc">${docHead('Ordem de serviço — ficha interna', 'OS ' + pad(o.numero) + ' · ' + esc(osSt(o).t), 'Entrada ' + tsBR(o.at))}${afpGeral(tmp)}${docFoot()}</div>`, RT_CSS + AFP_G_CSS, semAcento(t).replace(/\W+/g, '-') + '.pdf'); },
   'os-st': async el => {
     const o = get('os', el.dataset.id); if (!o) return;
     const st = $('#osv-st').value, obs = $('#osv-obs').value.trim();
@@ -6407,7 +6418,7 @@ Object.assign(FORMS, {
         if (await save('fotos', uid(), doc)) ok++;
       } catch { toast('Não foi possível ler uma das imagens. Use fotos JPG ou PNG.'); }
     }
-    btn.disabled = false; FT_FILES = []; closeModal();
+    btn.disabled = false; FT_FILES = []; ftRascunhoApagar(); closeModal();
     if (ok) toast(`${ok} foto${ok === 1 ? '' : 's'} adicionada${ok === 1 ? '' : 's'}.`);
   }
 });
@@ -6666,6 +6677,7 @@ async function lerCodigoFoto(file, aviso) {
 function codigoLido(target, code) {
   code = String(code).trim();
   if (String(target).startsWith('eq:')) { eqPorCodigo(target.slice(3), code); return; }
+  if (target === 'os-ler') { const o = osPorCodigo(code); if (o) { osView(o.id); toast(`OS ${pad(o.numero)} encontrada pelo QR code.`); } else toast('Este código não é de uma OS deste sistema. Leia o QR code da OS (documento ou etiqueta).', 6000); return; }
   if (target === 'pdv') {
     const p = S.produtos.find(x => x.tipo !== 'aluguel' && String(x.codigo || '') === code);
     if (p) { addToCart(p); toast(`${p.nome} adicionado.`); }
@@ -9938,7 +9950,7 @@ async function btImprimir0(job, escolher, impId) {
     let bytes; try { bytes = await btBytesDoc(job, imp); } catch (e) { btEnvioFim(); console.error('[bt] preparar', e); toast('Não foi possível preparar o documento para a impressora' + (e && e.message ? ' (' + e.message + ')' : '') + '. Tente o Modo “Texto” em Configurações → Impressoras.', 8000); return; }
     btEnvioIni(imp.nome);
     try { await btEnviarVia(imp, bytes); btEnvioFim(); toast(`Enviado para ${imp.nome || 'a impressora'}.`, 5000); }
-    catch (e) { btEnvioFim(); if (e && e.code === 'cancelado') { toast('Impressão cancelada. O que já estava na memória da impressora pode sair (alguns centímetros).', 6000); return; } if (e && e.code === 'parcial') { toast('A impressora desligou no meio da impressão. Ligue de novo e toque em Bluetooth para imprimir outra vez.', 8000); return; } if (e && e.name === 'NotFoundError') return; toast(e && e.code === 'sem-serial' ? 'Este navegador não acessa impressoras pareadas. Use o Google Chrome atualizado (celular) ou o Chrome/Edge (computador).' : 'Não foi possível enviar. Confira se a impressora está ligada, perto e pareada no Bluetooth do aparelho.', 6000); SER.port = null; }
+    catch (e) { btEnvioFim(); if (e && e.code === 'cancelado') { toast('Impressão cancelada. O que já estava na memória da impressora pode sair (alguns centímetros).', 6000); return; } if (e && e.code === 'parcial') { toast('A impressora desligou no meio da impressão. Ligue de novo e toque em Bluetooth para imprimir outra vez.', 8000); return; } if (e && e.name === 'NotFoundError') { if (imp.via === 'serial') btSemImpressora(imp, job); return; } toast(e && e.code === 'sem-serial' ? 'Este navegador não acessa impressoras pareadas. Use o Google Chrome atualizado (celular) ou o Chrome/Edge (computador).' : 'Não foi possível enviar. Confira se a impressora está ligada, perto e pareada no Bluetooth do aparelho.', 6000); SER.port = null; }
     return;
   }
   toast('Preparando a impressão…');
@@ -10076,7 +10088,7 @@ ACT['bt-add'] = () => {
 ACT['bt-add-via'] = async el => {
   const via = el.dataset.v; closeModal(); BT_T = Date.now();
   if (via === 'rawbt') { const nome = (prompt('Nome desta impressora (ex.: Térmica do balcão):', 'Térmica do celular') || '').trim(); if (!nome) return; const L = btImps(), nova = { ...BT_PAD, via: 'rawbt', papel: S.pfmt === 't58' ? 't58' : 't80', id: 'rawbt-' + uid(), nome, criadaEm: Date.now() }; if (!L.length) nova.padrao = true; L.push(nova); btImpsSalvar(L); btImpsRedesenha(); toast('Impressora cadastrada. Enviando a página de teste pelo RawBT…'); btTeste(nova.id); return; }
-  if (via === 'serial') { let port; try { port = await serialPorta(null, true); } catch (e) { if (e && e.name === 'NotFoundError') return; toast(ehCelular ? 'Não foi possível ligar na impressora. Confira se ela está ligada, perto e pareada no Bluetooth do celular.' : 'Não foi possível abrir a porta. Confira o pareamento no Windows.', 6000); return; } let porta = 0; try { porta = Math.max(0, (await navigator.serial.getPorts()).indexOf(port)); } catch { } let pi = {}; try { pi = port.getInfo() || {}; } catch { } const nome = (prompt('Nome desta impressora (ex.: Térmica do balcão):', 'Térmica do balcão') || 'Térmica').trim(); const L = btImps(), nova = { ...BT_PAD, via: 'serial', porta, papel: S.pfmt === 't58' ? 't58' : 't80', id: 'serial-' + uid(), nome, criadaEm: Date.now() }; if (!L.length) nova.padrao = true; L.push(nova); btImpsSalvar(L); btImpsRedesenha(); toast('Impressora cadastrada. Enviando a página de teste…'); btTeste(nova.id); return; }
+  if (via === 'serial') { let port; try { port = await serialPorta(null, true); } catch (e) { if (e && e.name === 'NotFoundError') { btSemImpressora(null, null); return; } toast(ehCelular ? 'Não foi possível ligar na impressora. Confira se ela está ligada, perto e pareada no Bluetooth do celular.' : 'Não foi possível abrir a porta. Confira o pareamento no Windows.', 6000); return; } let porta = 0; try { porta = Math.max(0, (await navigator.serial.getPorts()).indexOf(port)); } catch { } let pi = {}; try { pi = port.getInfo() || {}; } catch { } const nome = (prompt('Nome desta impressora (ex.: Térmica do balcão):', 'Térmica do balcão') || 'Térmica').trim(); const L = btImps(), nova = { ...BT_PAD, via: 'serial', porta, papel: S.pfmt === 't58' ? 't58' : 't80', id: 'serial-' + uid(), nome, criadaEm: Date.now() }; if (!L.length) nova.padrao = true; L.push(nova); btImpsSalvar(L); btImpsRedesenha(); toast('Impressora cadastrada. Enviando a página de teste…'); btTeste(nova.id); return; }
   let con; try { con = await btConectar(null, true); } catch (e) { if (e && e.name === 'NotFoundError') return; btErroConexao(e); return; }
   const L = btImps(), i = L.findIndex(x => x.id === con.dev.id), nova = { ...BT_PAD, via: 'ble', papel: S.pfmt === 't58' ? 't58' : 't80', id: con.dev.id, nome: con.dev.name || 'Impressora', criadaEm: Date.now() };
   if (i >= 0) L[i] = { ...L[i], nome: nova.nome }; else { if (!L.length) nova.padrao = true; L.push(nova); }
@@ -10995,7 +11007,7 @@ ACT['logo-editar'] = () => { if (M.logo) logoEditar(); };
 /* fotos da OS antes de enviar: tocar numa miniatura abre o editor */
 ACT['ft-editar'] = el => {
   const i = +el.dataset.i, f = FT_FILES[i]; if (!f) return;
-  fotoEditor(URL.createObjectURL(f), { titulo: `Foto ${i + 1} de ${FT_FILES.length}`, max: 2000, salvarTxt: 'Usar esta foto', onSave: async cv => { const b = await toBlob(cv, .9); FT_FILES[i] = new File([b], 'foto' + (i + 1) + '.jpg', { type: 'image/jpeg' }); const im = el.querySelector('img'); if (im) im.src = URL.createObjectURL(b); el.classList.add('editada'); toast('Foto ajustada.'); return true; } });
+  fotoEditor(URL.createObjectURL(f), { titulo: `Foto ${i + 1} de ${FT_FILES.length}`, max: 2000, salvarTxt: 'Usar esta foto', onSave: async cv => { const b = await toBlob(cv, .9); FT_FILES[i] = new File([b], 'foto' + (i + 1) + '.jpg', { type: 'image/jpeg' }); ftRascunhoSalvar(); const im = el.querySelector('img'); if (im) im.src = URL.createObjectURL(b); el.classList.add('editada'); toast('Foto ajustada.'); return true; } });
 };
 
 /* ======================= busca automática dos dados do produto pelo código de barras ======================= */
@@ -12695,6 +12707,89 @@ function topoCaber() { try { const t = document.getElementById('top'); if (!t ||
   for (const c of P) { if (cabe()) return; if (c === 'tp-sem-nome' && !temLogo) continue; t.classList.add(c); }
 } catch { } }
 addEventListener('resize', () => { clearTimeout(topoCaber._t); topoCaber._t = setTimeout(topoCaber, 120); });
+/* v14: a lista do Chrome "quer se conectar a uma porta serial" veio vazia (ou foi cancelada): explica o que conferir e oferece tentar de novo ou usar o app RawBT */
+function btSemImpressora(imp, job) {
+  const cel = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  openModal('A impressora não apareceu na lista', `<p style="margin:0 0 8px">O Chrome só mostra a impressora que já está <b>pareada no Bluetooth do ${cel ? 'celular' : 'computador'}</b> e quando ele tem permissão para ver aparelhos por perto. Confira:</p>
+    <ol style="margin:0 0 10px;padding-left:1.2em;line-height:1.5">
+      <li><b>Impressora ligada</b>, com papel, perto do aparelho.</li>
+      <li><b>Bluetooth ligado</b> e a impressora <b>pareada</b>: ${cel ? 'Configurações do celular › Bluetooth › Parear novo dispositivo' : 'Configurações do Windows › Bluetooth e dispositivos › Adicionar dispositivo'} (senha costuma ser 0000 ou 1234). Ex.: “MTP-3”.</li>
+      ${cel ? '<li><b>Permissão do Chrome</b>: Configurações do celular › Apps › Chrome › Permissões › <b>Dispositivos por perto</b> › Permitir. Sem ela a lista vem vazia (“Nenhum dispositivo compatível encontrado”).</li><li><b>Chrome atualizado</b> (Play Store › Chrome › Atualizar).</li>' : ''}
+      <li>Se a impressora já estava pareada, desligue e ligue a impressora e tente de novo.</li>
+    </ol>
+    <p class="muted" style="margin:0;font-size:.88rem">Se mesmo assim não aparecer, use a ligação pelo app grátis <b>RawBT</b> (funciona com a maioria das térmicas): em Impressoras, troque a ligação desta impressora para “Pareada no Bluetooth do celular (app RawBT)”.</p>`,
+    `<button type="button" class="btn" data-act="close">Fechar</button><button type="button" class="btn" data-act="bt-imps" title="Abre as impressoras cadastradas para trocar a ligação (ex.: app RawBT)">Impressoras</button>${imp && job ? '<button type="button" class="btn primary" data-act="bt-sem-tentar" title="Abre de novo a lista do Chrome para escolher a impressora pareada">Tentar de novo</button>' : ''}`);
+  M.btSemImp = { imp, job };
+}
+ACT['bt-sem-tentar'] = () => { const X = M.btSemImp || {}; closeModal(); if (X.job) btImprimir(X.job, false, X.imp && X.imp.id); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'bt-sem-tentar': '' }); Object.assign(AJUDA, { 'bt-sem-tentar': 'Abre de novo a lista do Chrome com as impressoras pareadas. Ex.: escolha “MTP-3” e toque em Conectar.' }); } catch { } }, 0);
+/* v14: status da OS escolhido tocando nos botões (sem a lista "Status"); o atual fica destacado, os já passados em verde claro */
+function osStBotoes(o) { const idx = OS_ST.findIndex(s => s[0] === o.status);
+  return `<div class="steps osv-steps" role="radiogroup" aria-label="Status da OS">${OS_ST.map((s, i) => `<button type="button" role="radio" aria-checked="${i === idx}" class="${i === idx ? 'now' : (i < idx && idx < 7) ? 'done' : ''}${s[0] === 'cancelada' ? ' st-canc' : ''}" data-act="osv-st-b" data-id="${esc(o.id)}" data-st="${s[0]}" title="Muda o status da OS para “${esc(s[1])}” e salva na hora. Ex.: Em análise → o cliente vê na consulta.">${esc(s[1])}</button>`).join('')}</div>`; }
+ACT['osv-st-b'] = async el => { const id = el.dataset.id, st = el.dataset.st, o = get('os', id); if (!o || o.status === st) return; const ob = $('#osv-obs'); if (ob) ob.value = ''; const h = $('#osv-st'); if (h) h.value = st;
+  const box = el.closest('.osv-steps'), idx = OS_ST.findIndex(s => s[0] === st); if (box) [...box.children].forEach((b, i) => { b.classList.toggle('now', i === idx); b.classList.toggle('done', i < idx && idx < 7); b.setAttribute('aria-checked', i === idx ? 'true' : 'false'); });
+  await osStSalvar(id, st, ''); toast('Status: ' + OS_ST[idx][1] + '.'); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'osv-st-b': 'os' }); Object.assign(AJUDA, { 'osv-st-b': 'Toque para mudar o status da OS; salva na hora. Ex.: Aguardando peça → Em execução.' }); } catch { } }, 0);
+/* a foto foi mexida no editor? (girar, espelhar, cortar, brilho, contraste, tamanho, desenho) */
+function feMudou() { try { const F = FE || {}; return !!(F.rot || F.flip || F.crop || (F.strokes && F.strokes.length) || +(($('#fe-br') || {}).value || 100) !== 100 || +(($('#fe-ct') || {}).value || 100) !== 100 || +(($('#fe-esc') || {}).value || 100) !== 100); } catch { return true; } }
+/* v14: fotos da OS
+   - "Tirar foto" abre a câmera dentro do aplicativo (o Chrome não vai para segundo plano, então o Android não fecha o aplicativo);
+   - cada foto tirada fica guardada no aparelho (rascunho): se o aplicativo fechar antes de Enviar, ao abrir de novo ele oferece continuar com as fotos, a etapa e a legenda. */
+let FT_OS = null, FTC = null;
+const ftCamOk = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && !window.CAM_BLOQ;
+function ftAdd(f) { FT_FILES.push(f); const u = URL.createObjectURL(f), i = FT_FILES.length - 1; $('#ft-thumbs')?.insertAdjacentHTML('beforeend', `<button type="button" class="ft-th" data-act="ft-editar" data-i="${i}" title="Toque para editar: cortar, ampliar, marcar"><img src="${u}" alt="Foto ${i + 1}"><span>${ic('edit')}</span></button>`); const dc = $('#ft-dica'); if (dc) dc.hidden = !FT_FILES.length; ftRascunhoSalvar(); }
+const ftIDB = () => new Promise((ok, no) => { try { const r = indexedDB.open('bancada-rascunhos', 1); r.onupgradeneeded = () => r.result.createObjectStore('r'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); } catch (e) { no(e); } });
+let FT_REST = false;
+async function ftRascunhoSalvar() { try { if (!FT_OS || FT_REST) return; const db = await ftIDB(), st = db.transaction('r', 'readwrite').objectStore('r'), k = 'fotos-os-' + FT_OS; if (!FT_FILES.length) { st.delete(k); return; } st.put({ osId: FT_OS, etapa: ($('#ft-et') || {}).value || '', legenda: ($('#ft-leg') || {}).value || '', files: FT_FILES.map(f => f), at: Date.now(), op: S.op && S.op.id }, k); } catch { } }
+async function ftRascunhoApagar(os) { try { const db = await ftIDB(); db.transaction('r', 'readwrite').objectStore('r').delete('fotos-os-' + (os || FT_OS)); } catch { } }
+async function ftRascunhoLer(os) { try { const db = await ftIDB(); return await new Promise(ok => { const st = db.transaction('r').objectStore('r'), q = os ? st.get('fotos-os-' + os) : st.getAll(); q.onsuccess = () => ok(q.result || null); q.onerror = () => ok(null); }); } catch { return null; } }
+/* ao abrir "Adicionar fotos" de uma OS que tem fotos não enviadas (a janela fechou sozinha ou o aplicativo reiniciou), elas voltam para a lista */
+function ftRestaurar(r, aviso) { const e = $('#ft-et'), l = $('#ft-leg'); if (!$('#ft-thumbs') || !r) return; if (e && r.etapa) e.value = r.etapa; if (l && !l.value) l.value = r.legenda || ''; FT_REST = true; try { (r.files || []).forEach(f => ftAdd(f instanceof File ? f : new File([f], 'foto.jpg', { type: 'image/jpeg' }))); } finally { FT_REST = false; } ftRascunhoSalvar(); if (aviso && (r.files || []).length) toastOk(`${r.files.length} foto${r.files.length === 1 ? '' : 's'} não enviada${r.files.length === 1 ? '' : 's'} recuperada${r.files.length === 1 ? '' : 's'}.`); }
+document.addEventListener('input', e => { if (e.target && (e.target.id === 'ft-leg' || e.target.id === 'ft-et') && FT_FILES.length) ftRascunhoSalvar(); });
+document.addEventListener('change', e => { if (e.target && e.target.id === 'ft-et' && FT_FILES.length) ftRascunhoSalvar(); });
+ACT['ft-cancelar'] = el => { const fim = () => { ftRascunhoApagar(); FT_FILES = []; FT_OS = null; closeModal(); }; if (FT_FILES.length) { arm(el, `Confirmar: descartar ${FT_FILES.length} foto${FT_FILES.length === 1 ? '' : 's'}`, fim); return; } fim(); };
+/* ao abrir o aplicativo: fotos que não foram enviadas */
+setTimeout(function ftRetomar() { if (!S.loaded || !S.op) { setTimeout(ftRetomar, 2500); return; } if ($('#ft-thumbs')) return; ftRascunhoLer().then(L => { const r = (L || []).filter(x => x && (x.files || []).length && Date.now() - x.at < 3 * 864e5 && get('os', x.osId)).sort((a, b) => b.at - a.at)[0]; if (!r || $('#ft-thumbs')) return; const o = get('os', r.osId);
+  M.ftRet = r; openModal('Fotos não enviadas', `<p style="margin:0">O aplicativo fechou antes de enviar <b>${r.files.length} foto${r.files.length === 1 ? '' : 's'}</b> da <b>OS ${pad(o.numero)}</b>${r.legenda ? ` (legenda: “${esc(r.legenda)}”)` : ''}. Elas ficaram guardadas neste aparelho.</p>`,
+    `<button type="button" class="btn" data-act="ft-ret-descartar">Descartar</button><button type="button" class="btn primary" data-act="ft-ret-ok">Continuar e enviar</button>`); }); }, 3000);
+ACT['ft-ret-ok'] = () => { const r = M.ftRet; closeModal(); if (!r) return; fotoForm(r.osId); };
+ACT['ft-ret-descartar'] = el => arm(el, 'Confirmar: descartar as fotos', () => { const r = M.ftRet; if (r) ftRascunhoApagar(r.osId); M.ftRet = null; closeModal(); toast('Fotos descartadas.'); });
+/* câmera dentro do aplicativo */
+ACT['ft-cam'] = async () => {
+  let st = null; try { st = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
+  catch { toast('Não foi possível abrir a câmera aqui. Abrindo a câmera do aparelho.'); const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.setAttribute('capture', 'environment'); i.className = 'ft-in'; i.hidden = true; document.body.appendChild(i); i.addEventListener('change', () => setTimeout(() => i.remove(), 500)); i.click(); return; }
+  FTC = { st, n: 0 };
+  openModal('Tirar foto', `<div class="ftc"><video id="ftc-v" playsinline muted autoplay></video><div class="ftc-flash" id="ftc-fl"></div></div><p class="muted" id="ftc-n" style="margin:6px 0 0;text-align:center">Aponte e toque em <b>Fotografar</b>. Pode tirar várias seguidas.</p>`,
+    `<button type="button" class="btn" data-act="ftc-fim">Concluir</button><button type="button" class="btn primary" data-act="ftc-foto">${ic('camera')}Fotografar</button>`, { wide: true });
+  const v = $('#ftc-v'); if (v) { v.srcObject = st; try { await v.play(); } catch { } }
+  const obs = new MutationObserver(() => { if (!document.getElementById('ftc-v')) { ftcParar(); obs.disconnect(); } }); obs.observe($('#modals'), { childList: true });
+};
+function ftcParar() { try { FTC && FTC.st.getTracks().forEach(t => t.stop()); } catch { } FTC = null; }
+ACT['ftc-foto'] = async () => { const v = $('#ftc-v'); if (!v || !v.videoWidth) return; const cv = document.createElement('canvas'); cv.width = v.videoWidth; cv.height = v.videoHeight; cv.getContext('2d').drawImage(v, 0, 0); const b = await toBlob(cv, .9); if (!b) return; FTC && FTC.n++; ftAdd(new File([b], 'foto' + FT_FILES.length + '.jpg', { type: 'image/jpeg' }));
+  const fl = $('#ftc-fl'); if (fl) { fl.classList.remove('on'); void fl.offsetWidth; fl.classList.add('on'); } if (navigator.vibrate) try { navigator.vibrate(40); } catch { }
+  const n = $('#ftc-n'); if (n) n.innerHTML = `<b>${FTC ? FTC.n : 1} foto${FTC && FTC.n > 1 ? 's' : ''} tirada${FTC && FTC.n > 1 ? 's' : ''}</b> · já guardadas. Tire outra ou toque em Concluir.`; };
+ACT['ftc-fim'] = () => { ftcParar(); closeModal(); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'ft-cam': 'os', 'ftc-foto': 'os', 'ftc-fim': '', 'ft-cancelar': '', 'ft-ret-ok': 'os', 'ft-ret-descartar': '' }); Object.assign(AJUDA, { 'ft-cam': 'Abre a câmera aqui dentro do aplicativo. Ex.: tire a frente, a lateral e o número de série, uma após a outra.', 'ftc-foto': 'Tira a foto e guarda na lista. Ex.: toque de novo para a próxima.', 'ftc-fim': 'Fecha a câmera e volta para as fotos tiradas.', 'ft-ret-ok': 'Abre de novo a janela de fotos da OS com as fotos guardadas, a etapa e a legenda.', 'ft-ret-descartar': 'Apaga as fotos guardadas que não foram enviadas.' }); } catch { } }, 0);
+/* v14: registro de fechamentos inesperados neste aparelho (para descobrir por que o aplicativo fechou ou reiniciou) */
+const DIAG_K = 'bancada-diag', VIVO_K = 'bancada-vivo';
+function diagLer() { try { return JSON.parse(lsGet(DIAG_K) || '[]') || []; } catch { return []; } }
+function diagReg(motivo, extra) { try { const L = diagLer(); L.unshift({ t: Date.now(), motivo, ver: APP_VER, ...(extra || {}) }); lsSet(DIAG_K, JSON.stringify(L.slice(0, 30))); } catch { } }
+function diagEstado() { const ov = document.querySelector('#modals > :last-child'); return { t: Date.now(), vis: !document.hidden, rota: ((document.querySelector('#view h1') || {}).textContent || S.route || '').trim().slice(0, 40), jan: ov ? ((ov.querySelector('.sheet-h h2') || {}).textContent || '').trim().slice(0, 60) : '' }; }
+(() => { let x = null; try { x = JSON.parse(lsGet(VIVO_K) || 'null'); } catch { }
+  if (x && !x.fim) { const disc = !!document.wasDiscarded, rec = Date.now() - x.t < 15 * 60e3;
+    if (disc || rec) diagReg(disc ? 'O Android fechou o aplicativo em segundo plano (pouca memória no aparelho) e ele abriu de novo' : x.vis ? 'O navegador fechou o aplicativo enquanto ele estava em uso e abriu de novo' : 'O aplicativo foi fechado em segundo plano e abriu de novo', { quando: x.t, rota: x.rota, jan: x.jan }); }
+  else if (x && x.fim && x.fim !== 'normal' && Date.now() - x.t < 15 * 60e3) diagReg(x.fim, { quando: x.t, rota: x.rota, jan: x.jan });
+  const bate = () => { try { lsSet(VIVO_K, JSON.stringify(diagEstado())); } catch { } };
+  setInterval(bate, 4000); document.addEventListener('visibilitychange', bate); setTimeout(bate, 1500);
+  addEventListener('pagehide', () => { try { lsSet(VIVO_K, JSON.stringify({ ...diagEstado(), fim: window.DIAG_MOTIVO || (window.VER_RELOAD ? 'Reiniciou para atualizar a versão' : 'normal') })); } catch { } });
+})();
+/* marca a janela que tem dados digitados pela pessoa */
+document.addEventListener('input', e => { if (!e.isTrusted) return; const ov = e.target && e.target.closest && e.target.closest('#modals > *'); if (ov && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && e.target.type !== 'search') ov.dataset.sujo = '1'; }, true);
+ACT['diag-ver'] = () => { const L = diagLer();
+  openModal('Fechamentos neste aparelho', `<p class="muted" style="margin-top:0">Quando o aplicativo ou uma janela fecha sozinho, fica anotado aqui o motivo, a tela e a janela que estavam abertas. Ex.: “O Android fechou o aplicativo em segundo plano (pouca memória)”, na tela Ordens de serviço.</p>${L.length ? `<div class="list">${L.map(d => `<div class="row"><div class="grow"><b>${esc(d.motivo)}</b><div class="muted" style="font-size:.82rem">${tsBR(d.quando || d.t)}${d.rota ? ' · tela: ' + esc(d.rota) : ''}${d.jan ? ' · janela: ' + esc(d.jan) : ''} · versão ${esc(String(d.ver || ''))}</div></div></div>`).join('')}</div>` : '<p class="muted">Nenhum fechamento anotado neste aparelho.</p>'}`,
+    `${L.length ? '<button type="button" class="btn" data-act="diag-limpar">Limpar</button>' : ''}<button type="button" class="btn primary" data-act="close">Fechar</button>`); };
+ACT['diag-limpar'] = el => arm(el, 'Confirmar: limpar a lista', () => { try { lsSet(DIAG_K, '[]'); } catch { } closeModal(); ACT['diag-ver'](); });
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'diag-ver': '', 'diag-limpar': '' }); Object.assign(AJUDA, { 'diag-ver': 'Mostra quando o aplicativo ou uma janela fechou sozinho neste aparelho e o motivo. Ex.: “pouca memória no aparelho”.', 'diag-limpar': 'Apaga a lista de fechamentos deste aparelho.' }); } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -13241,7 +13336,8 @@ document.addEventListener('pointerup', () => { PAT_ON = false; });
 document.addEventListener('input', e => { if (e.target && e.target.id === 'pw-txt') pwAtualizar(); });
 
 /* Ler OS (QR do documento ou da etiqueta) de qualquer lugar: abre a câmera e, ao ler, mostra a ordem */
-ACT['os-ler'] = () => { if (S.route !== 'os') go('os'); setTimeout(() => { const b = document.querySelector('[data-act="cam-scan"][data-target="q-os"]'); if (b) b.click(); else ACT['cam-scan']({ dataset: { target: 'q-os' } }); }, 80); };
+/* v14: abre direto o leitor (câmera), sem passar por outra tela; ao ler, abre a OS */
+ACT['os-ler'] = () => ACT['cam-scan']({ dataset: { target: 'os-ler' } });
 setTimeout(() => { try { loadEtLibs().catch(() => { }); } catch { } }, 2500);
 
 /* status da OS: salva sozinho; a observação acompanha o status até ele mudar */
@@ -17791,7 +17887,7 @@ async function nuvemEmpresa() {
   firebase.auth().onAuthStateChanged(u => {
     if (u && u.isAnonymous) { if (ligado) return; acVerificar(u, () => { ligado = true; FB_USER = u; nuvemTela(null); S.me = u.uid; S.userReady = true; S.isAdmin = true; registered = true; ligarDB(fbAdapter(firebase.firestore())); acVigiarAparelho(u.uid); acOuvirPedidos(); }); return; }
     if (u) { if (ligado) return; ligado = true; FB_USER = u; nuvemTela(null); S.me = u.uid; S.userReady = true; S.isAdmin = true; ligarDB(fbAdapter(firebase.firestore())); acOuvirPedidos(); }
-    else if (ligado) location.reload();
+    else if (ligado) { /* v14: a conta pode sumir por um instante (renovação do acesso sem internet); só reinicia se continuar desconectado */ setTimeout(() => { try { if (!firebase.auth().currentUser) { guardarRetomar(); window.DIAG_MOTIVO = 'Reiniciou porque a conexão com a conta da empresa caiu'; location.reload(); } } catch { } }, 6000); }
     else nuvemTela('login');
   });
 }
@@ -17930,7 +18026,7 @@ function acEsperar(uid) {
 document.addEventListener('visibilitychange', () => { if (!document.hidden && AC_POLL) acConferirAgora(false); });
 /* aparelho liberado que for bloqueado depois: sai na hora */
 function acVigiarAparelho(uid) {
-  try { acFs().collection(AC_AP).doc(uid).onSnapshot(s => { const d = s.exists ? s.data() || {} : null; if (!d || d.liberado !== true) { toast('O administrador bloqueou o acesso deste aparelho.', 6000); setTimeout(async () => { try { await firebase.auth().signOut(); } catch { } location.reload(); }, 2500); } }, () => { }); } catch { }
+  try { acFs().collection(AC_AP).doc(uid).onSnapshot(async s => { if (s.metadata && s.metadata.fromCache) return; const d = s.exists ? s.data() || {} : null; if (!d || d.liberado !== true) { try { const s2 = await acFs().collection(AC_AP).doc(uid).get({ source: 'server' }); const d2 = s2.exists ? s2.data() || {} : null; if (d2 && d2.liberado === true) return; } catch { return; } toast('O administrador bloqueou o acesso deste aparelho.', 6000); window.DIAG_MOTIVO = 'Saiu porque o acesso deste aparelho foi bloqueado'; setTimeout(async () => { try { await firebase.auth().signOut(); } catch { } location.reload(); }, 2500); } }, () => { }); } catch { }
 }
 /* lado do administrador: pedidos e aparelhos autorizados */
 S.acPed = []; S.acAp = [];
