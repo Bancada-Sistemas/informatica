@@ -2039,7 +2039,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 14, APP_BUILD = 375;
+const APP_VER = 15, APP_BUILD = 376;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -5256,7 +5256,7 @@ ACT['sobre'] = () => {
       return `<div class="dev-card"><div class="dev-id">${temNome ? `<div><span class="dev-k">Desenvolvedor</span><b>${esc(c.nome)}</b></div>` : ''}${temDoc ? `<div><span class="dev-k">${String(c.cnpj).replace(/\D/g, '').length > 11 ? 'CNPJ' : 'CPF'}</span><b class="mono">${esc(c.cnpj)}</b></div>` : ''}</div>
         ${temEnd ? `<div class="dev-end">${ic('mapa')}<div class="grow"><span class="dev-k">Endereço</span>${c.logradouro || c.cidade ? `${l1 ? `<b>${esc(l1)}</b>` : ''}${l2 ? `<span>${esc(l2)}</span>` : ''}${c.cep ? `<span class="muted">CEP ${esc(c.cep)}</span>` : ''}${c.referencia ? `<span class="muted dev-ref">Ponto de referência: ${esc(c.referencia)}</span>` : ''}` : `<b>${esc(c.endereco)}</b>`}</div><a class="btn sm" href="${esc(mapa)}" target="_blank" rel="noopener">${ic('mapa')}Ver no mapa</a></div>` : ''}</div>`;
     })()}
-    ${(() => { const n = diagLer().length; return n ? `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">${n} fechamento${n === 1 ? '' : 's'} inesperado${n === 1 ? '' : 's'} anotado${n === 1 ? '' : 's'} neste aparelho · ver</button>` : `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">Fechamentos neste aparelho</button>`; })()}
+    ${(() => { const n = diagLer().length; return n ? `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">${n} fechamento${n === 1 ? '' : 's'} inesperado${n === 1 ? '' : 's'} anotado${n === 1 ? '' : 's'} neste aparelho · ver</button>` : `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">Fechamentos neste aparelho</button>`; })().replace(/^/, '<div style="display:flex;gap:16px;flex-wrap:wrap">') + '<button type="button" class="lnk" data-act="ia-testar" style="font-size:.85rem">Testar a IA</button></div>'}
     ${op ? `<p class="muted" style="margin:0;font-size:.85rem">Usando agora: <b style="color:var(--ink)">${esc(op)}</b> · ${esc(nivelNome(meuPapel()))} · ${esc(empresaNome())}</p>` : ''}
     <div class="sobre-col2"><h3 style="margin:0">Contato e suporte do desenvolvedor</h3>
     <div class="sobre-links"><button type="button" class="sobre-l" data-act="manual-ver" data-ajuda="Abre o manual do aplicativo numa janela nova do navegador: todas as funções explicadas em abas, com imagens dos exemplos, busca por palavra e as novidades de cada versão. Use ← e → para mudar de aba, ↑ e ↓ para rolar e Esc para fechar.">${ic('info')}<span class="grow"><b>Manual do aplicativo</b><small>Todas as funções em abas, com imagens dos exemplos e as novidades</small></span><span class="muted">›</span></button>${links}<button type="button" class="sobre-l sobre-l-sup" data-act="sup-remoto">${ic('suporte')}<span class="grow"><b>Suporte remoto</b><small>${supWa ? 'AnyDesk: o técnico acessa este computador' : 'WhatsApp de suporte ainda não cadastrado'}</small></span><span class="muted">›</span></button></div>
@@ -11093,7 +11093,10 @@ Responda SOMENTE com um JSON neste formato (valores em português; deixe "" o qu
 ${PROD_IA_JSON}`;
   aviso && aviso(file ? 'Identificando o produto pela foto e procurando no site do fabricante e nas lojas… (até 1 minuto)' : 'Procurando este código no site do fabricante e nas lojas… (até 1 minuto)');
   let img = null; if (file) { try { img = await toBlob(drawScaled(await loadImg(file), 1600), .88); } catch { img = file; } }
-  if (sample.buscar) return await comPrazo(sample.buscar(pedido, img ? { images: [img] } : {}), 90000, 'ia_lenta');
+  if (sample.buscar) { try { return await comPrazo(sample.buscar(pedido, img ? { images: [img] } : {}), 90000, 'ia_lenta'); }
+    catch (e) { if (!e || /^ia_(rede|negado|cota)$/.test(e.code || '') || /API_KEY|API key|RESOURCE_EXHAUSTED|quota|not.found|no longer available|not supported/i.test(e.message || '') || e.status === 404) throw e;
+      aviso && aviso('A pesquisa na internet não respondeu no formato certo. Tentando identificar só pela IA…');
+      return await comPrazo(sample.json(pedido.replace('PESQUISE NA INTERNET', 'informe, pelo que você conhece,'), img ? { images: [img] } : {}), 60000, 'ia_lenta'); } }
   /* dentro do Claude não há pesquisa na internet: identifica pelo que se vê/lê */
   const sem = pedido.replace('PESQUISE NA INTERNET', 'informe, pelo que você conhece,');
   if (img) return await claudeLerFoto(file, sem, aviso);
@@ -11122,7 +11125,7 @@ async function prodIAExecutar(o) {
   const box = $('#p-busca'); if (!box) return false; box.hidden = false; box.className = 'banner info';
   const aviso = t => { box.innerHTML = `<span class="grow">${esc(t)}</span>`; }; aviso('Procurando o produto…');
   try { const r = normIA(await prodBuscarIA({ ...o, aviso })); if (!r.nome && !r.modelo) throw { code: 'nada' }; PROD_IA_ULT = r; const f = prodAplicarIA(r, false); if (!$('#p-busca')) return true; box.className = 'banner info'; box.innerHTML = prodIAResumo(r, f); return true; }
-  catch (e) { if (!$('#p-busca')) return false; box.className = 'banner'; box.innerHTML = `<span class="grow">${e && e.code === 'nada' ? 'Não encontrei este produto na internet.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : esc(fotoErroMsg(e))} Tente pela foto da caixa ou digite o que está escrito (marca, modelo, nome):</span><span class="actions">${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button></span>`; return false; }
+  catch (e) { if (!$('#p-busca')) return false; box.className = 'banner'; box.innerHTML = `<span class="grow">${e && e.code === 'nada' ? 'Não encontrei este produto na internet.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : esc(fotoErroMsg(e))} Tente pela foto da caixa ou digite o que está escrito (marca, modelo, nome):</span><span class="actions">${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button>${(e && e.code !== 'nada') ? `<button type="button" class="btn sm" data-act="ia-testar">${ic('search')}Testar a IA</button>` : ''}</span>`; return false; }
 }
 /* identificar o produto pela foto da embalagem (o próprio Claude lê a foto; pede permissão no 1º uso) */
 const fotoIdBtn = () => `<label class="btn sm primary" style="cursor:pointer">${ic('camera')}Identificar pela foto<input type="file" accept="image/*" capture="environment" class="vh p-idfoto"></label>`;
@@ -11217,7 +11220,18 @@ async function claudeLerFoto(file, pedido, aviso) {
   aviso && aviso('Organizando os dados…');
   return await sample.json(pedido + `\n\nATENÇÃO: não há imagem. Abaixo está o TEXTO lido da foto por OCR (pode ter erros de leitura; corrija o que for óbvio):\n<<<\n${txt.slice(0, 3000)}\n>>>`);
 }
-const fotoErroMsg = e => !e ? 'Não consegui ler a foto.' : e.code === 'not_granted' ? 'A leitura não foi permitida. Ela usa o Claude da sua conta: toque de novo e responda “Permitir”.' : e.code === 'sem_texto' ? 'Não achei texto legível na foto. Fotografe mais de perto a etiqueta ou a caixa, com boa luz e sem reflexo.' : e.code === 'ocr_falhou' || e.code === 'ocr_lento' ? 'Neste aparelho a foto não pode ser lida automaticamente.' : e.code === 'sem_claude' ? 'O texto foi lido, mas o Claude não respondeu neste aparelho. Preencha à mão.' : 'Não consegui ler a foto. Tente mais de perto, com boa luz e a etiqueta inteira.';
+/* v14: erro da IA explicado (antes todo erro virava “Não consegui ler a foto”, e não dava para saber o que faltava) */
+function iaErroMsg(e) { const m = String((e && e.message) || ''), st = e && e.status;
+  if (e.code === 'ia_rede') return 'Sem conexão com a IA. Verifique a internet do aparelho.';
+  if (e.code === 'ia_lenta') return 'A IA demorou demais para responder.';
+  if (e.code === 'ia_negado') return 'A ponte da IA recusou o pedido: a chave de IA desta empresa não está cadastrada na ponte (ou foi apagada). O suporte do aplicativo precisa cadastrá-la.';
+  if (e.code === 'ia_cota' || /RESOURCE_EXHAUSTED|quota/i.test(m)) return 'O limite de uso gratuito da IA do Google acabou por agora. Tente de novo mais tarde (o limite volta sozinho).';
+  if (/API_KEY_INVALID|API key not valid|API key expired|PERMISSION_DENIED/i.test(m)) return 'A chave de IA cadastrada na ponte não vale mais (vencida ou apagada no Google). O suporte do aplicativo precisa gerar uma chave nova.';
+  if (/location is not supported/i.test(m)) return 'O Google não liberou a IA para esta região.';
+  if (/not.found|no longer available|is not supported for generateContent/i.test(m) || st === 404) return 'O modelo de IA usado pela ponte (Gemini) não está disponível para esta chave. É preciso trocar o modelo na ponte (variável MODELO no Cloudflare).';
+  if (e.code === 'nada') return 'A IA não achou dados deste produto.';
+  return 'A IA respondeu com erro' + (st ? ' ' + st : '') + (m ? ': ' + m.replace(/[{}"\n]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140) : '') + '.'; }
+const fotoErroMsg = e => !e ? 'Não consegui ler a foto.' : /^ia_/.test(e.code || '') ? iaErroMsg(e) : e.code === 'not_granted' ? 'A leitura não foi permitida. Ela usa o Claude da sua conta: toque de novo e responda “Permitir”.' : e.code === 'sem_texto' ? 'Não achei texto legível na foto. Fotografe mais de perto a etiqueta ou a caixa, com boa luz e sem reflexo.' : e.code === 'ocr_falhou' || e.code === 'ocr_lento' ? 'Neste aparelho a foto não pode ser lida automaticamente.' : e.code === 'sem_claude' ? 'O texto foi lido, mas o Claude não respondeu neste aparelho. Preencha à mão.' : 'Não consegui ler a foto. Tente mais de perto, com boa luz e a etiqueta inteira.';
 
 /* plano B: a pessoa digita o que lê na caixa e o Claude organiza o cadastro (só texto) */
 const pDescHTML = () => `<div class="p-desc"><input id="p-desc-in" placeholder="Ex.: Mini teclado sem fio RGB i8 com touchpad" autocomplete="off"><button type="button" class="btn sm primary" data-act="p-desc-ok">Preencher</button></div>`;
@@ -12790,6 +12804,19 @@ ACT['diag-ver'] = () => { const L = diagLer();
     `${L.length ? '<button type="button" class="btn" data-act="diag-limpar">Limpar</button>' : ''}<button type="button" class="btn primary" data-act="close">Fechar</button>`); };
 ACT['diag-limpar'] = el => arm(el, 'Confirmar: limpar a lista', () => { try { lsSet(DIAG_K, '[]'); } catch { } closeModal(); ACT['diag-ver'](); });
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'diag-ver': '', 'diag-limpar': '' }); Object.assign(AJUDA, { 'diag-ver': 'Mostra quando o aplicativo ou uma janela fechou sozinho neste aparelho e o motivo. Ex.: “pouca memória no aparelho”.', 'diag-limpar': 'Apaga a lista de fechamentos deste aparelho.' }); } catch { } }, 0);
+/* v14: Testar a IA — mostra, passo a passo, se a ponte e a IA do Google respondem e o motivo exato quando não respondem */
+ACT['ia-testar'] = async () => {
+  const s = await iaSample();
+  openModal('Testar a IA', `<p class="muted" style="margin-top:0">Confere a ligação com a IA usada para identificar produtos pelo código de barras e pela foto. Ex.: se a chave venceu, aparece aqui o motivo.</p><div class="list" id="iat-l"></div>`, `<button type="button" class="btn primary" data-act="close">Fechar</button>`);
+  const L = $('#iat-l'), linha = (ok, t, d) => { if (L) L.insertAdjacentHTML('beforeend', `<div class="row"><div class="grow"><b>${ok === null ? '⏳' : ok ? '✅' : '❌'} ${esc(t)}</b>${d ? `<div class="muted" style="font-size:.82rem;word-break:break-word">${esc(d)}</div>` : ''}</div></div>`); };
+  if (!s) { linha(false, 'IA não disponível neste aparelho', 'O aplicativo não está ligado à conta da empresa (nuvem).'); return; }
+  if (s !== IA_PONTE) { try { const r = await comPrazo(s.json('Responda só {"ok": true}'), 30000, 'ia_lenta'); linha(!!r, 'IA do Claude respondeu'); } catch (e) { linha(false, 'IA do Claude não respondeu', fotoErroMsg(e)); } return; }
+  const t0 = Date.now(); try { const r = await comPrazo(IA_PONTE.json('Teste de ligação. Responda só o JSON {"ok": true}.'), 40000, 'ia_lenta'); linha(!!(r && r.ok), 'IA respondeu (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s)'); }
+  catch (e) { linha(false, 'A IA não respondeu', iaErroMsg(e) + (e && e.message ? ' — detalhe técnico: ' + String(e.message).replace(/\s+/g, ' ').slice(0, 300) : '')); return; }
+  const t1 = Date.now(); try { const r = await comPrazo(IA_PONTE.buscar('Pesquise na internet o produto "cartucho HP 664 preto" e responda SOMENTE um JSON {"nome": "", "marca": ""}.'), 60000, 'ia_lenta'); linha(!!(r && r.nome), 'Pesquisa na internet funcionando (' + ((Date.now() - t1) / 1000).toFixed(1) + ' s)', r && r.nome ? 'Exemplo encontrado: ' + r.nome : ''); }
+  catch (e) { linha(false, 'A pesquisa na internet não funcionou (a identificação usa só a IA)', iaErroMsg(e) + (e && e.message ? ' — detalhe técnico: ' + String(e.message).replace(/\s+/g, ' ').slice(0, 300) : '')); }
+};
+setTimeout(() => { try { ACT_PERM['ia-testar'] = ''; AJUDA['ia-testar'] = 'Confere se a IA que identifica produtos está respondendo e mostra o motivo quando não está. Ex.: chave vencida ou limite do Google esgotado.'; } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -13159,7 +13186,7 @@ let _cabW = innerWidth, _cabH = innerHeight; window.addEventListener('resize', (
     const r = alvo.getBoundingClientRect(); if (!r.width || r.width < 70) { bt.hidden = true; return; }
     bt.hidden = false; const ta = alvo.tagName === 'TEXTAREA', cy = ta ? r.bottom - 18 : r.top + r.height / 2;
     /* procura, da direita para a esquerda, um lugar livre dentro do campo (sem × de apagar, sem ▼ de lista) */
-    bt.style.visibility = 'hidden'; let off = (ta ? 18 : 6 + ctlDir(alvo)) + (alvo.value && !alvo.dataset.semX && !ta ? 28 : 0);
+    bt.style.visibility = 'hidden'; let off = (ta ? 18 : 6 + ctlDir(alvo)) + (!alvo.dataset.semX && !ta && r.width >= 118 && !/^(number)$/.test(alvo.type) ? 28 : 0); /* v14: o lugar do × fica sempre reservado, com o campo vazio ou não: o 🎤 nunca fica embaixo do × (ao parar a gravação, o toque caía no × e apagava o ditado) */
     let livre = false; for (let k = 0; k < 6; k++) { const x = r.right - off - 12; if (x < r.left + 30) break; const top = document.elementsFromPoint(x, cy).find(e => e !== bt && !bt.contains(e)); const xb = document.querySelector('.clr-x:not([hidden])'); const xr = xb && xb.getBoundingClientRect(); const bateX = xr && xr.width && x + 12 > xr.left - 2 && x - 12 < xr.right + 2 && cy > xr.top - 4 && cy < xr.bottom + 4; if ((top === alvo || (top && alvo.contains(top))) && !bateX) { livre = true; break; } off += 26; }
     /* campo estreito ou sem lugar livre dentro: o 🎤 fica logo à direita, colado no campo */
     if (!livre) off = -28;
@@ -18552,7 +18579,7 @@ const IA_PONTE = {
     try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], generationConfig: { responseMimeType: 'application/json' } }), signal: o.signal }); }
     catch (e) { if (e && e.name === 'AbortError') throw e; throw { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
     const t = await r.text();
-    if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : 'ia_erro', message: t.slice(0, 300) };
+    if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
     let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
     const txt = ((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join('').trim();
     try { return JSON.parse(txt.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '')); } catch { throw { code: 'ia_erro', message: 'A IA respondeu fora do formato esperado.' }; }
@@ -18565,7 +18592,7 @@ IA_PONTE.buscar = async function (pedido, o = {}) {
   const url = String(EMP_CFG.ponte || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
   let r; try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], tools: [{ google_search: {} }] }), signal: o.signal }); }
   catch (e) { if (e && e.name === 'AbortError') throw e; throw { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
-  const t = await r.text(); if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : 'ia_erro', message: t.slice(0, 300) };
+  const t = await r.text(); if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
   let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
   const c = (j.candidates || [])[0] || {}, txt = ((c.content || {}).parts || []).map(p => p.text || '').join('').trim();
   const fontes = (((c.groundingMetadata || {}).groundingChunks) || []).map(g => g.web).filter(Boolean).map(w => ({ titulo: w.title || '', url: w.uri || '' }));
