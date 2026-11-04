@@ -2039,7 +2039,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 379;
+const APP_VER = 17, APP_BUILD = 380;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -3831,7 +3831,8 @@ const DOC_CSS = `.doc{position:relative}.doc-wm{position:absolute;inset:0;z-inde
 .doc .dh .dco b.emp-nome{font-size:calc(16px * var(--nfk,1))}
 .th .doc .dhth b.emp-nome{font-size:calc(1.4em * var(--nfk,1))!important}
 .nf-prev .emp-nome{font-size:calc(1em * var(--nfk,1))}
-`;
+
+.pix-bloco{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:1em 0 4px}.pix-bloco .pix-t{flex:1 1 180px}.pix-bloco .pix-o{flex:1 1 220px;font-size:.92em}.pix-bloco .pix-qr{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px}.pix-bloco .pix-qr svg{width:26mm;height:26mm}.pix-bloco .pix-qr small{font-size:9px}.th .doc .pix-bloco{flex-direction:column;align-items:center;text-align:center;gap:3px;margin:1.25em 0 2px}.th .doc .pix-bloco>*{flex:none!important}.th .doc .pix-bloco .pix-qr small{margin-top:0}.th .doc .pix-bloco .pix-qr svg{width:30mm;height:30mm}`;
 function docHead(titulo, numero, data, os) {
   /* data e hora da emissão já saem no rodapé (com o usuário): tira o “emitido em <agora>” do cabeçalho */
   try { const ag = tsBR(Date.now()).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); data = String(data ?? '').replace(new RegExp('\\s*·\\s*[Ee]mitid[oa] em ' + ag, 'g'), '').replace(new RegExp('^[Ee]mitid[oa] em ' + ag + '(\\s*·\\s*)?'), ''); } catch { }
@@ -4024,19 +4025,22 @@ function showDoc(kind, x) {
 /* v356: telefone para o WhatsApp do cliente: o WhatsApp cadastrado, senão o telefone */
 const cliTelWa = c => c ? String(c.whatsapp || c.telefone || '').replace(/\D/g, '') : '';
 /* v356: PDF por LINK — a ponte da nuvem guarda o PDF (90 dias) e devolve um link; assim o WhatsApp abre direto na conversa do cliente com o texto + link */
-let DOC_LINK_OFF = false, DOC_LINK_OK = null;
+let DOC_LINK_OFF = false, DOC_LINK_OK = null, DOC_LINK_ERRO = '';
 async function docLinkPdf(pdf, nome) {
-  if (DOC_LINK_OFF || !pdf || typeof agDisponivel !== 'function' || !agDisponivel()) return null;
+  DOC_LINK_ERRO = '';
+  if (!pdf) { DOC_LINK_ERRO = 'o PDF não foi gerado'; return null; }
+  if (typeof agDisponivel !== 'function' || !agDisponivel()) { DOC_LINK_ERRO = 'este aparelho não está ligado à conta da empresa na nuvem'; return null; }
+  if (DOC_LINK_OFF) { DOC_LINK_ERRO = 'a ponte não tem a função de documentos por link'; return null; }
   /* a ponte precisa ter a função de documentos (versão de 27/10/2026 em diante): confere uma vez */
-  if (DOC_LINK_OK === null) { try { const r0 = await fetchT(agPonte() + '/doc/ping', {}, 10000); const j0 = await r0.json().catch(() => null); DOC_LINK_OK = !!(j0 && j0.doc); } catch { DOC_LINK_OK = false; } }
-  if (!DOC_LINK_OK) return null;
+  if (DOC_LINK_OK !== true) { try { const r0 = await fetchT(agPonte() + '/doc/ping', {}, 10000); const j0 = await r0.json().catch(() => null); DOC_LINK_OK = !!(j0 && j0.doc); } catch { DOC_LINK_OK = null; DOC_LINK_ERRO = 'sem conexão com a ponte (verifique a internet)'; return null; } }
+  if (!DOC_LINK_OK) { DOC_LINK_ERRO = 'a ponte não tem a função de documentos por link'; return null; }
   try {
     const idToken = await firebase.auth().currentUser.getIdToken();
     const r = await fetchT(agPonte() + '/doc?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken, nome, pdf: await blobB64(pdf) }) });
     const j = await r.json().catch(() => null);
-    if (!r.ok || !j || !j.url) { if (!(j && j.doc)) DOC_LINK_OFF = true; return null; } /* ponte antiga (sem /doc): não tenta de novo nesta sessão */
+    if (!r.ok || !j || !j.url) { if (!(j && j.doc)) DOC_LINK_OFF = true; DOC_LINK_ERRO = (j && (j.erro + (j.detalhe ? ' — ' + j.detalhe : ''))) || ('a ponte respondeu com erro ' + r.status); return null; } /* ponte antiga (sem /doc): não tenta de novo nesta sessão */
     return j.url;
-  } catch { return null; }
+  } catch (e) { DOC_LINK_ERRO = 'falha ao enviar o PDF para a ponte (' + ((e && e.message) || 'internet') + ')'; return null; }
 }
 /* baixa um arquivo: pelo Claude (downloads) ou pelo navegador (GitHub) */
 async function baixarArquivo(blob, nome, okMsg) {
@@ -6071,9 +6075,17 @@ const waLink = (c, txt) => { const tel = cliTelWa(c); return tel && txt ? waUrl(
 ACT['os-avisar'] = async el => {
   const o = get('os', el.dataset.id); if (!o) return; const tel = cliTelWa(cliente(o.clienteId)); if (!tel) { toast('Cadastre o telefone do cliente.'); return; }
   const t0 = el.innerHTML; el.disabled = true; el.textContent = 'Preparando…'; let link = null; const kind = o.laudo ? 'laudo' : 'entrada', nome = kind === 'laudo' ? `Laudo-tecnico-OS-${pad(o.numero)}.pdf` : `OS-${pad(o.numero)}-entrada.pdf`;
-  try { if (agDisponivel() && !DOC_LINK_OFF) { const h = quebraLongas(kind === 'laudo' ? docLaudo(o) : docEntrada(o)); let hh = h; try { hh = await inlineBlobs(h); } catch { } const old = S.pfmt; S.pfmt = 'a4'; let pr; try { pr = pdfDoc(hh); } finally { S.pfmt = old; } link = await docLinkPdf(await pr, nome); } } catch { }
+  let pdf = null; DOC_LINK_ERRO = '';
+  try { const h = quebraLongas(kind === 'laudo' ? docLaudo(o) : docEntrada(o)); let hh = h; try { hh = await inlineBlobs(h); } catch { } const old = S.pfmt; S.pfmt = 'a4'; let pr; try { pr = pdfDoc(hh); } finally { S.pfmt = old; } pdf = await pr; if (agDisponivel()) { el.textContent = 'Preparando o link…'; link = await docLinkPdf(pdf, nome); } else DOC_LINK_ERRO = 'este aparelho não está ligado à conta da empresa na nuvem'; } catch (e) { if (!DOC_LINK_ERRO) DOC_LINK_ERRO = pdf ? 'falha ao criar o link' : 'o PDF não foi gerado'; }
   el.disabled = false; el.innerHTML = t0;
-  abrirExterno(waUrl(tel, osMsg(o) + (link ? `\n\n📄 *${kind === 'laudo' ? 'Laudo técnico' : 'Comprovante de entrada'}* (PDF): ${link}` : '')));
+  const msgW = osMsg(o), tit = kind === 'laudo' ? 'Laudo técnico' : 'Comprovante de entrada';
+  if (link) { abrirExterno(waUrl(tel, msgW + `\n\n📄 *${tit}* (PDF): ${link}`)); return; }
+  /* v17: sem o link, não abre o WhatsApp só com o texto sem avisar: diz o motivo e oferece mandar o arquivo */
+  M.waShare = pdf ? { file: new File([pdf], nome, { type: 'application/pdf' }), msg: msgW, title: tit } : null; M.waPdf = pdf ? { pdf, nome } : null;
+  openModal('Enviar no WhatsApp', `<div class="banner"><span class="grow"><b>O link do PDF não foi criado:</b> ${esc(DOC_LINK_ERRO || 'motivo desconhecido')}.</span></div>
+    <p>${pdf ? `Escolha como enviar o <b>${esc(tit.toLowerCase())}</b> para o cliente:` : 'O PDF não pôde ser gerado agora. Dá para mandar só o texto da situação da OS.'}</p>
+    ${pdf ? `<ol class="wa-passos"><li><b>Compartilhar o PDF</b>: abre a janela de compartilhar do celular com o arquivo; escolha o WhatsApp e a conversa do cliente.</li><li><b>Salvar o PDF</b> e depois <b>Abrir conversa do cliente</b>: na conversa, toque no clipe 📎 → Documento e escolha o PDF.</li></ol>` : ''}`,
+    `<button type="button" class="btn" data-act="close">Fechar</button>${pdf ? `<button type="button" class="btn" data-act="wa-pdf-de-novo">Salvar o PDF</button><button type="button" class="btn" data-act="wa-share-arq">Compartilhar o PDF</button>` : ''}<button type="button" class="btn primary" data-act="wa-abrir" data-url="${esc(waUrl(tel, msgW))}">${ic('chat')}Abrir conversa do cliente</button>`);
 };
 setTimeout(() => { try { ACT_PERM['os-avisar'] = ''; AJUDA['os-avisar'] = 'Abre a conversa do cliente no WhatsApp com a situação da OS e o link do PDF.'; } catch { } }, 0);
 function testesResumo(L) { const t = L.testes || [], ok = t.filter(x => x.res === 'ok').length, bad = t.filter(x => x.res === 'falha').length; return t.length ? `<span class="res-ok">${ok} OK</span> · <span class="res-bad">${bad} com falha</span>` : '—'; }
@@ -12794,7 +12806,7 @@ ACT['ft-ret-descartar'] = el => arm(el, 'Confirmar: descartar as fotos', () => {
 /* câmera dentro do aplicativo */
 ACT['ft-cam'] = async () => {
   let st = null; try { st = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
-  catch { toast('Não foi possível abrir a câmera aqui. Abrindo a câmera do aparelho.'); const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.setAttribute('capture', 'environment'); i.className = 'ft-in'; i.hidden = true; document.body.appendChild(i); i.addEventListener('change', () => setTimeout(() => i.remove(), 500)); i.click(); return; }
+  catch { toast('Não foi possível abrir a câmera aqui. Abrindo a câmera do aparelho.'); const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.setAttribute('capture', 'environment'); i.className = 'ft-in'; i.hidden = true; i.dataset.nativa = '1'; document.body.appendChild(i); i.addEventListener('change', () => setTimeout(() => i.remove(), 500)); i.click(); return; }
   FTC = { st, n: 0 };
   openModal('Tirar foto', `<div class="ftc"><video id="ftc-v" playsinline muted autoplay></video><div class="ftc-flash" id="ftc-fl"></div></div><p class="muted" id="ftc-n" style="margin:6px 0 0;text-align:center">Aponte e toque em <b>Fotografar</b>. Pode tirar várias seguidas.</p>`,
     `<button type="button" class="btn" data-act="ftc-fim">Concluir</button><button type="button" class="btn primary" data-act="ftc-foto">${ic('camera')}Fotografar</button>`, { wide: true });
@@ -12814,7 +12826,8 @@ function diagReg(motivo, extra) { try { const L = diagLer(); L.unshift({ t: Date
 function diagEstado() { const ov = document.querySelector('#modals > :last-child'); return { t: Date.now(), vis: !document.hidden, rota: ((document.querySelector('#view h1') || {}).textContent || S.route || '').trim().slice(0, 40), jan: ov ? ((ov.querySelector('.sheet-h h2') || {}).textContent || '').trim().slice(0, 60) : '' }; }
 (() => { let x = null; try { x = JSON.parse(lsGet(VIVO_K) || 'null'); } catch { }
   if (x && !x.fim) { const disc = !!document.wasDiscarded, rec = Date.now() - x.t < 15 * 60e3;
-    if (disc || rec) diagReg(disc ? 'O Android fechou o aplicativo em segundo plano (pouca memória no aparelho) e ele abriu de novo' : x.vis ? 'O navegador fechou o aplicativo enquanto ele estava em uso e abriu de novo' : 'O aplicativo foi fechado em segundo plano e abriu de novo', { quando: x.t, rota: x.rota, jan: x.jan }); }
+    const cam = (() => { try { return Math.abs(x.t - +(lsGet('bancada-cam-nativa') || 0)) < 10 * 60e3; } catch { return false; } })();
+    if (disc || rec) diagReg(cam && !x.vis ? 'O Android fechou o aplicativo enquanto a câmera do celular estava aberta (pouca memória no aparelho) e ele abriu de novo' : disc ? 'O Android fechou o aplicativo em segundo plano (pouca memória no aparelho) e ele abriu de novo' : x.vis ? 'O navegador fechou o aplicativo enquanto ele estava em uso e abriu de novo' : 'O Android fechou o aplicativo enquanto ele estava em segundo plano (outro aplicativo aberto, tela desligada ou o aplicativo fechado pela lista de recentes) e ele abriu de novo', { quando: x.t, rota: x.rota, jan: x.jan }); }
   else if (x && x.fim && x.fim !== 'normal' && Date.now() - x.t < 15 * 60e3) diagReg(x.fim, { quando: x.t, rota: x.rota, jan: x.jan });
   const bate = () => { try { lsSet(VIVO_K, JSON.stringify(diagEstado())); } catch { } };
   setInterval(bate, 4000); document.addEventListener('visibilitychange', bate); setTimeout(bate, 1500);
@@ -12881,6 +12894,31 @@ ACT['iat-de-novo'] = () => { iaParar(); closeModal(); ACT['ia-testar'](); };
 ACT['ia-continuar'] = () => { const p = IA_PAUSA; if (!p || !p.op) { toast('A pesquisa já terminou. Toque em Recomeçar.'); return; } if (p.op !== IA_OP) { toast('Esta pesquisa foi cancelada. Toque em Recomeçar.'); return; } IA_PAUSA = null; if (p.tipo === 'cad') prodIAExecutar(p.o, p); else iaTesteProduto(p.o, p); };
 ACT['ia-recomecar'] = () => { const p = IA_PAUSA; if (!p) { toast('Não há pesquisa para recomeçar.'); return; } IA_PAUSA = null; if (p.op && p.op === IA_OP) iaParar(); if (p.tipo === 'cad') prodIAExecutar(p.o); else iaTesteProduto(p.o, { row: p.row }); };
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'ia-continuar': '', 'ia-recomecar': '', 'iat-de-novo': '' }); Object.assign(AJUDA, { 'ia-continuar': 'Volta a esperar o resultado da pesquisa que foi parada. Se ela já terminou, mostra na hora.', 'ia-recomecar': 'Começa a pesquisa de novo, do zero. Ex.: a IA deu erro de sobrecarga e você quer tentar outra vez.', 'iat-de-novo': 'Faz o teste da IA de novo, do começo.' }); } catch { } }, 0);
+/* v17: toda "Tirar foto" do aplicativo usa a câmera aqui dentro (o Chrome não vai para segundo plano, então o Android não fecha o aplicativo).
+   A foto entra no mesmo campo de antes, como se viesse da câmera do celular: nada mais muda. "Usar a câmera do celular" continua disponível. */
+document.addEventListener('click', e => {
+  const t = e.target; if (!t || !t.closest) return;
+  const inp = t.matches && t.matches('input[type=file][capture]') ? t : (t.closest('label') || { querySelector: () => null }).querySelector('input[type=file][capture]');
+  if (!inp) return;
+  if (inp.dataset.nativa === '1') { delete inp.dataset.nativa; try { lsSet('bancada-cam-nativa', String(Date.now())); } catch { } return; }
+  if (!ftCamOk()) { try { lsSet('bancada-cam-nativa', String(Date.now())); } catch { } return; }
+  e.preventDefault(); e.stopPropagation(); camFotoApp(inp);
+}, true);
+async function camFotoApp(inp) {
+  const nativa = () => { inp.dataset.nativa = '1'; inp.click(); };
+  let st = null; try { st = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); } catch { }
+  if (!st) { openModal('Tirar foto', `<p>Não foi possível abrir a câmera aqui dentro do aplicativo. Use a câmera do celular.</p>`, `<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="cfa-nativa">${ic('camera')}Usar a câmera do celular</button>`); M.cfaInp = inp; return; }
+  M.cfaInp = inp; M.cfaSt = st;
+  openModal('Tirar foto', `<div class="ftc"><video id="cfa-v" playsinline muted autoplay></video></div><p class="muted" style="margin:6px 0 0;text-align:center;font-size:.85rem">Aponte e toque em <b>Fotografar</b>. Ex.: a etiqueta ou a caixa do produto, de perto e com boa luz.</p>`,
+    `<button type="button" class="btn" data-act="cfa-nativa" title="Abre a câmera do celular (pode fechar o aplicativo em celulares com pouca memória)">Câmera do celular</button><button type="button" class="btn primary" data-act="cfa-foto">${ic('camera')}Fotografar</button>`, { wide: true });
+  const v = $('#cfa-v'); if (v) { v.srcObject = st; try { await v.play(); } catch { } }
+  const obs = new MutationObserver(() => { if (!document.getElementById('cfa-v')) { try { st.getTracks().forEach(t => t.stop()); } catch { } obs.disconnect(); } }); obs.observe($('#modals'), { childList: true });
+}
+ACT['cfa-foto'] = async () => { const v = $('#cfa-v'), inp = M.cfaInp; if (!v || !v.videoWidth || !inp) return; const cv = document.createElement('canvas'); cv.width = v.videoWidth; cv.height = v.videoHeight; cv.getContext('2d').drawImage(v, 0, 0); const b = await toBlob(cv, .9); if (!b) return;
+  closeModal(); try { const dt = new DataTransfer(); dt.items.add(new File([b], 'foto_' + Date.now() + '.jpg', { type: 'image/jpeg' })); inp.files = dt.files; } catch { toast('Não deu para usar a foto. Toque em “Câmera do celular”.'); return; }
+  inp.dispatchEvent(new Event('change', { bubbles: true })); };
+ACT['cfa-nativa'] = () => { const inp = M.cfaInp; closeModal(); if (!inp || !inp.isConnected) return; inp.dataset.nativa = '1'; inp.click(); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'cfa-foto': '', 'cfa-nativa': '' }); Object.assign(AJUDA, { 'cfa-foto': 'Tira a foto com a câmera aqui dentro do aplicativo. Ex.: a etiqueta do equipamento.', 'cfa-nativa': 'Usa a câmera do próprio celular. Em celulares com pouca memória, o Android pode fechar o aplicativo enquanto ela está aberta.' }); } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -13831,7 +13869,7 @@ async function waEnviarDoc(D, url, el) {
     if (link) { abrirExterno(waUrl(D.tel, txtLink)); setTimeout(() => toast('Conversa do cliente aberta com o texto e o link do PDF. É só tocar em Enviar.', 6000), 400); return; }
     /* sem link (versão de teste ou ponte ainda sem a função): salva o PDF e abre a conversa do cliente; anexe pelo clipe */
     const ok = await baixarArquivo(pdf, nome, 'PDF salvo no aparelho.'); M.waPdf = { pdf, nome };
-    openModal('Enviar no WhatsApp', `<ol class="wa-passos"><li><b>O PDF foi salvo</b> no aparelho: <span class="mono">${esc(nome)}</span> (pasta Downloads).</li><li>Toque em <b>Abrir conversa do cliente</b>: o WhatsApp abre direto na conversa, com o texto pronto.</li><li>Na conversa, toque no <b>clipe 📎 → Documento</b> e escolha o PDF.</li></ol><p class="muted" style="font-size:.82rem">Quer mandar o arquivo pela janela de compartilhar do celular? Toque em <b>Compartilhar arquivo</b> (aí o celular pergunta para quem enviar).</p>`,
+    openModal('Enviar no WhatsApp', `${DOC_LINK_ERRO ? `<div class="banner"><span class="grow"><b>O link do PDF não foi criado:</b> ${esc(DOC_LINK_ERRO)}.</span></div>` : ''}<ol class="wa-passos"><li><b>O PDF foi salvo</b> no aparelho: <span class="mono">${esc(nome)}</span> (pasta Downloads).</li><li>Toque em <b>Abrir conversa do cliente</b>: o WhatsApp abre direto na conversa, com o texto pronto.</li><li>Na conversa, toque no <b>clipe 📎 → Documento</b> e escolha o PDF.</li></ol><p class="muted" style="font-size:.82rem">Quer mandar o arquivo pela janela de compartilhar do celular? Toque em <b>Compartilhar arquivo</b> (aí o celular pergunta para quem enviar).</p>`,
       `<button type="button" class="btn" data-act="close">Fechar</button>${ok ? '' : `<button type="button" class="btn" data-act="wa-pdf-de-novo">Salvar o PDF de novo</button>`}<button type="button" class="btn" data-act="wa-share-arq">Compartilhar arquivo</button><button type="button" class="btn primary" data-act="wa-abrir" data-url="${esc(waUrl(D.tel, msg))}">${ic('chat')}Abrir conversa do cliente</button>`);
     M.waShare = { file, msg, title: D.title };
     return;
@@ -19072,7 +19110,7 @@ function recTexto(r) { const t = r.tipo || ''; if (t === 'PIX') return `PIX${r.t
 function pixDocBloco(valor, txid) {
   const e = S.empresa || {}, outras = (e.recebimento || []).filter(r => !(r.tipo === 'PIX' && pixChave(r.chave) === pixChave(e.pix)));
   if (!e.pix && !outras.length) return '<span class="pix-precisa" hidden></span>';
-  const q = e.pix ? pixQRsvg(valor, txid) : '';
+  const q = e.pix ? pixQRsvg(valor, txid).replace('<svg', '<svg width="98" height="98"') : ''; /* v17: tamanho também no PDF (lá o estilo da tela não chega e o QR saía do tamanho da página) */
   return `<div class="pix-bloco">${e.pix ? `<div class="pix-t"><b>Chave PIX:</b> ${esc(e.pix)}${e.pixNome ? '<br><span class="muted">' + esc(e.pixNome) + '</span>' : ''}${outras.length ? '' : ''}</div>` : ''}${outras.length ? `<div class="pix-o">${outras.map(r => `<div>${esc(recTexto(r))}</div>`).join('')}</div>` : ''}${q ? `<div class="pix-qr">${q}<small>Pague com PIX</small></div>` : ''}</div>`;
 }
 Object.assign(ACT_PERM, { 'cx-fin': '', 'mov-recibo': '' }); Object.assign(AJUDA, { 'cx-fin': 'Escolhe se o dinheiro vai para outra pessoa ou para pagar uma compra/serviço.', 'mov-recibo': 'Gera o comprovante deste movimento para a pessoa assinar.' });
