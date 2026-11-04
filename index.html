@@ -1992,6 +1992,33 @@ function failMsg(e) {
   if (e && e.code === 'quota_exceeded') return 'O armazenamento está cheio. Apague registros antigos para continuar.';
   return 'Não foi possível salvar agora. Verifique a conexão e tente de novo.';
 }
+/* v17: sem internet, a nuvem só confirma a gravação quando a conexão volta; o aplicativo não fica esperando:
+   se em 2,5 s não houver resposta, a gravação já está guardada no aparelho (fila) e sobe sozinha depois. Erro de verdade (ex.: sem permissão) aparece na hora ou depois. */
+function gravarOuFila(pr) { let passou = false; pr.catch(e => { if (passou) toast(failMsg(e)); }); return Promise.race([pr.then(() => 'ok'), new Promise(r => setTimeout(() => { passou = true; r('fila'); }, 2500))]); }
+/* v17: numeração sem repetir — sem internet, dois aparelhos podem usar o mesmo número (ex.: as duas OS 0011).
+   Quando a internet volta, o mais antigo fica com o número; o deste aparelho passa para o próximo livre (ex.: 0012) e o aplicativo avisa. */
+const NUM_COLS = ['os', 'vendas', 'orcamentos', 'alugueis', 'contratos'], NUM_NOME = { os: 'OS', vendas: 'Venda nº', orcamentos: 'Orçamento', alugueis: 'Aluguel', contratos: 'Contrato' }, MEUS_K = 'bancada-meus-novos';
+function meusNovos() { try { return JSON.parse(lsGet(MEUS_K) || '{}') || {}; } catch { return {}; } }
+function meuNovo(col, id) { try { const m = meusNovos(), lim = Date.now() - 30 * 864e5; for (const k of Object.keys(m)) if (m[k] < lim) delete m[k]; m[col + '/' + id] = Date.now(); lsSet(MEUS_K, JSON.stringify(m)); } catch { } }
+let NUM_T = 0;
+function numConferirLogo() { clearTimeout(NUM_T); NUM_T = setTimeout(numConferir, 4000); }
+async function numConferir() {
+  if (!DB || !S.loaded || !navigator.onLine) return; const m = meusNovos(); if (!Object.keys(m).length) return;
+  for (const col of NUM_COLS) {
+    const L = S[col] || [], grupos = {}; L.forEach(x => { const n = Number(x.numero) || 0; if (n > 0) (grupos[n] = grupos[n] || []).push(x); });
+    let prox = Math.max(0, ...L.map(x => Number(x.numero) || 0));
+    for (const [n, g] of Object.entries(grupos)) {
+      if (g.length < 2) continue;
+      g.sort((a, b) => ((a.at || a.criadoEm || 0) - (b.at || b.criadoEm || 0)) || String(a.id).localeCompare(String(b.id)));
+      for (const x of g.slice(1)) { if (!m[col + '/' + x.id]) continue;
+        const novo = ++prox, { id, ...dados } = x;
+        if (await save(col, id, { ...dados, numero: novo, numeroAntes: [...(x.numeroAntes || []), Number(n)] })) {
+          const msg = `${NUM_NOME[col]} ${pad(Number(n))} deste aparelho virou ${pad(novo)}: outro aparelho já tinha usado o número ${pad(Number(n))} enquanto estavam sem internet.`;
+          toast(msg, 10000); try { diagReg('Numeração corrigida: ' + msg); } catch { }
+        } } }
+  }
+}
+addEventListener('online', numConferirLogo);
 async function save(col, id, data) {
   data = JSON.parse(JSON.stringify(data)); delete data.id; const _agSync = !!data._agSync; delete data._agSync;
   try { if ((col === 'os' || col === 'vendas') && !data.consumoOk) setTimeout(() => consumoAuto(col, id), 400); } catch { }
@@ -1999,7 +2026,7 @@ async function save(col, id, data) {
   if (col === 'config' && id === 'empresa' && MODO_TESTE()) Object.assign(data, EMP_TESTE);
   const _ant = col !== 'logs' && col !== 'config' && S[col] ? (S[col].find(x => x.id === id) || null) : null; try { if (col !== 'logs') setTimeout(() => logSalvo(col, id, data, _ant), 0); } catch { }
   if (DB) {
-    try { await (col === 'config' ? DB.doc('config/' + id) : DB.collection(col).doc(id)).set(data); if (col === 'clientes' && !_agSync) setTimeout(() => { try { agAoSalvar(id, data, _ant); } catch { } }, 0); return true; }
+    try { await gravarOuFila((col === 'config' ? DB.doc('config/' + id) : DB.collection(col).doc(id)).set(data)); if (NUM_COLS.includes(col) && data.numero && !_ant) meuNovo(col, id); if (col === 'clientes' && !_agSync) setTimeout(() => { try { agAoSalvar(id, data, _ant); } catch { } }, 0); return true; }
     catch (e) { toast(failMsg(e)); return false; }
   }
   if (col === 'config') { if (id === 'empresa') S.empresa = data; else if (id === 'pagamentos') S.pagamentos = data; else if (id === 'criador') S.criador = data; else S.acessos = data; }
@@ -2010,7 +2037,7 @@ async function del(col, id, opt) {
   try { if (col !== 'logs' && col !== 'lixeira') { const x = (S[col] || []).find(y => y.id === id); setTimeout(() => logReg('excluiu', col, id, x ? lixResumo(col, x) : '', [], x ? { mud: Object.keys(x).filter(k => LOG_CAMPO[k] && !['nome', 'descricao', 'titulo', 'fantasia', 'senhaHash', 'foto', 'fotos', 'logo'].includes(k) && x[k] != null && x[k] !== '' && !(typeof x[k] === 'object' && !Array.isArray(x[k]))).slice(0, 6).map(k => ({ c: k, de: '', para: logValor(k, x[k]) })) } : null), 0); } } catch { }
   let lixId = null, lixRes = '';
   if (col !== 'lixeira' && !(opt && opt.semLixeira)) { const x = (S[col] || []).find(y => y.id === id); if (x) { const { id: _i, ...dados } = x; lixId = uid(); lixRes = lixResumo(col, x); try { await save('lixeira', lixId, { col, docId: id, dados, resumo: lixRes, em: Date.now(), por: OPID() }); } catch { lixId = null; } } }
-  if (DB) { try { await DB.collection(col).doc(id).delete(); } catch (e) { toast(failMsg(e)); return false; } }
+  if (DB) { try { await gravarOuFila(DB.collection(col).doc(id).delete()); } catch (e) { toast(failMsg(e)); return false; } }
   else { S[col] = S[col].filter(x => x.id !== id); persistLocal(); scheduleRender(); }
   if (lixId && !(opt && opt.semDesfazer)) setTimeout(() => desfazerBarra(lixId, col, lixRes), 250);
   return true;
@@ -2039,7 +2066,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 380;
+const APP_VER = 17, APP_BUILD = 381;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -2166,7 +2193,7 @@ function ligarDB(db) {
   DB.doc('config/acessos').onSnapshot(s => { S.acessos = s.exists ? { ...s.data() } : {}; done('acessos'); scheduleRender(); }, () => done('acessos'));
   S.loaded = false; scheduleRender(true);
   COLS.forEach(c => DB.collection(c).onSnapshot(snap => {
-    S[c] = snap.docs.map(d => ({ ...d.data(), id: d.id })); done(c); refreshNames(); scheduleRender();
+    S[c] = snap.docs.map(d => ({ ...d.data(), id: d.id })); done(c); refreshNames(); scheduleRender(); if (NUM_COLS.includes(c)) numConferirLogo();
   }, e => { done(c); if (e.code !== 'revoked') toast('A conexão com os dados caiu. Recarregue a página.'); scheduleRender(); }));
   /* aviso de versão nova: o aparelho com a versão mais recente marca o número; os outros pedem para recarregar */
   try { DB.collection('ajustes').doc('app').onSnapshot(sn => { const dd = sn.exists ? sn.data() : {}, v = num(dd.build); if (v < APP_BUILD || num(dd.ver) < 99999) DB.collection('ajustes').doc('app').set({ ver: 99999, build: Math.max(v, APP_BUILD), at: Date.now() }).catch(() => { }); else if (v > APP_BUILD) avisoVersao(v); }, () => { }); } catch { }
@@ -5260,7 +5287,7 @@ ACT['sobre'] = () => {
       return `<div class="dev-card"><div class="dev-id">${temNome ? `<div><span class="dev-k">Desenvolvedor</span><b>${esc(c.nome)}</b></div>` : ''}${temDoc ? `<div><span class="dev-k">${String(c.cnpj).replace(/\D/g, '').length > 11 ? 'CNPJ' : 'CPF'}</span><b class="mono">${esc(c.cnpj)}</b></div>` : ''}</div>
         ${temEnd ? `<div class="dev-end">${ic('mapa')}<div class="grow"><span class="dev-k">Endereço</span>${c.logradouro || c.cidade ? `${l1 ? `<b>${esc(l1)}</b>` : ''}${l2 ? `<span>${esc(l2)}</span>` : ''}${c.cep ? `<span class="muted">CEP ${esc(c.cep)}</span>` : ''}${c.referencia ? `<span class="muted dev-ref">Ponto de referência: ${esc(c.referencia)}</span>` : ''}` : `<b>${esc(c.endereco)}</b>`}</div><a class="btn sm" href="${esc(mapa)}" target="_blank" rel="noopener">${ic('mapa')}Ver no mapa</a></div>` : ''}</div>`;
     })()}
-    ${(() => { const n = diagLer().length; return n ? `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">${n} fechamento${n === 1 ? '' : 's'} inesperado${n === 1 ? '' : 's'} anotado${n === 1 ? '' : 's'} neste aparelho · ver</button>` : `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">Fechamentos neste aparelho</button>`; })().replace(/^/, '<div style="display:flex;gap:16px;flex-wrap:wrap">') + '<button type="button" class="lnk" data-act="ia-testar" style="font-size:.85rem">Testar a IA</button></div>'}
+    ${(() => { const n = diagLer().length; return n ? `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">${n} fechamento${n === 1 ? '' : 's'} inesperado${n === 1 ? '' : 's'} anotado${n === 1 ? '' : 's'} neste aparelho · ver</button>` : `<button type="button" class="lnk" data-act="diag-ver" style="align-self:flex-start;font-size:.85rem">Fechamentos neste aparelho</button>`; })().replace(/^/, '<div style="display:flex;gap:16px;flex-wrap:wrap">') + '<button type="button" class="lnk" data-act="ia-testar" style="font-size:.85rem">Testar a IA</button>' + (typeof FB_USER !== 'undefined' && FB_USER ? '<button type="button" class="lnk" data-act="sync-tudo" style="font-size:.85rem">Sincronizar tudo</button>' : '') + '</div>'}
     ${op ? `<p class="muted" style="margin:0;font-size:.85rem">Usando agora: <b style="color:var(--ink)">${esc(op)}</b> · ${esc(nivelNome(meuPapel()))} · ${esc(empresaNome())}</p>` : ''}
     <div class="sobre-col2"><h3 style="margin:0">Contato e suporte do desenvolvedor</h3>
     <div class="sobre-links"><button type="button" class="sobre-l" data-act="manual-ver" data-ajuda="Abre o manual do aplicativo numa janela nova do navegador: todas as funções explicadas em abas, com imagens dos exemplos, busca por palavra e as novidades de cada versão. Use ← e → para mudar de aba, ↑ e ↓ para rolar e Esc para fechar.">${ic('info')}<span class="grow"><b>Manual do aplicativo</b><small>Todas as funções em abas, com imagens dos exemplos e as novidades</small></span><span class="muted">›</span></button>${links}<button type="button" class="sobre-l sobre-l-sup" data-act="sup-remoto">${ic('suporte')}<span class="grow"><b>Suporte remoto</b><small>${supWa ? 'AnyDesk: o técnico acessa este computador' : 'WhatsApp de suporte ainda não cadastrado'}</small></span><span class="muted">›</span></button></div>
@@ -17989,18 +18016,76 @@ function fbErro(e, er) {
 /* consumo da nuvem: conta as leituras e gravações feitas por ESTE aparelho no dia (o total da empresa soma todos os aparelhos) */
 function usoConta(k, n = 1) { try { const h = today(); let u = JSON.parse(localStorage.getItem('bancada-uso') || 'null'); if (!u || u.d !== h) u = { d: h, r: 0, w: 0, x: 0 }; u[k] = (u[k] || 0) + n; localStorage.setItem('bancada-uso', JSON.stringify(u)); } catch { } }
 function usoHoje() { try { const u = JSON.parse(localStorage.getItem('bancada-uso') || 'null'); if (u && u.d === today()) return u; } catch { } return { d: today(), r: 0, w: 0, x: 0 }; }
+/* v17: leitura econômica da nuvem — ao abrir, usa a cópia guardada no aparelho e busca na nuvem só o que mudou desde a última vez.
+   Cada gravação leva _mod (hora do servidor); cada exclusão deixa um aviso em _apagados. Uma vez por dia (ou se a cópia do aparelho
+   estiver incompleta) faz a leitura completa, como antes. O limite grátis do Firebase é de 50 mil leituras por dia. */
+const SYNC_CHEIA_MS = 24 * 3600e3, SYNC_MARGEM = 5 * 60e3;
+const syncK = c => 'bancada-sync:' + (typeof EMP_COD !== 'undefined' ? EMP_COD || '' : '') + ':' + c;
+const syncLer = c => { try { return JSON.parse(lsGet(syncK(c)) || 'null'); } catch { return null; } };
+const syncGravar = (c, m) => { try { lsSet(syncK(c), JSON.stringify(m)); } catch { } };
+const SYNC_INFO = {};
 function fbAdapter(fs) {
-  const snapDoc = s => ({ id: s.id, exists: s.exists, data: () => fbDec(s.data() || {}) });
-  const docW = ref => ({
-    set: d => { usoConta('w'); return ref.set(fbEnc(d)); }, update: d => { usoConta('w'); return ref.update(fbEnc(d)); }, delete: () => { usoConta('x'); return ref.delete(); },
+  const FV = firebase.firestore.FieldValue, TS = firebase.firestore.Timestamp;
+  const tsMs = v => v && typeof v.toMillis === 'function' ? v.toMillis() : 0;
+  const limpa = o => { const x = fbDec(o || {}); delete x._mod; return x; };
+  const snapDoc = s => ({ id: s.id, exists: s.exists, data: () => limpa(s.data()) });
+  const LOC = {};
+  const ehCol = ref => { try { return ref.parent && !ref.parent.parent && COLS.includes(ref.parent.id) ? ref.parent.id : ''; } catch { return ''; } };
+  const comMod = (col, d) => col ? { ...fbEnc(d), _mod: FV.serverTimestamp() } : fbEnc(d);
+  const docW = ref => { const col = ehCol(ref); return {
+    set: d => { usoConta('w'); const L = col && LOC[col]; if (L) { L.mapa.set(ref.id, limpa(fbEnc(d))); L.mod.set(ref.id, Date.now() + 864e5); L.emitir(); } return ref.set(comMod(col, d)); },
+    update: d => { usoConta('w'); const L = col && LOC[col]; if (L && L.mapa.has(ref.id)) { L.mapa.set(ref.id, { ...L.mapa.get(ref.id), ...limpa(fbEnc(d)) }); L.emitir(); } return ref.update(comMod(col, d)); },
+    delete: () => { usoConta('x'); const L = col && LOC[col]; if (L) { L.mapa.delete(ref.id); L.mod.delete(ref.id); L.emitir(); } if (col) { try { usoConta('w'); fs.collection('_apagados').doc(col + '__' + ref.id).set({ col, id: ref.id, _mod: FV.serverTimestamp() }).catch(() => { }); } catch { } } return ref.delete(); },
     get: async () => { usoConta('r'); return snapDoc(await ref.get()); },
     onSnapshot: (cb, er) => ref.onSnapshot(s => { if (!(s.metadata && s.metadata.fromCache)) usoConta('r'); cb(snapDoc(s)); }, e => fbErro(e, er))
-  });
+  }; };
+  /* exclusões feitas em outros aparelhos */
+  let APAG = null;
+  const apagadosOuvir = () => {
+    if (APAG) return; const m = syncLer('_apagados'); let t = (m && m.t) || 0, prim = true;
+    try { APAG = fs.collection('_apagados').where('_mod', '>', TS.fromMillis(Math.max(0, t - SYNC_MARGEM))).onSnapshot(q => {
+      q.docChanges().forEach(ch => { if (ch.type === 'removed') return; const d = ch.doc.data() || {}, mt = tsMs(d._mod); t = Math.max(t, mt); const L = LOC[d.col]; if (L && L.inc && L.mapa.has(d.id) && !((L.mod.get(d.id) || 0) > mt)) { L.mapa.delete(d.id); L.emitir(); } });
+      if (!(q.metadata && q.metadata.fromCache)) { usoConta('r', prim ? Math.max(1, q.size) : q.docChanges().length); prim = false; syncGravar('_apagados', { t }); }
+    }, () => { }); } catch { }
+  };
+  const colListen = (c, cb, er) => {
+    const meta = syncLer(c), L = LOC[c] = { mapa: new Map(), mod: new Map(), inc: false, emitir: null };
+    let emT = 0; L.emitir = () => { clearTimeout(emT); emT = setTimeout(() => cb({ docs: [...L.mapa].map(([id, v]) => ({ id, exists: true, data: () => v })) }), 0); };
+    let t = (meta && meta.t) || 0;
+    const anotar = ch => { const mt = tsMs(ch.doc.get('_mod')); if (mt) { t = Math.max(t, mt); L.mod.set(ch.doc.id, mt); } };
+    apagadosOuvir();
+    const cheio = () => { L.inc = false; SYNC_INFO[c] = 'completa'; let prim = true;
+      return fs.collection(c).onSnapshot(q => {
+        const srv = !(q.metadata && q.metadata.fromCache);
+        q.docChanges().forEach(ch => { if (ch.type === 'removed') { L.mapa.delete(ch.doc.id); L.mod.delete(ch.doc.id); } else { L.mapa.set(ch.doc.id, limpa(ch.doc.data())); anotar(ch); } });
+        if (srv) { usoConta('r', prim ? Math.max(1, q.size) : q.docChanges().length); if (prim) syncGravar(c, { t, full: Date.now(), n: L.mapa.size }); else syncGravar(c, { ...(syncLer(c) || {}), t, n: L.mapa.size }); prim = false; }
+        L.emitir();
+      }, e => fbErro(e, er)); };
+    if (!meta || !meta.full || Date.now() - meta.full > SYNC_CHEIA_MS) return cheio();
+    (async () => {
+      let cache = null; try { cache = await fs.collection(c).get({ source: 'cache' }); } catch { cache = null; }
+      if (!cache || cache.size < Math.floor((meta.n || 0) * 0.97)) { cheio(); return; } /* a cópia do aparelho sumiu ou está incompleta: lê tudo */
+      cache.docs.forEach(d => { L.mapa.set(d.id, limpa(d.data())); const mt = tsMs(d.get('_mod')); if (mt) L.mod.set(d.id, mt); });
+      L.inc = true; SYNC_INFO[c] = 'só o que mudou'; L.emitir();
+      fs.collection(c).where('_mod', '>', TS.fromMillis(Math.max(0, t - SYNC_MARGEM))).onSnapshot(q => {
+        const srv = !(q.metadata && q.metadata.fromCache);
+        q.docChanges().forEach(ch => { if (ch.type === 'removed') return; L.mapa.set(ch.doc.id, limpa(ch.doc.data())); anotar(ch); });
+        if (srv) { usoConta('r', Math.max(1, q.docChanges().length)); syncGravar(c, { ...meta, t, n: L.mapa.size }); }
+        L.emitir();
+      }, e => fbErro(e, er));
+    })();
+  };
   return {
     doc: p => docW(fs.doc(p)),
-    collection: c => ({ doc: id => docW(fs.collection(c).doc(id)), onSnapshot: (cb, er) => { let prim = true; return fs.collection(c).onSnapshot(q => { try { if (!(q.metadata && q.metadata.fromCache)) { usoConta('r', prim ? Math.max(1, q.size) : q.docChanges().length); prim = false; } } catch { } cb({ docs: q.docs.map(snapDoc) }); }, e => fbErro(e, er)); } })
+    collection: c => ({ doc: id => docW(fs.collection(c).doc(id)), onSnapshot: (cb, er) => {
+      if (COLS.includes(c)) return colListen(c, cb, er);
+      let prim = true; return fs.collection(c).onSnapshot(q => { try { if (!(q.metadata && q.metadata.fromCache)) { usoConta('r', prim ? Math.max(1, q.size) : q.docChanges().length); prim = false; } } catch { } cb({ docs: q.docs.map(snapDoc) }); }, e => fbErro(e, er)); } })
   };
 }
+/* Sobre o aplicativo → Sincronizar tudo: na próxima abertura lê tudo da nuvem de novo (use se faltar algo) */
+ACT['sync-tudo'] = el => arm(el, 'Confirmar: ler tudo da nuvem de novo', () => { try { Object.keys(localStorage).filter(k => k.startsWith('bancada-sync:')).forEach(k => localStorage.removeItem(k)); } catch { } window.DIAG_MOTIVO = 'normal'; guardarRetomar(); location.reload(); });
+setTimeout(() => { try { ACT_PERM['sync-tudo'] = ''; AJUDA['sync-tudo'] = 'Lê de novo todos os dados da nuvem. Normalmente o aplicativo só busca o que mudou desde a última vez (economiza o limite grátis de 50 mil leituras por dia do Firebase). Use se algum cadastro feito em outro aparelho não aparecer.'; } catch { } }, 0);
+try { if ('serviceWorker' in navigator && /github\.io$/.test(location.hostname)) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { })); } catch { }
 async function nuvemEmpresa() {
   nuvemTela('carregando', 'Procurando a empresa…');
   try { const r = await fetch('empresas/' + EMP_COD + '.json?v=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw 0; EMP_CFG = await r.json(); }
@@ -18011,6 +18096,7 @@ async function nuvemEmpresa() {
   try { for (const m of ['app', 'auth', 'firestore']) await carregaScript(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-${m}-compat.js`); }
   catch { nuvemTela('semrede'); return; }
   try { firebase.initializeApp(EMP_CFG.firebaseConfig); } catch { nuvemTela('semrede'); return; }
+  try { firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED, merge: true }); } catch { } /* v17: a cópia no aparelho guarda tudo (leitura econômica) */
   try { firebase.firestore().enablePersistence({ synchronizeTabs: true }).catch(() => { }); } catch { }
   let ligado = false;
   firebase.auth().onAuthStateChanged(u => {
