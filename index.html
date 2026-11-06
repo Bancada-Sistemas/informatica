@@ -366,6 +366,7 @@ table.mx input{width:18px;height:18px}
 .steps{display:flex;flex-wrap:wrap;gap:4px}
 .steps span{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .fe-dados{margin:0 0 8px;padding:0!important}.fe-dados .f{grid-column:1/-1}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .ftc{position:relative;background:#000;border-radius:12px;overflow:hidden}.ftc video{display:block;width:100%;max-height:68vh;object-fit:contain;background:#000}.ftc-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.ftc-flash.on{animation:ftcfl .35s}@keyframes ftcfl{0%{opacity:.8}100%{opacity:0}}
 .osv-steps{gap:6px;margin:4px 0 2px}.osv-steps button{font:inherit;font-size:.85rem;font-weight:700;padding:7px 12px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line);cursor:pointer}.osv-steps button:hover{border-color:var(--accent);color:var(--ink)}.osv-steps button.now{background:var(--accent);color:#fff;border-color:var(--accent)}.osv-steps button.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}.osv-steps button.st-canc.now{background:var(--bad,#b3261e);border-color:var(--bad,#b3261e)}
 .steps span.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}
@@ -820,16 +821,19 @@ div.f.ei-sig{display:flex;flex-direction:column;gap:4px;font-size:.8rem;font-wei
 @media (max-width:560px){.osl-bar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.osl-bar:not(:has(.osl-marg-sel)){grid-template-columns:minmax(0,1fr) 70px!important}}
 .osl-top{padding-bottom:8px!important}
 .wa-passos{margin:0 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:6px}.wa-txt{min-height:140px;font-size:.85rem}
-.ov{top:var(--vvt,0px)!important;bottom:auto!important;height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important}
-.sheet{max-height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px) - 16px)!important}
+.ov{top:var(--vvt,0px)!important;bottom:auto!important;height:calc(var(--vvh,100dvh) - var(--kbx,0px))!important}
+.sheet{max-height:calc(var(--vvh,100dvh) - var(--kbx,0px) - 16px)!important}
+/* v17: em tela cheia, o espaço das teclas do Android fica DENTRO do rodapé (antes ficava um vão por onde o dedo rolava o que estava atrás) */
+.sheet-f{padding-bottom:calc(8px + var(--navx,0px))!important}
 /* v17: celular — com o teclado aberto, a barra de sugestões do Chrome (chave, cartão, endereço) cobria o Salvar; em tela cheia, as teclas do Android (voltar, início) aparecem por cima do rodapé */
-#bottom{bottom:var(--navx,0px)!important}
+.bottom{padding-bottom:calc(6px + env(safe-area-inset-bottom,0px) + var(--navx,0px))!important}
 .sheet-b{padding-bottom:28px!important;-webkit-overflow-scrolling:touch}
-.sheet.fe-sheet{height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important;max-height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important}
+.sheet.fe-sheet{height:calc(var(--vvh,100dvh) - var(--kbx,0px))!important;max-height:calc(var(--vvh,100dvh) - var(--kbx,0px))!important}
 @media (min-width:1100px){.sheet.xl{max-height:calc(var(--vvh,100dvh) - 4px)!important}.sheet.xl .xl-c{gap:6px}}
 /* toque (tablet/celular): a rolagem das janelas continua para a página do Claude quando chega ao fim — assim dá para ver o rodapé e os botões mesmo quando a tela do Claude é maior que a área visível */
 @media (pointer:coarse){.ov,.sheet-b,.sheet.full .sheet-b{overscroll-behavior:auto!important}}
-.sheet.full{height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important;max-height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important}
+.sheet.full{height:calc(var(--vvh,100dvh) - var(--kbx,0px))!important;max-height:calc(var(--vvh,100dvh) - var(--kbx,0px))!important}
+html.jan-aberta,html.jan-aberta body{overflow:hidden!important;overscroll-behavior:none!important}
 /* entrada (usuário + senha) e funcionários */
 body.sem-op #side nav,body.sem-op #bottom,body.sem-op .side-foot{display:none!important}
 .lg-wrap{min-height:calc(var(--vvh,100vh) - 90px);display:grid;place-items:center;padding:12px 0}
@@ -1608,7 +1612,7 @@ textarea{padding-bottom:10px}
 /* ===== ajustes posteriores (mantidos no bloco principal) ===== */
 .lg-bios{display:flex;flex-direction:column;gap:8px}.lg-bios .btn{width:100%;justify-content:center;white-space:normal;flex-wrap:wrap;text-align:center;height:auto;min-height:44px}.lg-bios small{flex-basis:100%;font-size:.75rem}.cfg-tabs button svg{width:16px!important;height:16px!important;vertical-align:-3px;margin-right:4px;display:inline-block}.lg-bios .lg-off{opacity:.75}.lg-bios small{font-weight:500;opacity:.8}.lg-sair-area{margin-top:18px;padding-top:12px;border-top:1px dashed var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lg-sair-area small{font-size:.75rem}.lg-sair-area .btn{font-size:.82rem}html,body{overscroll-behavior-x:none}.chip-link{cursor:pointer;border:0;font:inherit;text-decoration:underline;text-underline-offset:2px}.chip-link:hover{filter:brightness(1.1)}.chks .chq.chq-oculta{display:none!important}.chq-ops:has(input:checked) label:not(:has(input:checked)){display:none}.meu-acesso .banner{margin-top:8px}.seg.seg-acoes{gap:4px}.seg.seg-acoes button{cursor:pointer}.who .who-b{display:flex;flex-wrap:wrap;gap:6px}.who .who-b .btn{flex:1 1 auto;justify-content:center}.op-menu{grid-template-columns:repeat(2,minmax(0,1fr))!important}.fu-perfil .perfil-b{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.fu-perfil select{max-width:100%}
 .fc-box{position:relative;aspect-ratio:3/4;width:min(100%,360px);margin:0 auto;border-radius:16px;overflow:hidden;background:#000}.fc-box video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.fc-box.deitada .fc-oval{left:27%;right:27%;top:5%;bottom:5%}.fc-box video{display:block}.fc-oval{position:absolute;left:12%;right:12%;top:8%;bottom:10%;border:4px solid rgba(255,255,255,.75);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.35);transition:border-color .2s}.fc-oval[data-st=ok]{border-color:#3DC496}.fc-oval[data-st=erro]{border-color:#e5533d}.fc-diag{text-align:center;font-size:.72rem;margin:0 0 4px;min-height:1em}.fc-erro{color:var(--red);display:block}.fc-msg{text-align:center;font-weight:700;margin:10px 0 4px;min-height:1.4em}.rosto-box{margin-top:6px}
-.dup-g{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:var(--surface)}.dup-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}.dup-c{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.dup-c.fica{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}.dup-c.sai{opacity:.82}.dup-ed{all:unset;display:block;cursor:pointer;border-radius:6px;max-width:100%}.dup-ed:hover b,.dup-ed:focus-visible b{text-decoration:underline}.dup-ed:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.dup-edb{margin-top:6px}.dup-c.dup-novo{animation:dupNovo 1.6s ease}@keyframes dupNovo{0%{background:rgba(61,196,150,.35)}100%{background:transparent}}.dup-c.sai b{text-decoration:line-through;text-decoration-color:rgba(200,60,60,.7)}.dup-g.dup-ocup{opacity:.55;pointer-events:none}.dup-c .grow{flex:1;min-width:0}.dup-c small{display:block;color:var(--muted,#667);font-size:.8rem;overflow-wrap:anywhere}.dup-op{display:flex;flex-direction:column;gap:2px;flex:none;font-size:.88rem}.dup-pe{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:4px}.dup-pe small{flex:1 1 200px}
+.dup-g{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:var(--surface)}.dup-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}.dup-c{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.dup-c.fica{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}.dup-c.sai{opacity:.82}.dup-c.deixa{border-style:dashed}.dup-ed{all:unset;display:block;cursor:pointer;border-radius:6px;max-width:100%}.dup-ed:hover b,.dup-ed:focus-visible b{text-decoration:underline}.dup-ed:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.dup-edb{margin-top:6px}.dup-c.dup-novo{animation:dupNovo 1.6s ease}@keyframes dupNovo{0%{background:rgba(61,196,150,.35)}100%{background:transparent}}.dup-c.sai b{text-decoration:line-through;text-decoration-color:rgba(200,60,60,.7)}.dup-g.dup-ocup{opacity:.55;pointer-events:none}.dup-c .grow{flex:1;min-width:0}.dup-c small{display:block;color:var(--muted,#667);font-size:.8rem;overflow-wrap:anywhere}.dup-op{display:flex;flex-direction:column;gap:2px;flex:none;font-size:.88rem}.dup-pe{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:4px}.dup-pe small{flex:1 1 200px}
 .ag-div{display:flex;flex-direction:column;gap:5px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:4px 0;background:var(--surface)}.ag-div .rf-chk{font-size:.92rem}
 .imp-orig{flex-wrap:wrap;margin:6px 0;display:flex}.imp-orig button{white-space:normal}
 .bt-imp-p{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px;cursor:pointer}.bt-imp-p input{margin:0;width:18px;height:18px}
@@ -2070,7 +2074,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 383;
+const APP_VER = 17, APP_BUILD = 384;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -4360,7 +4364,7 @@ function pdfPrepara(html) {
   document.body.appendChild(d); try { thNowrap(d, th ? f.w - 2 * f.m : 190); } catch { } const out = d.innerHTML; d.remove(); return out;
 }
 function pdfDoc(html, css = DOC_PDF_CSS) {
-  const f = PFMT[S.pfmt]; try { html = pdfPrepara(html); } catch { } html = nwHtml(qrParaImg(html)); css = css + 'img.qr-img{display:block;width:100%;height:auto;image-rendering:pixelated}.pix-bloco .pix-qr img.qr-img{width:26mm!important;height:26mm!important}.th .pix-bloco .pix-qr img.qr-img{width:30mm!important;height:30mm!important}.dqr img.qr-img{width:22mm;height:22mm}.iqr img.qr-img{width:22mm;height:22mm}.th58 .iqr img.qr-img{width:18mm;height:18mm}.oq img.qr-img,.rq img.qr-img{width:100%;height:auto}';
+  const f = PFMT[S.pfmt]; try { html = pdfPrepara(html); } catch { } html = nwHtml(qrParaImg(html)); css = css + 'img.qr-img{display:block;width:100%;height:auto;image-rendering:pixelated}.pix-bloco .pix-qr img.qr-img{width:26mm!important;height:26mm!important}.doc .sig{margin-top:0!important;padding-top:56px!important}.th .pix-bloco .pix-qr img.qr-img{width:30mm!important;height:30mm!important}.dqr img.qr-img{width:22mm;height:22mm}.iqr img.qr-img{width:22mm;height:22mm}.th58 .iqr img.qr-img{width:18mm;height:18mm}.oq img.qr-img,.rq img.qr-img{width:100%;height:auto}';
   /* no A4 o PDF mantém o layout de folha mesmo quando a tela é estreita (celular) */
   if (S.pfmt === 'a4') return htmlToPdf(css + '.pdf-a4 .doc .grid{grid-template-columns:1fr 1fr!important}.pdf-a4 .doc .sig{grid-template-columns:1fr 1fr!important}.pdf-a4 .doc .tot{width:260px!important}.pdf-a4 .doc .ph{grid-template-columns:repeat(3,1fr)!important}.pdf-a4 .doc .ph.ph-c{grid-template-columns:repeat(4,1fr)!important}.pdf-a4 .doc .dh{flex-wrap:nowrap!important}', `<div class="pdf-a4">${html}</div>`, { margin: 10 });
   return htmlToPdf(css + TH_CSS, `<div class="th">${html}</div>`, { roll: f.w, margin: f.m });
@@ -4517,7 +4521,7 @@ async function htmlToPdf(css, inner, opts = {}) {
       margin: mg, image: { type: 'jpeg', quality: .85 },
       html2canvas: { scale: 2, useCORS: true, backgroundColor: '#fff', logging: false },
       jsPDF: { unit: 'mm', format: fmt, orientation: opts.orientation || 'portrait' },
-      pagebreak: opts.roll ? { mode: [] } : (opts.pagebreak || { mode: ['css', 'legacy'], avoid: ['tr', 'figure', '.sig', 'h3'] })
+      pagebreak: opts.roll ? { mode: [] } : (opts.pagebreak || { mode: ['css', 'legacy'], avoid: ['tr', 'figure', '.sig', 'h3', '.pix-bloco'] } /* v17: o espaço das assinaturas (desenhadas acima da linha) fica dentro do bloco: a página não corta a assinatura */)
     }).from(host).outputPdf('blob');
   } finally { wrap.remove(); document.querySelectorAll('.html2pdf__overlay').forEach(o => o.remove()); }
   } finally { if (fsAntes) document.documentElement.classList.add('fs-on'); }
@@ -4656,7 +4660,7 @@ const ACT = {
   'orc-doc': el => { const o = get('orcamentos', el.dataset.id); if (o) showDoc('orc', o); },
   'orc-open': el => { const o = get('orcamentos', el.dataset.id); if (!o) return; if (pode('orcamentos') && o.status !== 'convertido') orcForm(o.id); else showDoc('orc', o); },
   'os-entrada-open': el => { const o = get('os', el.dataset.id); if (!o) return; if (pode('os')) osForm(o.id); else showDoc('entrada', o); },
-  'os-laudo-open': el => { const o = get('os', el.dataset.id); if (!o) return; if (pode('laudo')) laudoForm(o.id); else if (o.laudo) showDoc('laudo', o); },
+  'os-laudo-open': el => { const o = get('os', el.dataset.id); if (!o) return; if (pode('laudo')) laudoForm(o.id); else if (o.laudo) showDoc('laudo', o); else toast('O laudo desta OS ainda não foi preenchido, e o seu usuário não tem permissão para preencher laudos.'); },
   'orc-st': async el => { const o = get('orcamentos', el.dataset.id); if (o && await save('orcamentos', o.id, { ...o, status: el.dataset.st })) toast(`Orçamento ${pad(o.numero)}: ${orcStatus({ ...o, status: el.dataset.st }).t.toLowerCase()}.`); },
   'orc-vender': el => {
     const o = get('orcamentos', el.dataset.id); if (!o) return;
@@ -6171,18 +6175,20 @@ function refreshOsView() {
     const a = document.activeElement; if (a && ov.contains(a) && a.matches('select,input,textarea')) return;
     const b = ov.querySelector('.sheet-b'), top = b.scrollTop;
     const fl = b.querySelector('.salvo-flash'); b.innerHTML = osBody(o); if (fl) b.prepend(fl); b.scrollTop = top;
-    const f = ov.querySelector('.sheet-f'); if (f) f.innerHTML = osFoot(o);
+    const f = ov.querySelector('.sheet-f'); if (f) { f.innerHTML = osFoot(o); delete f.dataset.ul; umaLinha(f, false); }
     ov.querySelector('.sheet-h h2').textContent = `OS ${pad(o.numero)} · ${osEquip(o)}`;
   });
 }
 function osFoot(o) {
   const wa = waLink(cliente(o.clienteId), osMsg(o));
-  return `<div class="osf"><div class="osf-l">
-      ${wa ? `<button type="button" class="btn" data-act="os-avisar" data-id="${o.id}" title="Abre a conversa do cliente no WhatsApp com a situação da OS e o link do PDF (${o.laudo ? 'laudo' : 'comprovante de entrada'})">${ic('chat')}Avisar cliente</button>` : `<button type="button" class="btn" disabled title="Cadastre o telefone do cliente">${ic('chat')}Avisar cliente</button>`}
-      <button type="button" class="btn" data-act="os-entrada-open" data-id="${o.id}">Entrada</button>
-      <button type="button" class="btn primary" data-act="os-laudo-open" data-id="${o.id}" ${o.laudo ? '' : 'disabled title="Preencha o laudo primeiro"'}>Laudo técnico</button></div>
-    <div class="osf-l osf-2"><button type="button" class="btn" data-act="os-print" data-id="${o.id}" title="Imprimir esta OS: comprovante de entrada, laudo, ficha completa ou etiqueta">${ic('print')}Imprimir</button><button type="button" class="btn" data-act="os-etq" data-id="${o.id}">${ic('tag')}Etiqueta</button>
-      <button type="button" class="btn danger" data-act="os-del" data-id="${o.id}">Excluir OS</button></div></div>`;
+  /* v17 (regra): na barra só Fechar e Imprimir (a impressão abre as opções, inclusive Bluetooth); o resto fica no “Mais ▲” */
+  return `<button type="button" class="btn" data-act="close">Fechar</button>
+    <button type="button" class="btn primary" data-act="os-print" data-id="${o.id}" title="Imprimir esta OS: comprovante de entrada, laudo, ficha completa ou etiqueta (na impressora comum ou Bluetooth)">${ic('print')}Imprimir</button>
+    ${wa ? `<button type="button" class="btn" data-act="os-avisar" data-id="${o.id}" title="Abre a conversa do cliente no WhatsApp com a situação da OS e o link do PDF (${o.laudo ? 'laudo' : 'comprovante de entrada'})">${ic('chat')}Avisar cliente</button>` : ''}
+    <button type="button" class="btn" data-act="os-laudo-open" data-id="${o.id}" title="${o.laudo ? 'Abre o laudo técnico desta OS para ver, editar ou imprimir' : 'Abre o laudo para preencher: diagnóstico, testes, peças e garantia'}">${o.laudo ? 'Laudo técnico' : 'Preencher laudo'}</button>
+    <button type="button" class="btn" data-act="os-entrada-open" data-id="${o.id}">Entrada</button>
+    <button type="button" class="btn" data-act="os-etq" data-id="${o.id}">${ic('tag')}Etiqueta</button>
+    <button type="button" class="btn danger" data-act="os-del" data-id="${o.id}">Excluir OS</button>`;
 }
 function osBody(o) {
   const st = osSt(o), c = cliente(o.clienteId), fs = fotosDe(o.id), L = o.laudo, it = o.itens || [];
@@ -11212,7 +11218,7 @@ document.addEventListener('change', e => { const t = e.target; if (t && t.matche
 
 /* ======================= equipamento (OS e orçamento): ler código ou foto da etiqueta e preencher tipo/marca/modelo/série ======================= */
 const EQ_IDS = { os: { t: 'os-tipo', m: 'os-marca', mo: 'os-modelo', s: 'os-serie' }, o: { t: 'o-tipo', m: 'o-marca', mo: 'o-modelo', s: 'o-serie' } };
-const eqLerHTML = p => `<div class="eq-ler" id="eq-ler-${p}" style="grid-column:1/-1"><div class="actions" style="justify-content:flex-start"><button type="button" class="btn sm" data-act="cam-scan" data-target="eq:${p}">${ic('camera')}Ler código</button><label class="btn sm" style="cursor:pointer">${ic('tag')}Foto da etiqueta<input type="file" accept="image/*" capture="environment" class="vh eq-idfoto" data-p="${p}"></label><button type="button" class="btn sm" data-act="eq-dig" data-p="${p}">${ic('edit')}Digitar código</button></div><div class="eq-dig" id="eq-dig-${p}" hidden><span class="in-x"><input id="eq-dig-in-${p}" inputmode="text" autocomplete="off" data-sem-x="1" placeholder="Código de barras, QR ou nº de série" aria-label="Digitar código"><button type="button" class="in-x-b" data-act="in-limpar" data-alvo="eq-dig-in-${p}" title="Apagar o código" aria-label="Apagar o código">×</button></span><button type="button" class="btn sm primary" data-act="eq-dig-ok" data-p="${p}">Usar código</button></div><div class="eq-st muted" style="font-size:.82rem" hidden></div></div>`;
+const eqLerHTML = p => `<div class="eq-ler" id="eq-ler-${p}" style="grid-column:1/-1"><div class="actions" style="justify-content:flex-start"><button type="button" class="btn sm" data-act="cam-scan" data-target="eq:${p}">${ic('camera')}Ler código</button><label class="btn sm" style="cursor:pointer">${ic('tag')}Foto da etiqueta<input type="file" accept="image/*" capture="environment" class="vh eq-idfoto" data-p="${p}"></label><button type="button" class="btn sm" data-act="eq-dig" data-p="${p}">${ic('edit')}Digitar código</button></div><div class="eq-dig" id="eq-dig-${p}" hidden><span class="in-x"><input id="eq-dig-in-${p}" inputmode="text" autocomplete="off" data-sem-x="1" placeholder="Código de barras, QR, nº de série ou nome (ex.: Notebook Dell Inspiron 15)" aria-label="Digitar código ou nome"><button type="button" class="in-x-b" data-act="in-limpar" data-alvo="eq-dig-in-${p}" title="Apagar o código" aria-label="Apagar o código">×</button></span><button type="button" class="btn sm primary" data-act="eq-dig-ok" data-p="${p}">Usar código</button></div><div class="eq-st muted" style="font-size:.82rem" hidden></div></div>`;
 function tipoDoTexto(t) {
   const x = norm(t || ''); if (!x) return '';
   const R = [[/all.?in.?one|aio\b/, 'All-in-one'], [/notebook|laptop|ultrabook|chromebook|macbook/, 'Notebook'], [/tablet|ipad/, 'Tablet'], [/celular|smartphone|iphone|galaxy|telefone movel|mobile phone|cell phone|moto g|redmi|xiaomi/, 'Celular'], [/impressora|printer|multifuncional|laserjet|deskjet|ecotank/, 'Impressora'], [/monitor|display|tela/, 'Monitor'], [/playstation|xbox|nintendo|console|videogame/, 'Console de videogame'], [/nobreak|no-break|\bups\b|estabilizador|fonte de alimentacao|power supply/, 'Nobreak / fonte'], [/roteador|router|switch|modem|access point|repetidor|wi-?fi/, 'Roteador / rede'], [/desktop|computador|gabinete|\bpc\b|torre|mini pc/, 'Computador (desktop)']];
@@ -11225,34 +11231,52 @@ function eqSet(p, dados) {
   return feitos;
 }
 function eqStatus(p, html, ruim) { const st = document.querySelector(`#eq-ler-${p} .eq-st`); if (!st) return; st.hidden = false; st.style.color = ruim ? 'var(--red)' : ''; st.innerHTML = html; }
-async function eqPorCodigo(p, code) {
-  code = String(code || '').trim(); if (!code) return;
-  const digitos = /^\d{8,14}$/.test(code);
-  if (!digitos) { const f = eqSet(p, { serie: code }); eqStatus(p, f.length ? `Código <b>${esc(code)}</b> colocado no Nº de série.` : `Código lido: <b>${esc(code)}</b> (o Nº de série já estava preenchido).`); return; }
-  eqStatus(p, 'Buscando os dados deste código na internet…');
-  const r = await buscarProdutoNet(code);
-  if (!r || !r.nome) { eqStatus(p, r && r.bloqueado ? 'Dentro do Claude não dá para consultar sites de produtos. Use “Foto da etiqueta”.' : `O código <b>${esc(code)}</b> não está nas bases públicas. Use “Foto da etiqueta”.`, true); return; }
-  const f = eqSet(p, { tipo: tipoDoTexto([r.categoria, r.nome].join(' ')), marca: r.marca, modelo: r.modelo || r.nome.replace(new RegExp('^' + (r.marca || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '') });
-  eqStatus(p, `<b>Encontrado:</b> ${esc(r.nome)}. ${f.length ? 'Preenchido: ' + f.join(', ') + '.' : 'Os campos já estavam preenchidos.'} Confira.`);
-}
+async function eqPorCodigo(p, code) { code = String(code || '').trim(); if (!code) return; return eqBusca(p, /\s/.test(code) && !/^\d[\d\s]*$/.test(code) ? { texto: code } : { codigo: code }); }
 function eqDigPor(p, code) { const box = $('#eq-dig-' + p), i = $('#eq-dig-in-' + p); if (!box || !i) return false; box.hidden = false; const b = document.querySelector(`[data-act="eq-dig"][data-p="${p}"]`); if (b) b.classList.add('on'); i.value = code; i.dispatchEvent(new Event('input', { bubbles: true })); try { i.focus(); i.select(); } catch { } return true; }
-async function eqPorFoto(p, file) {
-  eqStatus(p, 'Lendo a foto… (pode levar alguns segundos)');
-  let cod = ''; try { const c = await lerCodigo(file); if (c) cod = String(c).trim(); } catch { }
+async function eqPorFoto(p, file) { return eqBusca(p, { file }); }
+/* v17 (regra): equipamento da OS e do orçamento usa a MESMA pesquisa do cadastro de produto — código de barras/QR nas bases públicas,
+   depois a IA (pesquisa na internet; sem ela, só a IA), pela foto, pelo código ou pelo nome digitado. Mostra com destaque o que está fazendo,
+   os segundos passando e o botão Parar; tem prazo (não fica minutos parado). */
+function eqAviso(p, html, tipo) { const st = document.querySelector(`#eq-ler-${p} .eq-st`); if (!st) return; st.hidden = false; st.className = 'eq-st banner' + (tipo === 'ok' || tipo === 'info' ? ' info' : ''); st.style.cssText = 'font-size:.9rem;margin-top:8px'; st.innerHTML = html; }
+async function eqBusca(p, o) {
+  const tela = 'eq-ler-' + p, op = iaOpIni(tela), t0 = Date.now(); let etapa = 'Começando…';
+  const nome = o.file ? 'a foto' : o.codigo ? `o código <b>${esc(o.codigo)}</b>` : `“${esc(o.texto)}”`;
+  const pinta = () => { if (IA_OP !== op) return; eqAviso(p, `<span class="grow"><span class="spin" aria-hidden="true"></span> <b>Pesquisando o equipamento</b> por ${nome} · <b>${Math.round((Date.now() - t0) / 1000)} s</b><br><small>${esc(etapa)}</small></span>${pararBtn()}`, 'info'); };
+  const aviso = t => { etapa = t; pinta(); }; pinta(); const iv = setInterval(() => { if (IA_OP !== op || !document.getElementById(tela)) { clearInterval(iv); return; } pinta(); }, 1000);
+  const fim = () => { clearInterval(iv); iaOpFim(op); };
+  const deNovo = `<button type="button" class="btn sm" data-act="eq-busca-novo" data-p="${p}">↻ Pesquisar de novo</button>`; M.eqUlt = { p, o };
+  const preencher = (r, extra) => { const nomeR = r.nome || [r.marca, r.modelo].filter(Boolean).join(' ');
+    const modelo = r.modelo || (nomeR || '').replace(new RegExp('^' + (r.marca || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '');
+    const tipo = TIPOS_EQ.includes(r.tipo) ? r.tipo : tipoDoTexto([r.tipo, r.categoria, r.subcategoria, nomeR].filter(Boolean).join(' '));
+    const f = eqSet(p, { tipo, marca: r.marca, modelo, serie: extra && extra.serie });
+    eqAviso(p, `<span class="grow">✅ <b>Identificado:</b> ${esc(nomeR || '—')}${r.confianca === 'baixa' ? ' <b>(pouca certeza)</b>' : ''}. ${f.length ? 'Preenchido: ' + f.join(', ') + '.' : 'Os campos já estavam preenchidos.'} Confira. <small class="muted">(${Math.round((Date.now() - t0) / 1000)} s)</small></span>`, 'ok'); };
   try {
-    let r = await claudeLerFoto(file, `Foto de um equipamento de informática/eletrônico (ou da etiqueta dele) para abrir uma ordem de serviço numa assistência técnica no Brasil. Leia o que está visível e responda SOMENTE um JSON com: "tipo" (exatamente um destes: ${TIPOS_EQ.join(', ')}), "marca", "modelo" (o modelo comercial ou o código de modelo da etiqueta, ex.: Inspiron 15 3520, A2337), "serie" (o número de série S/N, Serial ou Service Tag, só se estiver legível), "confianca" ("alta", "media" ou "baixa"). Deixe vazio o que não der para ler com segurança. Não invente número de série.`, t => eqStatus(p, esc(t)));
-    r = normJ(r);
-    const f = eqSet(p, { tipo: TIPOS_EQ.includes(r.tipo) ? r.tipo : tipoDoTexto(r.tipo), marca: r.marca, modelo: r.modelo });
-    const code = String(r.serie || '').replace(/\s+/g, '') || cod;
-    if (code) eqDigPor(p, code);
-    eqStatus(p, `<b>Lido na foto:</b> ${esc([r.tipo, r.marca, r.modelo].filter(Boolean).join(' ')) || '—'}${r.confianca === 'baixa' ? ' <b>(pouca certeza)</b>' : ''}. ${f.length ? 'Preenchido: ' + f.join(', ') + '.' : ''} ${code ? `O código <b>${esc(code)}</b> está no campo de digitação: confira e toque em <b>Usar código</b> (ou apague no ×).` : 'Nenhum código legível: digite no campo abaixo.'}`);
-    if (!code) eqDigPor(p, '');
-  } catch (e) {
-    let code = cod; if (!code && e && e.texto) code = codigoDoTexto(e.texto);
-    eqDigPor(p, code || '');
-    eqStatus(p, code ? `O código <b>${esc(code)}</b> foi lido e está no campo de digitação: confira e toque em <b>Usar código</b> (ou apague no ×).` : esc(fotoErroMsg(e)) + (e && e.code ? ` (${esc(e.code)})` : '') + ' Digite o código no campo abaixo.', !code);
-  }
+    let serie = '';
+    if (o.file) {
+      aviso('Procurando código de barras ou QR na foto…'); try { const c = await comPrazo(lerCodigo(o.file), 8000, 'ia_lenta'); if (c) { const cc = String(c).trim(); if (/^\d{8,14}$/.test(cc)) { const r = await comPrazo(buscarProdutoNet(cc), 15000, 'ia_lenta').catch(() => null); if (r && r.nome) { fim(); preencher(r); return; } } else serie = cc; } } catch (e) { if (e && e.code === 'ia_parado') throw e; }
+      aviso('Lendo a etiqueta (modelo e nº de série)…');
+      try { const r0 = normJ(await comPrazo(claudeLerFoto(o.file, `Foto de um equipamento de informática/eletrônico (ou da etiqueta dele) para uma ordem de serviço no Brasil. Responda SOMENTE um JSON com: "tipo" (um destes: ${TIPOS_EQ.join(', ')}), "marca", "modelo" (modelo comercial ou código de modelo da etiqueta), "serie" (S/N, Serial ou Service Tag, só se legível), "confianca" ("alta", "media" ou "baixa"). Deixe vazio o que não der para ler. Não invente.`, aviso), 45000, 'ia_lenta'));
+        serie = String(r0.serie || '').replace(/\s+/g, '') || serie;
+        if (r0.marca && r0.modelo) { fim(); preencher(r0, { serie }); return; }
+      } catch (e) { if (e && /^ia_(parado|pausada)$/.test(e.code)) throw e; }
+      aviso('Identificando pela pesquisa de produtos…');
+      const r = normIA(await comPrazo(prodBuscarIA({ file: o.file, aviso }), 100000, 'ia_lenta')); fim();
+      if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' }; preencher(r, { serie }); return;
+    }
+    if (o.codigo && /^\d{8,14}$/.test(o.codigo)) {
+      aviso('Procurando nas bases públicas de códigos de barras…'); const r = await comPrazo(buscarProdutoNet(o.codigo), 20000, 'ia_lenta').catch(e => { if (e && e.code === 'ia_parado') throw e; return null; });
+      if (r && r.nome) { fim(); preencher(r); return; }
+    } else if (o.codigo) { eqSet(p, { serie: o.codigo }); }
+    aviso(o.codigo ? 'Não está nas bases públicas: pesquisando pela IA…' : 'Pesquisando pelo nome…');
+    const r = normIA(await comPrazo(prodBuscarIA({ codigo: o.codigo, texto: o.texto, aviso }), 100000, 'ia_lenta')); fim();
+    if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' };
+    preencher(r, { serie: o.codigo && !/^\d{8,14}$/.test(o.codigo) ? o.codigo : '' });
+  } catch (e) { fim(); if (!document.getElementById(tela)) return;
+    const msg = e && e.code === 'ia_parado' ? 'Pesquisa parada.' : e && e.code === 'nada' ? 'Não encontrei este equipamento.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : fotoErroMsg(e);
+    eqAviso(p, `<span class="grow">❌ ${esc(msg)} ${o.codigo && !/^\d{8,14}$/.test(o.codigo) ? 'O código ficou no Nº de série. ' : ''}Tente outra foto, digite o nome (ex.: Notebook Dell Inspiron 15) ou preencha os campos.</span><span class="actions">${deNovo}<button type="button" class="btn sm" data-act="eq-dig" data-p="${p}">${ic('edit')}Digitar</button></span>`); }
 }
+ACT['eq-busca-novo'] = () => { const u = M.eqUlt; if (u) eqBusca(u.p, u.o); };
+setTimeout(() => { try { ACT_PERM['eq-busca-novo'] = ''; AJUDA['eq-busca-novo'] = 'Faz a pesquisa do equipamento de novo.'; } catch { } }, 0);
 document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.eq-idfoto') && t.files && t.files[0]) { const f = t.files[0], pp = t.dataset.p; t.value = ''; fotoAntes(f, 'Ajustar a foto do equipamento', g => eqPorFoto(pp, g)); } });
 
 /* ======================= quando o aparelho não pode enviar foto ao Claude: o celular lê o texto da foto (OCR) e manda só o texto ======================= */
@@ -12357,25 +12381,29 @@ ACT['fnh-pr'] = el => { const id = el.dataset.id, fo = get('fornecedores', id); 
   previewRel('Histórico do fornecedor', `<div class="doc">${docHead('Histórico — ' + fo.nome, CP_PER.find(x => x[0] === ((M.fnHist && M.fnHist.per) || ''))[1], 'Emitido em ' + tsBR(Date.now()))}${linhas}</div>`, RT_CSS, `Historico-${semAcento(fo.nome).replace(/\W+/g, '-')}.pdf`); };
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'fnh-pr': '' }); } catch { } }, 0);
 /* ======================= v367: botões numa linha só (rodapé das janelas e topo das páginas); o resto vai para “Mais ▲” ======================= */
-const ulLbl = (m, aberto) => { m.textContent = aberto ? 'Fechar ▼' : 'Mais ▲'; m.setAttribute('aria-expanded', aberto ? 'true' : 'false'); };
-const UL_FIXO = b => b.classList.contains('primary') || b.dataset.act === 'close' || /^\s*(cancelar|fechar)\s*$/i.test(b.textContent);
+const ulLbl = (m, aberto) => { m.textContent = aberto ? 'Mais ▼' : 'Mais ▲'; /* v17: aberto mostra “Mais ▼” (não confunde com o botão Fechar da janela) */ m.setAttribute('aria-expanded', aberto ? 'true' : 'false'); };
+const UL_FIXO = b => b.classList.contains('primary') || b.dataset.act === 'close' || /^\s*(cancelar|fechar|voltar|← voltar|imprimir)\s*$/i.test(b.textContent); /* v17 (regra): Fechar e Imprimir sempre na barra */
 function umaLinha(box, baixo) {
   if (!box || !box.offsetParent) return; const bts = () => [...box.children].filter(b => (b.tagName === 'BUTTON' || b.matches('a.btn,label.btn')) && !b.classList.contains('ul-mais'));
   const assin = bts().length + ':' + box.clientWidth; if (box.dataset.ul === assin) return;
   bts().forEach(b => { b.classList.remove('ul-oc', 'ul-ico'); if (b.dataset.ulLbl !== undefined) { if (b.dataset.ulLbl) b.setAttribute('aria-label', b.dataset.ulLbl); else b.removeAttribute('aria-label'); delete b.dataset.ulLbl; } }); box.querySelector('.ul-mais')?.remove(); box.querySelector('.ul-menu')?.remove(); box.classList.remove('ul-on');
   const vis = () => [...box.children].filter(b => b.offsetParent && !b.classList.contains('ul-menu') && b.tagName !== 'STYLE'), umaSo = () => { const L = vis(); if (L.length < 2) return true; const t = L.map(b => b.offsetTop); return Math.max(...t) - Math.min(...t) < 6 && box.scrollWidth <= box.clientWidth + 2; };
-  if (umaSo()) { box.dataset.ul = assin; return; }
+  /* v17 (regra): toda janela que tem × em cima tem também “Fechar” na barra de baixo */
+  if (box.matches('.sheet-f') && bts().length && !bts().some(b => b.dataset.act === 'close' || /^\s*(cancelar|fechar)\s*$/i.test(b.textContent))) { const ov = box.closest('.ov, .sheet'); if (ov && ov.querySelector('.sheet-h [data-act="close"]')) { const f = document.createElement('button'); f.type = 'button'; f.className = 'btn'; f.dataset.act = 'close'; f.textContent = 'Fechar'; const pr = bts().find(b => b.classList.contains('primary')); box.insertBefore(f, pr || null); } }
+  const tudo = box.matches('.sheet-f') && bts().some(UL_FIXO); /* v17 (regra): janelas — o que não é Fechar/Cancelar nem a ação principal vai sempre para o “Mais ▲” */
+  if (!tudo && umaSo()) { box.dataset.ul = assin; return; }
+  if (tudo && !bts().some(b => !UL_FIXO(b))) { box.dataset.ul = assin; return; }
   /* 1º: os botões com ícone viram só o ícone (do fim para o começo); se assim couber, não precisa do “Mais” */
   const ico = b => { if (!b.querySelector('svg.i') || b.classList.contains('ul-ico')) return false; b.dataset.ulLbl = b.getAttribute('aria-label') || ''; const t = b.textContent.replace(/\s+/g, ' ').trim(); b.setAttribute('aria-label', t); if (!b.title) b.title = t; b.classList.add('ul-ico'); return true; };
-  const cand = bts().filter(b => !UL_FIXO(b) && b.querySelector('svg.i')).reverse(), feitos = [];
+  const cand = tudo ? [] : bts().filter(b => !UL_FIXO(b) && b.querySelector('svg.i')).reverse(), feitos = [];
   for (const b of cand) { if (ico(b)) feitos.push(b); if (umaSo()) { box.dataset.ul = bts().length + ':' + box.clientWidth; return; } }
   feitos.forEach(b => { b.classList.remove('ul-ico'); if (b.dataset.ulLbl) b.setAttribute('aria-label', b.dataset.ulLbl); else b.removeAttribute('aria-label'); delete b.dataset.ulLbl; });
   const m = document.createElement('button'); m.type = 'button'; m.className = 'btn ul-mais' + (box.matches('.sheet-f') ? '' : ' sm'); ulLbl(m, false); m.title = 'Outras opções';
   const fix = bts().filter(UL_FIXO), mov = bts().filter(b => !UL_FIXO(b)); const ref = fix[0] || null; box.insertBefore(m, box.matches('.sheet-f') ? box.firstChild : ref); box.classList.add('ul-on');
-  const oc = []; for (let i = mov.length - 1; i >= 0 && !umaSo(); i--) { mov[i].classList.add('ul-oc'); oc.unshift(mov[i]); }
+  const oc = []; for (let i = mov.length - 1; i >= 0 && (tudo || !umaSo()); i--) { mov[i].classList.add('ul-oc'); oc.unshift(mov[i]); }
   if (!oc.length) { m.remove(); box.classList.remove('ul-on'); box.dataset.ul = assin; return; }
   /* só uma opção ficaria no “Mais”: não usa o “Mais”; ela volta como ícone */
-  if (oc.length === 1 && oc[0].querySelector('svg.i')) { oc[0].classList.remove('ul-oc'); m.remove(); box.classList.remove('ul-on'); ico(oc[0]); box.dataset.ul = bts().length + ':' + box.clientWidth; return; }
+  if (!tudo && oc.length === 1 && oc[0].querySelector('svg.i')) { oc[0].classList.remove('ul-oc'); m.remove(); box.classList.remove('ul-on'); ico(oc[0]); box.dataset.ul = bts().length + ':' + box.clientWidth; return; }
   m.onclick = e => { e.preventDefault(); e.stopPropagation(); const old = box.querySelector('.ul-menu'); if (old) { old.remove(); ulLbl(m, false); return; } document.querySelectorAll('.ul-menu').forEach(x => { const mm = x.parentElement && x.parentElement.querySelector('.ul-mais'); x.remove(); if (mm) ulLbl(mm, false); });
     const mn = document.createElement('div'); mn.className = 'ul-menu' + (baixo ? ' baixo' : ''); oc.forEach(b => { const c = document.createElement('button'); c.type = 'button'; c.className = 'btn' + (b.classList.contains('danger') ? ' danger' : ''); c.innerHTML = b.innerHTML; c.disabled = b.disabled; c.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); mn.remove(); ulLbl(m, false); b.click(); }; mn.appendChild(c); });
     box.appendChild(mn); ulLbl(m, true); };
@@ -12955,6 +12983,14 @@ ACT['cfa-foto'] = async () => { const v = $('#cfa-v'), inp = M.cfaInp; if (!v ||
   inp.dispatchEvent(new Event('change', { bubbles: true })); };
 ACT['cfa-nativa'] = () => { const inp = M.cfaInp; closeModal(); if (!inp || !inp.isConnected) return; inp.dataset.nativa = '1'; inp.click(); };
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'cfa-foto': '', 'cfa-nativa': '' }); Object.assign(AJUDA, { 'cfa-foto': 'Tira a foto com a câmera aqui dentro do aplicativo. Ex.: a etiqueta do equipamento.', 'cfa-nativa': 'Usa a câmera do próprio celular. Em celulares com pouca memória, o Android pode fechar o aplicativo enquanto ela está aberta.' }); } catch { } }, 0);
+/* v17: com uma janela aberta (fora do Claude), a página de trás não rola; arrastar o dedo no rodapé ou na barra de baixo não rola nada
+   (assim o gesto de baixo para cima mostra as teclas do Android em vez de rolar o laudo) */
+(() => { if (window.claude && window.claude.use) return;
+  const md = document.getElementById('modals'); if (!md) return;
+  const marca = () => document.documentElement.classList.toggle('jan-aberta', !!md.children.length);
+  new MutationObserver(marca).observe(md, { childList: true }); marca();
+  document.addEventListener('touchmove', e => { const t = e.target; if (t && t.closest && t.closest('.sheet-f, .bottom') && !t.closest('.ul-menu')) e.preventDefault(); }, { passive: false });
+})();
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -13365,7 +13401,7 @@ let _cabW = innerWidth, _cabH = innerHeight; window.addEventListener('resize', (
   setInterval(() => { if (!bt.hidden && (!alvo || !alvo.isConnected || (!rec && (document.activeElement !== alvo || !visivel(alvo))))) { if (rec) parar(); bt.hidden = true; } }, 700);
 })();
 ACT['in-limpar'] = el => { const i = document.getElementById(el.dataset.alvo); if (!i) return; i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); i.focus(); };
-ACT['eq-dig-ok'] = el => { const p = el.dataset.p, i = $('#eq-dig-in-' + p), v = i ? i.value.trim() : ''; if (!v) { toast('Digite o código.'); if (i) i.focus(); return; } eqPorCodigo(p, v); i.value = ''; };
+ACT['eq-dig-ok'] = el => { const p = el.dataset.p, i = $('#eq-dig-in-' + p), v = i ? i.value.trim() : ''; if (!v) { toast('Digite o código ou o nome do equipamento.'); if (i) i.focus(); return; } eqPorCodigo(p, v); i.value = ''; };
 document.addEventListener('keydown', e => { const t = e.target; if (e.key === 'Enter' && t && t.id && t.id.startsWith('eq-dig-in-')) { e.preventDefault(); ACT['eq-dig-ok']({ dataset: { p: t.id.slice(10) } }); } });
 
 /* ======================= testes do laudo por tipo de equipamento (Configurações) ======================= */
@@ -18584,6 +18620,10 @@ document.addEventListener('change', e => { if (e.target && e.target.id === 'agc-
    os telefones e dados que faltarem nele são completados e os outros vão para a lixeira (restauráveis com senha). */
 const DUP_COLS = () => COLS.filter(c => !['clientes', 'lixeira', 'logs', 'convites', 'equipe', 'autorizacoes'].includes(c));
 function dupUso() { const m = new Map(); for (const c of DUP_COLS()) for (const x of (S[c] || [])) if (x && x.clienteId) m.set(x.clienteId, (m.get(x.clienteId) || 0) + 1); return m; }
+/* v17: “Deixar” — cadastros parecidos que são pessoas diferentes ficam separados e não voltam a aparecer juntos */
+const dupPar = (a, b) => [a, b].sort().join('|');
+function dupSeparados() { const d = get('ajustes', 'clientes-separados'); return new Set((d && d.pares) || []); }
+async function dupSepararSalvar(idsDeixa, grupoIds) { const st = dupSeparados(); for (const a of idsDeixa) for (const b of grupoIds) if (a !== b) st.add(dupPar(a, b)); const d = get('ajustes', 'clientes-separados') || {}; return save('ajustes', 'clientes-separados', { ...d, pares: [...st], alteradoEm: Date.now() }); }
 function dupGrupos() {
   const cli = S.clientes.filter(c => !c.excluido && !c.exemplo), pai = new Map(cli.map(c => [c.id, c.id]));
   const ach = x => { while (pai.get(x) !== x) { pai.set(x, pai.get(pai.get(x))); x = pai.get(x); } return x; };
@@ -18592,6 +18632,8 @@ function dupGrupos() {
   const gT = new Map(); cli.forEach(c => { const r = ach(c.id); if (!gT.has(r)) gT.set(r, []); gT.get(r).push(c); });
   const gN = new Map(); cli.forEach(c => { const k = norm(c.nome || '').replace(/\s+/g, ' ').trim(); if (!k) return; if (!gN.has(k)) gN.set(k, []); gN.get(k).push(c); });
   const ord = g => g.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+  const sep = dupSeparados(), tira = g => { if (!sep.size) return g; let L = [...g]; for (;;) { const x = L.find(c => L.every(o => o.id === c.id || sep.has(dupPar(c.id, o.id)))); if (!x) break; L = L.filter(c => c !== x); } return L; };
+  [...gT.keys()].forEach(r => gT.set(r, tira(gT.get(r)))); [...gN.keys()].forEach(r => gN.set(r, tira(gN.get(r))));
   return { tel: [...gT.values()].filter(g => g.length > 1).map(ord).sort((a, b) => (a[0].nome || '').localeCompare(b[0].nome || '', 'pt-BR')),
     nome: [...gN.values()].filter(g => g.length > 1 && new Set(g.map(c => ach(c.id))).size > 1).map(ord).sort((a, b) => (a[0].nome || '').localeCompare(b[0].nome || '', 'pt-BR')) };
 }
@@ -18601,17 +18643,18 @@ const dupTemNome = c => /[A-Za-zÀ-ú]{2}/.test(c.nome || '');
 const dupFica = (g, uso) => [...g].sort((a, b) => ((uso.get(b.id) || 0) - (uso.get(a.id) || 0)) || (dupTemNome(b) - dupTemNome(a)) || ((a.at || 0) - (b.at || 0)))[0].id;
 const dupKey = (k, gi) => k + gi, dupG = (k, gi) => M.dup[k === 't' ? 'tel' : 'nome'][gi];
 /* escolha de cada grupo: um "fica"; no mesmo telefone todos os outros são excluídos (não dá para ficar dois nem excluir todos) */
-function dupSel(k, gi) { const D = M.dup, key = dupKey(k, gi); if (!D.sel[key]) { const g = dupG(k, gi), fica = dupFica(g, D.uso); D.sel[key] = { fica, marc: new Set(g.filter(c => c.id !== fica).map(c => c.id)) }; } return D.sel[key]; }
+function dupSel(k, gi) { const D = M.dup, key = dupKey(k, gi); if (!D.sel[key]) { const g = dupG(k, gi), fica = dupFica(g, D.uso); D.sel[key] = { fica, marc: new Set(g.filter(c => c.id !== fica).map(c => c.id)), deixa: new Set(), exc: new Set() }; } return D.sel[key]; }
 function dupCard(c, k, gi, S0) {
   const uso = M.dup.uso, n = uso.get(c.id) || 0, tels = agTelsCli(c), extra = [c.email, c.doc, [c.cidade, c.uf].filter(Boolean).join('/')].filter(Boolean).join(' · '), fica = c.id === S0.fica;
-  return `<div class="dup-c${fica ? ' fica' : k === 't' && S0.marc.has(c.id) ? ' sai' : ''}" data-id="${esc(c.id)}"><div class="grow"><button type="button" class="dup-ed" data-act="dup-editar" data-id="${esc(c.id)}" title="Editar o nome, os telefones e os outros dados deste cadastro"><b>${esc(c.nome || '(sem nome)')}</b><small>${esc(tels.join(' · ') || 'sem telefone')}${extra ? ' · ' + esc(extra) : ''}</small><small>${n ? `<b>${n}</b> registro${n === 1 ? '' : 's'} no histórico` : 'sem histórico'}${c.at ? ' · cadastrado em ' + esc(dBR(new Date(c.at).toISOString())) : ''}${c.googleId ? ' · na agenda do Google' : ''}</small></button>${fica ? `<button type="button" class="btn sm dup-edb" data-act="dup-editar" data-id="${esc(c.id)}">${ic('edit')}Editar</button>` : ''}</div>
-    <div class="dup-op"><label class="rf-chk"><input type="radio" class="dup-f" name="dupf-${k}${gi}" value="${esc(c.id)}"${fica ? ' checked' : ''}> Fica</label><label class="rf-chk"><input type="checkbox" class="dup-x" value="${esc(c.id)}"${!fica && S0.marc.has(c.id) ? ' checked' : ''}${fica && k === 'n' ? ' disabled' : ''}> ${k === 't' ? 'Excluir' : 'Juntar'}</label></div></div>`;
+  const deixa = S0.deixa.has(c.id), exc = S0.exc.has(c.id);
+  return `<div class="dup-c${fica ? ' fica' : exc ? ' sai' : deixa ? ' deixa' : k === 't' && S0.marc.has(c.id) ? ' sai' : ''}" data-id="${esc(c.id)}"><div class="grow"><button type="button" class="dup-ed" data-act="dup-editar" data-id="${esc(c.id)}" title="Editar o nome, os telefones e os outros dados deste cadastro"><b>${esc(c.nome || '(sem nome)')}</b><small>${esc(tels.join(' · ') || 'sem telefone')}${extra ? ' · ' + esc(extra) : ''}</small><small>${n ? `<b>${n}</b> registro${n === 1 ? '' : 's'} no histórico` : 'sem histórico'}${c.at ? ' · cadastrado em ' + esc(dBR(new Date(c.at).toISOString())) : ''}${c.googleId ? ' · na agenda do Google' : ''}</small></button>${fica ? `<button type="button" class="btn sm dup-edb" data-act="dup-editar" data-id="${esc(c.id)}">${ic('edit')}Editar</button>` : ''}</div>
+    <div class="dup-op"><label class="rf-chk"><input type="radio" class="dup-f" name="dupf-${k}${gi}" value="${esc(c.id)}"${fica ? ' checked' : ''}> Fica</label><label class="rf-chk"><input type="checkbox" class="dup-x" value="${esc(c.id)}"${!fica && S0.marc.has(c.id) ? ' checked' : ''}${fica && k === 'n' ? ' disabled' : ''}> ${k === 't' ? 'Excluir' : 'Juntar'}</label><label class="rf-chk" title="É outra pessoa: os dois cadastros continuam separados (mesmo nome com números diferentes, ou mesmo número com nomes diferentes) e não aparecem mais aqui juntos."><input type="checkbox" class="dup-d" value="${esc(c.id)}"${deixa ? ' checked' : ''}${fica ? ' disabled' : ''}> Deixar</label>${k === 'n' ? `<label class="rf-chk" title="Cadastro errado ou que não serve: vai para a lixeira (dá para restaurar com senha). Se tiver histórico, ele passa para o que fica."><input type="checkbox" class="dup-e" value="${esc(c.id)}"${exc ? ' checked' : ''}${fica ? ' disabled' : ''}> Excluir</label>` : ''}</div></div>`;
 }
 function dupGrupoHTML(k, gi) {
-  const g = dupG(k, gi), S0 = dupSel(k, gi), nx = S0.marc.size;
+  const g = dupG(k, gi), S0 = dupSel(k, gi), nx = S0.marc.size, nd = S0.deixa.size, ne = S0.exc.size;
   const comum = k === 't' ? (() => { const cont = new Map(); g.forEach(c => new Set(agTelsCli(c).map(agTel8)).forEach(t => cont.set(t, (cont.get(t) || 0) + 1))); const t8 = [...cont].filter(([, n]) => n > 1).map(([t]) => t); return g.flatMap(c => agTelsCli(c)).filter((t, i, A) => t8.includes(agTel8(t)) && A.findIndex(y => agTel8(y) === agTel8(t)) === i).join(' · '); })() : g[0].nome;
   return `<div class="dup-g" data-k="${k}" data-i="${gi}"><div class="dup-h"><b>${esc(comum)}</b><span class="chip">${g.length} cadastros</span></div>${g.map(c => dupCard(c, k, gi, S0)).join('')}
-    <div class="dup-pe"><small class="muted">${k === 't' ? `Fica 1 · ${nx} para excluir. Ao marcar um para ficar, os outros ficam marcados para excluir.` : 'Os marcados em “Juntar” viram um cadastro só.'} O histórico deles passa para o que fica.</small><button type="button" class="btn sm ${k === 't' ? 'danger' : 'primary'}" data-act="${k === 't' ? 'dup-excluir' : 'dup-unificar'}" data-i="${gi}">${k === 't' ? `Excluir ${nx === 1 ? 'o marcado' : 'os ' + nx + ' marcados'}` : 'Unificar'}</button></div></div>`;
+    <div class="dup-pe"><small class="muted">${k === 't' ? `Fica 1 · ${nx} para excluir${nd ? ` · ${nd} deixado${nd === 1 ? '' : 's'} separado${nd === 1 ? '' : 's'}` : ''}. Ao marcar um para ficar, os outros ficam marcados para excluir.` : `Os marcados em “Juntar” viram um cadastro só${nd ? ` · ${nd} deixado${nd === 1 ? '' : 's'} separado${nd === 1 ? '' : 's'}` : ''}.`} O histórico deles passa para o que fica. Os marcados em <b>Deixar</b> continuam como cadastros separados.</small><button type="button" class="btn sm ${!nx && nd ? 'primary' : k === 't' ? 'danger' : 'primary'}" data-act="${k === 't' ? 'dup-excluir' : 'dup-unificar'}" data-i="${gi}">${!nx && !ne && nd ? 'Manter separados' : k === 'n' && ne ? `Aplicar (${[nx && 'juntar ' + nx, 'excluir ' + ne, nd && 'deixar ' + nd].filter(Boolean).join(', ')})` : k === 't' ? `Excluir ${nx === 1 ? 'o marcado' : 'os ' + nx + ' marcados'}` : 'Unificar'}</button></div></div>`;
 }
 /* busca e tipo filtram pelos dados; a lista mostra 30 grupos por vez (rápido mesmo com centenas de duplicados) */
 function dupFiltrados(k) { const D = M.dup, q = norm(D.q || '').trim(), dq = q.replace(/\D/g, ''); return D[k === 't' ? 'tel' : 'nome'].map((g, gi) => [g, gi]).filter(([g, gi]) => !D.feito[dupKey(k, gi)] && (!q || g.some(c => norm(c.nome || '').includes(q) || (dq.length >= 3 && agTelsCli(c).join(' ').replace(/\D/g, '').includes(dq))))); }
@@ -18619,8 +18662,8 @@ function dupRes() {
   const D = M.dup;
   const sec = (k, t, dica) => { if (D.t && D.t !== k) return ''; const L = dupFiltrados(k), lim = D.lim[k];
     return `<div class="dup-sec" data-k="${k}"><h3 style="margin:14px 0 4px">${t} <span class="chip">${L.length}</span></h3><p class="muted" style="margin:0 0 6px;font-size:.84rem">${dica}</p>${L.length ? L.slice(0, lim).map(([, gi]) => dupGrupoHTML(k, gi)).join('') : '<p class="muted" style="margin:6px 0">Nenhum.</p>'}${L.length > lim ? `<p style="text-align:center;margin:8px 0"><button type="button" class="btn" data-act="dup-mais" data-k="${k}">Mostrar mais ${Math.min(30, L.length - lim)} (faltam ${L.length - lim})</button></p>` : ''}</div>`; };
-  return sec('t', 'Mesmo telefone', 'Cadastros com o mesmo número. Marque qual <b>fica</b>: os outros já ficam marcados para <b>excluir</b> (e, se marcar <b>Excluir</b> no que fica, outro passa a ficar). O histórico deles (OS, vendas, orçamentos, aluguéis, contratos, contas) passa para o que fica, e os telefones e dados que faltarem nele são completados.')
-    + sec('n', 'Mesmo nome, telefones diferentes', 'Mesmo cliente cadastrado com números diferentes. Escolha o cadastro principal (<b>Fica</b>) e deixe marcado <b>Juntar</b> nos outros: todos os telefones vão para o principal e o histórico também.');
+  return sec('t', 'Mesmo telefone', 'Cadastros com o mesmo número. Marque qual <b>fica</b>: os outros já ficam marcados para <b>excluir</b> (e, se marcar <b>Excluir</b> no que fica, outro passa a ficar). O histórico deles (OS, vendas, orçamentos, aluguéis, contratos, contas) passa para o que fica, e os telefones e dados que faltarem nele são completados. Se for <b>outra pessoa</b>, marque <b>Deixar</b>: os cadastros continuam separados e não aparecem mais aqui.')
+    + sec('n', 'Mesmo nome, telefones diferentes', 'Mesmo cliente cadastrado com números diferentes. Escolha o cadastro principal (<b>Fica</b>) e deixe marcado <b>Juntar</b> nos outros: todos os telefones vão para o principal e o histórico também. Cadastro errado ou que não serve: marque <b>Excluir</b> (vai para a lixeira). Se for <b>outra pessoa</b>, marque <b>Deixar</b>: os cadastros continuam separados e não aparecem mais aqui.');
 }
 function dupRender() { const b = $('#dup-res'); if (b) b.innerHTML = dupRes(); const D = M.dup, el = $('#dup-n'); if (el) el.textContent = D.q || D.t ? `${(D.t !== 'n' ? dupFiltrados('t').length : 0) + (D.t !== 't' ? dupFiltrados('n').length : 0)} grupos` : ''; }
 function dupAbrir() {
@@ -18636,14 +18679,16 @@ document.addEventListener('change', e => {
   const t = e.target; if (!t || !M.dup) return; if (t.id === 'dup-t') { M.dup.t = t.value; M.dup.lim = { t: 30, n: 30 }; dupRender(); return; }
   const gEl = t.closest && t.closest('.dup-g'); if (!gEl || !t.closest('#dup-res')) return;
   const k = gEl.dataset.k, gi = +gEl.dataset.i, g = dupG(k, gi), S0 = dupSel(k, gi), outros = id => g.filter(c => c.id !== id).map(c => c.id);
-  if (t.classList.contains('dup-f')) { const ant = S0.fica; S0.fica = t.value; if (k === 't') S0.marc = new Set(outros(t.value)); else { S0.marc.delete(t.value); S0.marc.add(ant); } }
+  if (t.classList.contains('dup-d')) { const id = t.value; if (t.checked) { S0.deixa.add(id); S0.marc.delete(id); S0.exc.delete(id); } else { S0.deixa.delete(id); S0.marc.add(id); } gEl.outerHTML = dupGrupoHTML(k, gi); return; }
+  if (t.classList.contains('dup-e')) { const id = t.value; if (t.checked) { S0.exc.add(id); S0.marc.delete(id); S0.deixa.delete(id); } else { S0.exc.delete(id); S0.marc.add(id); } gEl.outerHTML = dupGrupoHTML(k, gi); return; }
+  if (t.classList.contains('dup-f')) { const ant = S0.fica; S0.fica = t.value; S0.deixa.delete(t.value); if (k === 't') S0.marc = new Set(outros(t.value).filter(id => !S0.deixa.has(id))); else { S0.marc.delete(t.value); if (!S0.deixa.has(ant)) S0.marc.add(ant); } }
   else if (t.classList.contains('dup-x')) {
     const id = t.value;
     if (k === 't') {
-      if (id === S0.fica && t.checked) { /* marcou excluir no que ficava: passa a ficar o melhor dos outros */ const nv = dupFica(g.filter(c => c.id !== id), M.dup.uso); S0.fica = nv; S0.marc = new Set(outros(nv)); }
-      else if (!t.checked) { /* desmarcou excluir: este passa a ficar e o que ficava vai para excluir */ S0.fica = id; S0.marc = new Set(outros(id)); }
-      else S0.marc.add(id);
-    } else { if (t.checked) S0.marc.add(id); else S0.marc.delete(id); }
+      if (id === S0.fica && t.checked) { /* marcou excluir no que ficava: passa a ficar o melhor dos outros */ const nv = dupFica(g.filter(c => c.id !== id && !S0.deixa.has(c.id)), M.dup.uso); S0.fica = nv; S0.marc = new Set(outros(nv).filter(x => !S0.deixa.has(x))); }
+      else if (!t.checked) { /* desmarcou excluir: este passa a ficar e o que ficava vai para excluir */ S0.fica = id; S0.marc = new Set(outros(id).filter(x => !S0.deixa.has(x))); }
+      else { S0.marc.add(id); S0.deixa.delete(id); }
+    } else { if (t.checked) { S0.marc.add(id); S0.deixa.delete(id); S0.exc.delete(id); } else S0.marc.delete(id); }
   }
   gEl.outerHTML = dupGrupoHTML(k, gi);
 });
@@ -18666,10 +18711,17 @@ async function dupJuntar(dest, ids, acao) {
   try { logReg(acao, 'clientes', dest, `${acao === 'unificou' ? 'Unificou' : 'Excluiu duplicados de'} ${k.nome}: ${outros.map(o => o.nome + (agTelsCli(o)[0] ? ' (' + agTelsCli(o)[0] + ')' : '')).join(', ')} · ${movidos} registro${movidos === 1 ? '' : 's'} do histórico passaram para ${k.nome}`.slice(0, 300), []); } catch { }
   return movidos;
 }
-function dupLer(el) { const gEl = el.closest('.dup-g'), k = gEl.dataset.k, gi = +gEl.dataset.i, S0 = dupSel(k, gi); return { k, gi, gEl, dest: S0.fica, ids: [...S0.marc].filter(id => id !== S0.fica) }; }
+function dupLer(el) { const gEl = el.closest('.dup-g'), k = gEl.dataset.k, gi = +gEl.dataset.i, S0 = dupSel(k, gi); return { k, gi, gEl, dest: S0.fica, ids: [...S0.marc].filter(id => id !== S0.fica && !S0.deixa.has(id) && !S0.exc.has(id)), deixa: [...S0.deixa], exc: [...(S0.exc || [])].filter(id => id !== S0.fica), grupo: dupG(k, gi).map(c => c.id) }; }
 /* depois de excluir ou unificar, o grupo sai da lista ali mesmo, sem fechar nem recarregar a janela */
 async function dupFazer(el, acao) {
-  const { k, gi, gEl, dest, ids } = dupLer(el), nd = (get('clientes', dest) || {}).nome || '';
+  const { k, gi, gEl, dest, ids, deixa, exc, grupo } = dupLer(el), nd = (get('clientes', dest) || {}).nome || '';
+  if (deixa.length) { try { await dupSepararSalvar(deixa, grupo); } catch { } }
+  /* v17: “Excluir” no mesmo nome — o cadastro vai para a lixeira sem juntar telefones/dados; o histórico dele passa para o que fica */
+  if (exc.length) { let mv = 0; for (const c of DUP_COLS()) for (const x of [...(S[c] || [])]) if (x && exc.includes(x.clienteId)) { if (await save(c, x.id, { ...x, clienteId: dest })) mv++; }
+    const nomes = exc.map(id => (get('clientes', id) || {}).nome || id); for (const id of exc) await del('clientes', id);
+    try { logReg('excluiu', 'clientes', dest, `Excluiu cadastros parecidos com ${nd}: ${nomes.join(', ')}${mv ? ` · ${mv} registro${mv === 1 ? '' : 's'} do histórico passaram para ${nd}` : ''}`.slice(0, 300), []); } catch { }
+    if (!ids.length) { M.dup.feito[dupKey(k, gi)] = true; toastOk(`${exc.length} cadastro${exc.length === 1 ? '' : 's'} excluído${exc.length === 1 ? '' : 's'} (estão na lixeira)${deixa.length ? ` · ${deixa.length} mantido${deixa.length === 1 ? '' : 's'} separado${deixa.length === 1 ? '' : 's'}` : ''}.`); const st = $('#dup-res') ? $('#dup-res').closest('.sheet-b') : null, y = st ? st.scrollTop : 0; dupRender(); if (st) st.scrollTop = y; return; } }
+  if (!ids.length) { M.dup.feito[dupKey(k, gi)] = true; toastOk(`${deixa.length} cadastro${deixa.length === 1 ? '' : 's'} mantido${deixa.length === 1 ? '' : 's'} separado${deixa.length === 1 ? '' : 's'}: não aparecem mais aqui como duplicados.`); const st = $('#dup-res') ? $('#dup-res').closest('.sheet-b') : null, y = st ? st.scrollTop : 0; dupRender(); if (st) st.scrollTop = y; return; }
   el.disabled = true; el.textContent = acao === 'unificou' ? 'Unificando…' : 'Excluindo…'; gEl.classList.add('dup-ocup');
   try { const n = await dupJuntar(dest, ids, acao); M.dup.feito[dupKey(k, gi)] = true;
     toastOk(acao === 'unificou' ? `Unificado em ${nd}: telefones juntos${n ? ` e ${n} registro${n === 1 ? '' : 's'} do histórico` : ''}. Os outros cadastros estão na lixeira.` : `${ids.length} cadastro${ids.length === 1 ? '' : 's'} repetido${ids.length === 1 ? '' : 's'} excluído${ids.length === 1 ? '' : 's'}${n ? ` · ${n} registro${n === 1 ? '' : 's'} do histórico passaram para ${nd}` : ''}. Estão na lixeira (dá para desfazer).`);
@@ -18682,9 +18734,9 @@ Object.assign(ACT, {
   'cli-dups': () => dupAbrir(),
   'dup-editar': el => editarCliente(el.dataset.id),
   'dup-mais': el => { const k = el.dataset.k; M.dup.lim[k] += 30; const st = el.closest('.sheet-b'), y = st ? st.scrollTop : 0; dupRender(); if (st) st.scrollTop = y; },
-  'dup-excluir': el => { const { ids } = dupLer(el); if (!ids.length) { toast('Marque “Excluir” em pelo menos um cadastro repetido.'); return; }
+  'dup-excluir': el => { const { ids, deixa } = dupLer(el); if (!ids.length && deixa.length) { dupFazer(el, 'excluiu'); return; } if (!ids.length) { toast('Marque “Excluir” em pelo menos um cadastro repetido (ou “Deixar”, se for outra pessoa).'); return; }
     arm(el, `Confirmar: excluir ${ids.length}`, () => pedirSenha('excluir', 'Excluir clientes duplicados', () => dupFazer(el, 'excluiu'))); },
-  'dup-unificar': el => { const { ids } = dupLer(el); if (!ids.length) { toast('Marque “Juntar” em pelo menos um cadastro além do principal.'); return; }
+  'dup-unificar': el => { const { ids, deixa, exc } = dupLer(el); if (!ids.length && !exc.length && deixa.length) { dupFazer(el, 'unificou'); return; } if (!ids.length && exc.length) { arm(el, `Confirmar: excluir ${exc.length}`, () => pedirSenha('excluir', 'Excluir clientes', () => dupFazer(el, 'unificou'))); return; } if (!ids.length) { toast('Marque “Juntar” em pelo menos um cadastro além do principal (ou “Deixar”, se for outra pessoa).'); return; }
     arm(el, `Confirmar: unificar ${ids.length + 1}`, () => pedirSenha('excluir', 'Unificar cadastros de clientes', () => dupFazer(el, 'unificou'))); },
   'dup-print': () => {
     const D = M.dup; if (!D) return; const q = D.q || '', t = D.t || ''; let corpo = '', tot = 0; const res = [];
@@ -18785,15 +18837,17 @@ AJUDA['nuvem-sair'] = 'Desconecta este aparelho da conta da empresa. Para voltar
 const blobB64 = b => new Promise((ok, er) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1] || ''); r.onerror = er; r.readAsDataURL(b); });
 let IA_MODELO = null; /* v16: modelo que a ponte usou (a ponte versão 7 troca sozinha quando o Google desliga um modelo) */
 const iaModeloAnotar = r => { try { const m = r.headers.get('X-Bancada-Modelo'); if (m) IA_MODELO = { nome: m, auto: r.headers.get('X-Bancada-Modelo-Auto') === '1' }; } catch { } };
+/* v17: foto enviada à IA no máximo com 1600 px (foto da câmera em tamanho cheio demorava muito para subir pela internet do celular) */
+async function imgReduzIA(im) { try { if (!im || !/^image\//.test(im.type || 'image/') || im.size < 700000) return im; const bm = await createImageBitmap(im); const k = Math.min(1, 1600 / Math.max(bm.width, bm.height)); const cv = document.createElement('canvas'); cv.width = Math.round(bm.width * k); cv.height = Math.round(bm.height * k); cv.getContext('2d').drawImage(bm, 0, 0, cv.width, cv.height); try { bm.close(); } catch { } const b = await new Promise(ok => cv.toBlob(ok, 'image/jpeg', .85)); return b && b.size < im.size ? b : im; } catch { return im; } }
 const IA_PONTE = {
   limits: async () => ({ images: true }),
   async json(pedido, o = {}) {
     const parts = [{ text: pedido + '\n\nResponda somente com JSON válido, sem nenhum texto antes ou depois.' }];
-    for (const im of (o.images || [])) parts.push({ inline_data: { mime_type: im.type || 'image/jpeg', data: await blobB64(im) } });
+    for (const im of (o.images || [])) { const rz = await imgReduzIA(im); parts.push({ inline_data: { mime_type: rz.type || 'image/jpeg', data: await blobB64(rz) } }); }
     const url = String(EMP_CFG.ponte || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
-    let r;
+    let r; const t0r = Date.now();
     try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], generationConfig: { responseMimeType: 'application/json' } }), signal: o.signal || (IA_OP && IA_OP.ac.signal) }); }
-    catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; throw { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
+    catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; throw (navigator.onLine !== false && Date.now() - t0r > 45000) ? { code: 'ia_lenta', message: 'A IA do Google demorou demais e a ligação foi encerrada.' } : { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
     const t = await r.text(); iaModeloAnotar(r);
     if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
     let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
@@ -18804,10 +18858,10 @@ const IA_PONTE = {
 /* v357: IA com pesquisa no Google (Gemini, pela ponte): procura o produto no site do fabricante e nas lojas */
 IA_PONTE.buscar = async function (pedido, o = {}) {
   const parts = [{ text: pedido }];
-  for (const im of (o.images || [])) parts.push({ inline_data: { mime_type: im.type || 'image/jpeg', data: await blobB64(im) } });
+  for (const im of (o.images || [])) { const rz = await imgReduzIA(im); parts.push({ inline_data: { mime_type: rz.type || 'image/jpeg', data: await blobB64(rz) } }); }
   const url = String(EMP_CFG.ponte || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
-  let r; try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], tools: [{ google_search: {} }] }), signal: o.signal || (IA_OP && IA_OP.ac.signal) }); }
-  catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; throw { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
+  let r; const t0r = Date.now(); try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], tools: [{ google_search: {} }] }), signal: o.signal || (IA_OP && IA_OP.ac.signal) }); }
+  catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; throw (navigator.onLine !== false && Date.now() - t0r > 45000) ? { code: 'ia_lenta', message: 'A IA do Google demorou demais e a ligação foi encerrada.' } : { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
   const t = await r.text(); iaModeloAnotar(r); if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
   let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
   const c = (j.candidates || [])[0] || {}, txt = ((c.content || {}).parts || []).map(p => p.text || '').join('').trim();
