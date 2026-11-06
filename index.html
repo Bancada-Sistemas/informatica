@@ -820,14 +820,16 @@ div.f.ei-sig{display:flex;flex-direction:column;gap:4px;font-size:.8rem;font-wei
 @media (max-width:560px){.osl-bar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.osl-bar:not(:has(.osl-marg-sel)){grid-template-columns:minmax(0,1fr) 70px!important}}
 .osl-top{padding-bottom:8px!important}
 .wa-passos{margin:0 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:6px}.wa-txt{min-height:140px;font-size:.85rem}
-.ov{top:var(--vvt,0px)!important;bottom:auto!important;height:var(--vvh,100dvh)!important}
-.sheet{max-height:calc(var(--vvh,100dvh) - 16px)!important}
+.ov{top:var(--vvt,0px)!important;bottom:auto!important;height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important}
+.sheet{max-height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px) - 16px)!important}
+/* v17: celular — com o teclado aberto, a barra de sugestões do Chrome (chave, cartão, endereço) cobria o Salvar; em tela cheia, as teclas do Android (voltar, início) aparecem por cima do rodapé */
+#bottom{bottom:var(--navx,0px)!important}
 .sheet-b{padding-bottom:28px!important;-webkit-overflow-scrolling:touch}
-.sheet.fe-sheet{height:var(--vvh,100dvh)!important;max-height:var(--vvh,100dvh)!important}
+.sheet.fe-sheet{height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important;max-height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important}
 @media (min-width:1100px){.sheet.xl{max-height:calc(var(--vvh,100dvh) - 4px)!important}.sheet.xl .xl-c{gap:6px}}
 /* toque (tablet/celular): a rolagem das janelas continua para a página do Claude quando chega ao fim — assim dá para ver o rodapé e os botões mesmo quando a tela do Claude é maior que a área visível */
 @media (pointer:coarse){.ov,.sheet-b,.sheet.full .sheet-b{overscroll-behavior:auto!important}}
-.sheet.full{height:var(--vvh,100dvh)!important;max-height:var(--vvh,100dvh)!important}
+.sheet.full{height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important;max-height:calc(var(--vvh,100dvh) - var(--kbx,0px) - var(--navx,0px))!important}
 /* entrada (usuário + senha) e funcionários */
 body.sem-op #side nav,body.sem-op #bottom,body.sem-op .side-foot{display:none!important}
 .lg-wrap{min-height:calc(var(--vvh,100vh) - 90px);display:grid;place-items:center;padding:12px 0}
@@ -2068,7 +2070,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 382;
+const APP_VER = 17, APP_BUILD = 383;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -4358,7 +4360,7 @@ function pdfPrepara(html) {
   document.body.appendChild(d); try { thNowrap(d, th ? f.w - 2 * f.m : 190); } catch { } const out = d.innerHTML; d.remove(); return out;
 }
 function pdfDoc(html, css = DOC_PDF_CSS) {
-  const f = PFMT[S.pfmt]; try { html = pdfPrepara(html); } catch { } html = nwHtml(qrParaImg(html)); css = css + 'img.qr-img{display:block;width:100%;height:auto;image-rendering:pixelated}.dqr img.qr-img{width:22mm;height:22mm}.iqr img.qr-img{width:22mm;height:22mm}.th58 .iqr img.qr-img{width:18mm;height:18mm}.oq img.qr-img,.rq img.qr-img{width:100%;height:auto}';
+  const f = PFMT[S.pfmt]; try { html = pdfPrepara(html); } catch { } html = nwHtml(qrParaImg(html)); css = css + 'img.qr-img{display:block;width:100%;height:auto;image-rendering:pixelated}.pix-bloco .pix-qr img.qr-img{width:26mm!important;height:26mm!important}.th .pix-bloco .pix-qr img.qr-img{width:30mm!important;height:30mm!important}.dqr img.qr-img{width:22mm;height:22mm}.iqr img.qr-img{width:22mm;height:22mm}.th58 .iqr img.qr-img{width:18mm;height:18mm}.oq img.qr-img,.rq img.qr-img{width:100%;height:auto}';
   /* no A4 o PDF mantém o layout de folha mesmo quando a tela é estreita (celular) */
   if (S.pfmt === 'a4') return htmlToPdf(css + '.pdf-a4 .doc .grid{grid-template-columns:1fr 1fr!important}.pdf-a4 .doc .sig{grid-template-columns:1fr 1fr!important}.pdf-a4 .doc .tot{width:260px!important}.pdf-a4 .doc .ph{grid-template-columns:repeat(3,1fr)!important}.pdf-a4 .doc .ph.ph-c{grid-template-columns:repeat(4,1fr)!important}.pdf-a4 .doc .dh{flex-wrap:nowrap!important}', `<div class="pdf-a4">${html}</div>`, { margin: 10 });
   return htmlToPdf(css + TH_CSS, `<div class="th">${html}</div>`, { roll: f.w, margin: f.m });
@@ -13950,8 +13952,12 @@ document.addEventListener('focusin', e => { const t = e.target; if (t && t.match
 (() => {
   const vv = window.visualViewport; if (!vv) return;
   let hAnt = vv.height;
-  const upd = () => { const r = document.documentElement.style; r.setProperty('--vvh', vv.height + 'px'); r.setProperty('--vvt', vv.offsetTop + 'px'); if (vv.height > hAnt + 80 && document.querySelector('.lg-wrap')) { try { window.scrollTo(0, 0); document.querySelector('.lg-box').scrollTop = 0; } catch { } } else if (vv.height < hAnt - 80) { const f = document.activeElement; if (f && f.closest && f.closest('.lg-box')) setTimeout(() => { try { f.scrollIntoView({ block: 'center' }); } catch { } }, 60); } hAnt = vv.height; };
-  vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd); upd();
+  const toque = matchMedia('(pointer:coarse)').matches;
+  const upd = () => { const r = document.documentElement.style; r.setProperty('--vvh', vv.height + 'px'); r.setProperty('--vvt', vv.offsetTop + 'px');
+    if (toque) { const teclado = innerHeight - vv.height > 150 || (screen.height - vv.height > 260 && document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName));
+      const cheia = !!document.fullscreenElement || matchMedia('(display-mode: fullscreen)').matches;
+      r.setProperty('--kbx', teclado ? '58px' : '0px'); r.setProperty('--navx', !teclado && cheia ? '48px' : '0px'); } if (vv.height > hAnt + 80 && document.querySelector('.lg-wrap')) { try { window.scrollTo(0, 0); document.querySelector('.lg-box').scrollTop = 0; } catch { } } else if (vv.height < hAnt - 80) { const f = document.activeElement; if (f && f.closest && f.closest('.lg-box')) setTimeout(() => { try { f.scrollIntoView({ block: 'center' }); } catch { } }, 60); } hAnt = vv.height; };
+  vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd); upd(); document.addEventListener('focusin', () => setTimeout(upd, 350)); document.addEventListener('focusout', () => setTimeout(upd, 350)); document.addEventListener('fullscreenchange', upd);
   document.addEventListener('focusin', e => { const t = e.target, b = t && t.closest && t.closest('.sheet-b'); if (b && innerWidth < 900 && t.matches('input,textarea,select')) setTimeout(() => { try { t.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch { } }, 300); });
 })();
 /* ======================= entrada no sistema: usuário + senha (operador) ======================= */
