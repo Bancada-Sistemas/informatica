@@ -366,6 +366,8 @@ table.mx input{width:18px;height:18px}
 .steps{display:flex;flex-wrap:wrap;gap:4px}
 .steps span{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .fe-dados{margin:0 0 8px;padding:0!important}.fe-dados .f{grid-column:1/-1}
+.pz-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 14px}.pz-r{display:grid;grid-template-columns:1fr 80px auto;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)}.pz-r input{text-align:right}
+.os-voz-b{display:flex;align-items:center;gap:8px;width:100%;justify-content:flex-start;margin:0 0 10px;padding:12px 14px;font-size:1.05rem}.os-voz-b small{color:var(--muted);font-weight:400;margin-left:auto;font-size:.8rem}.vz{display:flex;flex-direction:column;gap:10px}.vz-passo{font-size:.85rem;color:var(--muted)}.vz-q{margin:0;font-size:1.5rem;line-height:1.25}.vz-dica{margin:0}.vz-ouvido{min-height:1.6em;font-size:1.2rem;font-weight:600;color:var(--primary,#2563eb)}.vz-ops{display:flex;flex-direction:column;gap:6px;max-height:42vh;overflow:auto}.vz-op{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);cursor:pointer}.vz-op small{display:block;color:var(--muted)}.vz-n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--line);font-weight:700;font-size:.85rem;flex:0 0 auto}.vz-mic{display:flex;gap:8px;flex-wrap:wrap}.vz-mic-b{font-size:1.05rem;padding:12px 16px}.vz-mic-b.on{background:#dc2626;color:#fff;border-color:#dc2626}.vz-mic input{flex:1 1 200px;min-width:0}.vz-res{display:flex;flex-direction:column;gap:4px}.vz-res-i{display:flex;justify-content:space-between;gap:10px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}.vz-res-i span{color:var(--muted)}.vz-falar{font-size:.85rem}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .ftc{position:relative;background:#000;border-radius:12px;overflow:hidden}.ftc video{display:block;width:100%;max-height:68vh;object-fit:contain;background:#000}.ftc-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.ftc-flash.on{animation:ftcfl .35s}@keyframes ftcfl{0%{opacity:.8}100%{opacity:0}}
 .osv-steps{gap:6px;margin:4px 0 2px}.osv-steps button{font:inherit;font-size:.85rem;font-weight:700;padding:7px 12px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line);cursor:pointer}.osv-steps button:hover{border-color:var(--accent);color:var(--ink)}.osv-steps button.now{background:var(--accent);color:#fff;border-color:var(--accent)}.osv-steps button.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}.osv-steps button.st-canc.now{background:var(--bad,#b3261e);border-color:var(--bad,#b3261e)}
@@ -1612,7 +1614,7 @@ textarea{padding-bottom:10px}
 /* ===== ajustes posteriores (mantidos no bloco principal) ===== */
 .lg-bios{display:flex;flex-direction:column;gap:8px}.lg-bios .btn{width:100%;justify-content:center;white-space:normal;flex-wrap:wrap;text-align:center;height:auto;min-height:44px}.lg-bios small{flex-basis:100%;font-size:.75rem}.cfg-tabs button svg{width:16px!important;height:16px!important;vertical-align:-3px;margin-right:4px;display:inline-block}.lg-bios .lg-off{opacity:.75}.lg-bios small{font-weight:500;opacity:.8}.lg-sair-area{margin-top:18px;padding-top:12px;border-top:1px dashed var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lg-sair-area small{font-size:.75rem}.lg-sair-area .btn{font-size:.82rem}html,body{overscroll-behavior-x:none}.chip-link{cursor:pointer;border:0;font:inherit;text-decoration:underline;text-underline-offset:2px}.chip-link:hover{filter:brightness(1.1)}.chks .chq.chq-oculta{display:none!important}.chq-ops:has(input:checked) label:not(:has(input:checked)){display:none}.meu-acesso .banner{margin-top:8px}.seg.seg-acoes{gap:4px}.seg.seg-acoes button{cursor:pointer}.who .who-b{display:flex;flex-wrap:wrap;gap:6px}.who .who-b .btn{flex:1 1 auto;justify-content:center}.op-menu{grid-template-columns:repeat(2,minmax(0,1fr))!important}.fu-perfil .perfil-b{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.fu-perfil select{max-width:100%}
 .fc-box{position:relative;aspect-ratio:3/4;width:min(100%,360px);margin:0 auto;border-radius:16px;overflow:hidden;background:#000}.fc-box video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.fc-box.deitada .fc-oval{left:27%;right:27%;top:5%;bottom:5%}.fc-box video{display:block}.fc-oval{position:absolute;left:12%;right:12%;top:8%;bottom:10%;border:4px solid rgba(255,255,255,.75);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.35);transition:border-color .2s}.fc-oval[data-st=ok]{border-color:#3DC496}.fc-oval[data-st=erro]{border-color:#e5533d}.fc-diag{text-align:center;font-size:.72rem;margin:0 0 4px;min-height:1em}.fc-erro{color:var(--red);display:block}.fc-msg{text-align:center;font-weight:700;margin:10px 0 4px;min-height:1.4em}.rosto-box{margin-top:6px}
-.dup-g{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:var(--surface)}.dup-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}.dup-c{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.dup-c.fica{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}.dup-c.sai{opacity:.82}.dup-c.deixa{border-style:dashed}.dup-ed{all:unset;display:block;cursor:pointer;border-radius:6px;max-width:100%}.dup-ed:hover b,.dup-ed:focus-visible b{text-decoration:underline}.dup-ed:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.dup-edb{margin-top:6px}.dup-c.dup-novo{animation:dupNovo 1.6s ease}@keyframes dupNovo{0%{background:rgba(61,196,150,.35)}100%{background:transparent}}.dup-c.sai b{text-decoration:line-through;text-decoration-color:rgba(200,60,60,.7)}.dup-g.dup-ocup{opacity:.55;pointer-events:none}.dup-c .grow{flex:1;min-width:0}.dup-c small{display:block;color:var(--muted,#667);font-size:.8rem;overflow-wrap:anywhere}.dup-op{display:flex;flex-direction:column;gap:2px;flex:none;font-size:.88rem}.dup-pe{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:4px}.dup-pe small{flex:1 1 200px}
+.dup-g{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:var(--surface)}.dup-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}.dup-c{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.dup-c.fica{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}.dup-c.sai{opacity:.82}.dup-c.deixa{border-style:dashed}.cmp-src{display:none!important}.cmp{display:flex;flex-direction:column;gap:6px}.cmp-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:6px 8px;border:1px solid var(--line);border-radius:10px}.cmp-n{font-weight:600;flex:1 1 auto}.cmp-obs{flex:1 1 100%;min-width:0;order:2}.cmp-row .cmp-x{order:1}.cmp-x{border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:2px 6px}.cmp-add-w{position:relative}.cmp-menu{display:flex;flex-direction:column;margin-top:6px;border:1px solid var(--line);border-radius:10px;max-height:260px;overflow:auto;background:var(--surface)}.cmp-op{text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 12px;cursor:pointer;color:var(--ink)}.cmp-op:last-child{border-bottom:0}.cmp-vazio{margin:0;font-size:.85rem}.trow{position:relative;padding-right:34px}.trow .t-x{position:absolute;right:0;top:6px}.dup-lote{position:sticky;top:-14px;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:8px 10px;margin:8px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}.dup-lote .actions{margin-left:auto}.dup-g.dup-sel-on{outline:2px solid var(--primary,#2563eb);outline-offset:2px}.dup-ed{all:unset;display:block;cursor:pointer;border-radius:6px;max-width:100%}.dup-ed:hover b,.dup-ed:focus-visible b{text-decoration:underline}.dup-ed:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.dup-edb{margin-top:6px}.dup-c.dup-novo{animation:dupNovo 1.6s ease}@keyframes dupNovo{0%{background:rgba(61,196,150,.35)}100%{background:transparent}}.dup-c.sai b{text-decoration:line-through;text-decoration-color:rgba(200,60,60,.7)}.dup-g.dup-ocup{opacity:.55;pointer-events:none}.dup-c .grow{flex:1;min-width:0}.dup-c small{display:block;color:var(--muted,#667);font-size:.8rem;overflow-wrap:anywhere}.dup-op{display:flex;flex-direction:column;gap:2px;flex:none;font-size:.88rem}.dup-pe{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:4px}.dup-pe small{flex:1 1 200px}
 .ag-div{display:flex;flex-direction:column;gap:5px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:4px 0;background:var(--surface)}.ag-div .rf-chk{font-size:.92rem}
 .imp-orig{flex-wrap:wrap;margin:6px 0;display:flex}.imp-orig button{white-space:normal}
 .bt-imp-p{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px;cursor:pointer}.bt-imp-p input{margin:0;width:18px;height:18px}
@@ -2074,7 +2076,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 384;
+const APP_VER = 17, APP_BUILD = 385;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -2368,6 +2370,7 @@ const rotaPos = {}, rotaVolta = { n: 0, mexeu: false };
 const ROTA_SENHA = [];
 var ROTA_LIB = 0;
 function go(r, voltando) {
+  try { if (r !== 'inicio') VAL_MOSTRA_ATE = 0; } catch { }
   if (!planoTem(r)) { toast(`“${navNome(r)}” não faz parte do plano ${planoAtivo().nome} deste aplicativo.`); return; }
   const need = ROTA_PERM[r];
   if (need && !pode(need)) { pedirSenha(need, 'Liberar acesso: ' + navNome(r), () => { TMP.rota.clear(); TMP.rota.add(need); TMP.rotaR = r; go(r, voltando); }); return; }
@@ -2712,12 +2715,12 @@ function cartHTML() {
     ${field('Cliente', `<div style="display:flex;gap:6px"><select class="cli-sel" id="pdv-cli">${cliOpts(c.clienteId)}</select><button class="icon-btn" data-act="cli-new" data-target="pdv" aria-label="Novo cliente" title="Novo cliente">${ic('plus')}</button><button type="button" class="icon-btn" data-act="cli-edit-sel" data-target="pdv-cli" aria-label="Editar cliente" title="Editar o cliente escolhido">${ic('edit')}</button></div>`)}
     ${ehCel() && S.vendasTab !== 'hist' ? pdvCelBusca() : ''}
     <div class="cart-items">${c.itens.length ? c.itens.map((it, i) => `<div class="ci">
-      <span class="nm">${esc(it.nome)}${!it.produtoId ? `<span class="ci-av">Avulso${pode('produtos') ? ` · <button type="button" class="lnk" data-act="ci-cad" data-i="${i}" title="Cadastra este item como produto ou serviço definitivo">Tornar produto do cadastro</button>` : ''}</span>` : ''}</span><span class="mono" style="font-weight:600">${brl(it.qtd * it.preco)}</span>
+      <span class="nm">${esc(it.nome)}${!it.produtoId ? `<span class="ci-av">Avulso · <button type="button" class="lnk" data-act="ci-cad-aut" data-i="${i}" title="Cadastra este item como produto ou serviço definitivo (quem não tem permissão pede autorização)">Tornar produto do cadastro</button></span>` : ''}</span><span class="mono" style="font-weight:600">${brl(it.qtd * it.preco)}</span>
       ${atacItemTxt(it) ? `<div class="ci-atac">${atacItemTxt(it)}</div>` : ''}
       ${it.durN ? `<div class="ci-dur"><span>⏱ ${durTxt(it.durN, it.durU, it.qtd)} · válido de</span><input type="date" class="cart-ini" data-i="${i}" id="ci-ini-${i}" value="${esc(it.ini || today())}" aria-label="Início da validade"><span>até <b>${dBR(durFim(it.ini || today(), it.durN, it.durU, it.qtd))}</b></span></div>` : ''}
       <div class="ctl"><span class="qty"><button data-act="cart-qty" data-i="${i}" data-d="-1" aria-label="Diminuir">−</button><input class="cart-qtd" data-i="${i}" id="cq-${i}" value="${fmtQ(it.qtd)}" inputmode="decimal" aria-label="Quantidade" title="Toque e digite a quantidade"><button data-act="cart-qty" data-i="${i}" data-d="1" aria-label="Aumentar">+</button></span>
       <span class="muted" style="font-size:.8rem">× R$</span><input class="cart-preco mono" data-i="${i}" id="cp-${i}" value="${fmtNum(it.preco)}" inputmode="decimal" aria-label="Preço unitário">
-      <button class="btn sm ghost" data-act="cart-del" data-i="${i}" style="margin-left:auto">Remover</button></div></div>`).join('') : `<p class="muted" style="padding:18px 0;text-align:center">Busque um produto ou leia o código de barras para começar.</p>`}</div>
+      ${itemProdId(it) ? `<button class="btn sm ghost" data-act="item-prod-ed" data-pid="${esc(itemProdId(it))}" title="Editar o cadastro deste produto (quem não tem permissão pede autorização)" aria-label="Editar produto">${ic('edit')}</button>` : ''}<button class="btn sm ghost" data-act="cart-del" data-i="${i}" style="margin-left:auto">Remover</button></div></div>`).join('') : `<p class="muted" style="padding:18px 0;text-align:center">Busque um produto ou leia o código de barras para começar.</p>`}</div>
     <div class="fg" style="margin-top:12px">${field('Desconto', descBox('pdv-desc', c.descIn ?? c.desconto, c.descTipo))}${field('Frete (R$)', money('pdv-frete', 'frete', c.frete || ''))}${field('Acréscimo (R$)', money('pdv-acr', 'acrescimo', c.acrescimo || ''))}</div>
     ${atacadoAvisoHTML()}
     <div class="totals">${atacTotLinhas(c.itens, cartSub(), (c.atacInfo || {}).lim).map(([k, val, cl]) => `<div class="l${cl ? ' atac-l' : ''}"><span>${k}</span><span class="mono">${val < 0 ? '− ' + brl(-val) : brl(val)}</span></div>`).join('')}
@@ -3590,6 +3593,8 @@ function resizeLogo(file) {
 }
 
 /* --- linhas de itens (orçamento e aluguel) --- */
+/* v17: editar o produto direto do item (OS/laudo, orçamento, venda, PDV); sem permissão, pede autorização */
+const itemProdId = it => { if (!it) return ''; if (it.produtoId && get('produtos', it.produtoId)) return it.produtoId; const p = it.nome && S.produtos.find(x => x.tipo !== 'aluguel' && x.nome === it.nome); return p ? p.id : ''; };
 function itemRows() {
   const al = M.kind === 'alug';
   return `<div class="irow head"><span>${al ? 'Equipamento' : 'Peça, produto ou serviço'}</span><span>Qtd</span><span>${al ? 'Valor/' + perCurto(M.periodo) : 'Valor unit.'}</span><span style="text-align:right">Subtotal</span><span></span></div>` +
@@ -3598,12 +3603,12 @@ function itemRows() {
       <input class="ir-qtd" id="ir-q-${i}" data-i="${i}" inputmode="decimal" value="${fmtQ(it.qtd)}" aria-label="Quantidade">
       <input class="ir-val" id="ir-v-${i}" data-i="${i}" inputmode="decimal" value="${fmtNum(it.preco)}" aria-label="Valor">
       <span class="ir-sub mono" id="ir-s-${i}">${brl(it.qtd * it.preco)}</span>
-      <button type="button" class="icon-btn" data-act="ir-del" data-i="${i}" aria-label="Remover item">${ic('x')}</button></div>${!al && irAvulso(it) ? `<div class="ir-avulso" id="ir-av-${i}"><span title="Não está no cadastro: entra só neste documento">Avulso (fora do cadastro)</span>${pode('produtos') ? `<button type="button" class="lnk" data-act="ir-cad" data-i="${i}">· Cadastrar</button>` : ''}</div>` : `<div class="ir-avulso" id="ir-av-${i}" hidden></div>`}`).join('') +
+      <button type="button" class="icon-btn" data-act="ir-del" data-i="${i}" aria-label="Remover item">${ic('x')}</button></div>${!al && itemProdId(it) ? `<div class="ir-avulso ir-prod"><button type="button" class="lnk" data-act="item-prod-ed" data-pid="${esc(itemProdId(it))}" title="Abre o cadastro deste produto ou serviço para editar (quem não tem permissão pede autorização)">${ic('edit')} Editar o produto no cadastro</button></div>` : ''}${!al && irAvulso(it) ? `<div class="ir-avulso" id="ir-av-${i}"><span title="Não está no cadastro: entra só neste documento">Avulso (fora do cadastro)</span><button type="button" class="lnk" data-act="ir-cad-aut" data-i="${i}">· Cadastrar</button></div>` : `<div class="ir-avulso" id="ir-av-${i}" hidden></div>`}`).join('') +
     `<div class="ir-acoes"><button type="button" class="btn sm" data-act="ir-add">${ic('plus')}Adicionar ${al ? 'equipamento' : 'item do cadastro'}</button>${al ? '' : `<button type="button" class="btn sm" data-act="ir-avulso" title="Peça ou serviço que ainda não está cadastrado">${ic('edit')}Peça / serviço avulso</button>`}</div>`;
 }
 /* item digitado que não existe no catálogo: pode ser lançado assim mesmo ("avulso") ou cadastrado na hora */
 const irAvulso = it => !!(it && String(it.nome || '').trim() && !it.produtoId && !S.produtos.some(p => p.nome === it.nome && p.tipo !== 'aluguel'));
-function irAvAtualiza(i) { const it = M.itens && M.itens[i], el = $('#ir-av-' + i); if (!el) return; const av = irAvulso(it); el.hidden = !av; if (av && !el.innerHTML) el.innerHTML = `<span title="Não está no cadastro: entra só neste documento">Avulso (fora do cadastro)</span>${pode('produtos') ? `<button type="button" class="lnk" data-act="ir-cad" data-i="${i}">· Cadastrar</button>` : ''}`; }
+function irAvAtualiza(i) { const it = M.itens && M.itens[i], el = $('#ir-av-' + i); if (!el) return; const av = irAvulso(it); el.hidden = !av; if (av && !el.innerHTML) el.innerHTML = `<span title="Não está no cadastro: entra só neste documento">Avulso (fora do cadastro)</span><button type="button" class="lnk" data-act="ir-cad-aut" data-i="${i}">· Cadastrar</button>`; }
 queueMicrotask(() => {
 ACT['ir-avulso'] = () => { M.itens.push({ nome: '', qtd: 1, preco: 0, produtoId: null }); refreshRows(); const i = M.itens.length - 1, n = $('#ir-n-' + i); if (n) { n.removeAttribute('list'); n.placeholder = 'Descreva a peça ou o serviço (não precisa estar cadastrado)'; n.focus(); } };
 ACT['ci-cad'] = el => { const i = +el.dataset.i, it = S.cart.itens[i]; if (!it) return; const ov0 = $('#modals').children.length, nome = it.nome;
@@ -6224,8 +6229,9 @@ function osBody(o) {
 }
 
 function osForm(id) {
-  const o = id ? get('os', id) : { prioridade: 'normal', previsao: addDays(today(), 3), tecnico: S.names[S.me] || '' };
+  const o = id ? get('os', id) : { prioridade: 'normal', previsao: previsaoPara(TIPOS_EQ[0]), tecnico: S.names[S.me] || '' };
   openModal(id ? `Editar entrada — OS ${pad(o.numero)}` : 'Nova ordem de serviço', `<div class="xl-cols os-cols"><div class="xl-c">
+    ${id ? '' : `<button type="button" class="btn os-voz-b" data-act="os-voz" title="Preenche a OS falando: uma pergunta por vez (cliente, equipamento, defeito, previsão…). Ex.: diga “Maria Souza”, depois “impressora”, “HP”.">🎤 <b>OS por voz</b><small>responda falando</small></button>`}
     ${field('Cliente *', `<div style="display:flex;gap:6px"><select class="cli-sel" id="os-cli" name="clienteId">${cliOpts(o.clienteId, 'Selecione o cliente')}</select><button type="button" class="icon-btn" data-act="cli-new" data-target="os-cli" aria-label="Novo cliente" title="Novo cliente">${ic('plus')}</button><button type="button" class="icon-btn" data-act="cli-edit-sel" data-target="os-cli" aria-label="Editar cliente" title="Editar o cliente escolhido">${ic('edit')}</button></div>`)}
     <fieldset><legend>Equipamento</legend><div class="fg os-eq">
       ${eqLerHTML('os')}
@@ -6250,9 +6256,14 @@ function osForm(id) {
 }
 
 function testesRows() {
-  return M.testes.map((t, i) => `<div class="trow"><input id="t-n-${i}" class="t-nome" data-i="${i}" value="${esc(t.nome)}" aria-label="Teste">
+  /* v17 (regra): só aparecem os testes escolhidos; os outros ficam no “＋ Adicionar teste ▾” */
+  const vis = t => t.on || t.res || String(t.obs || '').trim() || (t.nome && !t.padrao && !t.res && t.novo);
+  const resto = M.testes.map((t, i) => [t, i]).filter(([t]) => !vis(t) && t.nome);
+  return M.testes.map((t, i) => vis(t) ? `<div class="trow"><button type="button" class="cmp-x t-x" data-act="lf-test-tira" data-i="${i}" title="Tirar este teste do laudo" aria-label="Tirar">×</button><input id="t-n-${i}" class="t-nome" data-i="${i}" value="${esc(t.nome)}" aria-label="Teste">
     <select id="t-r-${i}" class="t-res" data-i="${i}" aria-label="Resultado"><option value="">Não testado</option><option value="ok"${t.res === 'ok' ? ' selected' : ''}>OK</option><option value="falha"${t.res === 'falha' ? ' selected' : ''}>Com falha</option></select>
-    <input id="t-o-${i}" class="t-obs" data-i="${i}" value="${esc(t.obs || '')}" placeholder="Detalhe (opcional)" aria-label="Detalhe"></div>`).join('');
+    <input id="t-o-${i}" class="t-obs" data-i="${i}" value="${esc(t.obs || '')}" placeholder="Detalhe (opcional)" aria-label="Detalhe"></div>` : '').join('')
+    + `<div class="cmp-add-w"><button type="button" class="btn sm cmp-add" data-act="lf-test-menu">＋ Adicionar teste ▾</button><div class="cmp-menu" hidden>${resto.map(([t, i]) => `<button type="button" class="cmp-op" data-act="lf-test-on" data-i="${i}">${esc(t.nome)}</button>`).join('')}<button type="button" class="cmp-op" data-act="lf-test-add">✎ Outro teste (digitar)</button></div></div>`
+    + (M.testes.some(vis) ? '' : '<p class="muted" style="margin:4px 0 0;font-size:.85rem">Nenhum teste escolhido.</p>');
 }
 function laudoForm(id) {
   const o = get('os', id); if (!o) return; const L = o.laudo || {};
@@ -6417,7 +6428,10 @@ Object.assign(ACT, {
     const f = get('fotos', el.dataset.id); if (!f) return;
     if (await del('fotos', f.id)) { if (f.assetId && ASSETS) { try { await ASSETS.delete(f.assetId); } catch { } } closeModal(); toast('Foto apagada.'); }
   }),
-  'lf-test-add': () => { M.testes.push({ nome: '', res: '', obs: '' }); $('#lf-tests').innerHTML = testesRows(); const n = $('#t-n-' + (M.testes.length - 1)); if (n) n.focus(); }
+  'lf-test-menu': el => { const m = el.nextElementSibling; if (m) { m.hidden = !m.hidden; el.textContent = m.hidden ? '＋ Adicionar teste ▾' : '＋ Adicionar teste ▴'; } },
+  'lf-test-on': el => { const i = +el.dataset.i, x = M.testes[i]; if (!x) return; x.on = true; $('#lf-tests').innerHTML = testesRows(); const r = $('#t-r-' + i); if (r) r.focus(); },
+  'lf-test-tira': el => { const i = +el.dataset.i, x = M.testes[i]; if (!x) return; x.on = false; x.res = ''; x.obs = ''; if (x.novo && !x.padrao) M.testes.splice(i, 1); $('#lf-tests').innerHTML = testesRows(); },
+  'lf-test-add': () => { M.testes.push({ nome: '', res: '', obs: '', on: true, novo: true }); $('#lf-tests').innerHTML = testesRows(); const n = $('#t-n-' + (M.testes.length - 1)); if (n) n.focus(); }
 });
 document.addEventListener('input', e => {
   const t = e.target; if (!M.testes || !t.matches('.t-nome,.t-obs,.t-res')) return;
@@ -6446,7 +6460,7 @@ Object.assign(FORMS, {
     const o = get('os', f.dataset.id); if (!o) return;
     const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco) }));
     const subtotal = r2(sum(itens, i => i.qtd * i.preco)), desconto = descCalc(subtotal, d.descontoIn, d.descTipo), frete = num(d.frete), acrescimo = num(d.acrescimo), now = Date.now();
-    const laudo = { diagnostico: d.diagnostico.trim(), causa: d.causa, solucao: d.solucao, conclusao: d.conclusao, tecnico: d.tecnico, garantia: d.garantia, obs: d.obs, obsFim: (d.obsFim || '').trim(), testes: M.testes.filter(t => t.nome.trim()), at: (o.laudo && o.laudo.at) || now, atualizado: now, por: (o.laudo && o.laudo.por) || S.me };
+    const laudo = { diagnostico: d.diagnostico.trim(), causa: d.causa, solucao: d.solucao, conclusao: d.conclusao, tecnico: d.tecnico, garantia: d.garantia, obs: d.obs, obsFim: (d.obsFim || '').trim(), testes: M.testes.filter(t => t.nome.trim() && (t.on || t.res || String(t.obs || '').trim())).map(({ on, novo, padrao, ...t }) => t), at: (o.laudo && o.laudo.at) || now, atualizado: now, por: (o.laudo && o.laudo.por) || S.me };
     let status = o.status, hist = [...(o.historico || [])];
     if (d.marcarPronto) status = 'pronto'; else if (status === 'recebido') status = 'analise';
     if (status !== o.status) hist.push({ st: status, at: now, por: OPID(), obs: 'Laudo técnico registrado' });
@@ -7780,10 +7794,10 @@ function cfgImpressoras() {
     <div id="bt-imps">${btImpsHTML()}</div></section>`;
 }
 V.config = () => {
-  const t = S.cfgTab, tabs = [['pagamentos', 'Formas de pagamento'], ['fornecedores', 'Fornecedores e favorecidos'], ['itens', 'Produtos e serviços'], ['checklists', 'Checklists de entrada'], ['testes', 'Laudo técnico'], ['mensagens', 'Mensagens do WhatsApp'], ['modelos', 'Modelos de documentos'], ['aparencia', 'Aparência e atalhos'], ['impressoras', 'Impressoras'], ['agenda', 'Agenda Google'], ...(podeRota('funcionarios') ? [['funcionarios', `${ic('funcionarios')}Funcionários ›`]] : []), ['dados', 'Dados: importar, exportar e excluir']];
+  const t = S.cfgTab, tabs = [['pagamentos', 'Formas de pagamento'], ['fornecedores', 'Fornecedores e favorecidos'], ['itens', 'Produtos e serviços'], ['checklists', 'Checklists de entrada'], ['prazos', 'Previsão de entrega'], ['testes', 'Laudo técnico'], ['mensagens', 'Mensagens do WhatsApp'], ['modelos', 'Modelos de documentos'], ['aparencia', 'Aparência e atalhos'], ['impressoras', 'Impressoras'], ['agenda', 'Agenda Google'], ...(podeRota('funcionarios') ? [['funcionarios', `${ic('funcionarios')}Funcionários ›`]] : []), ['dados', 'Dados: importar, exportar e excluir']];
   return `<div class="page-head"><div><p class="eyebrow">Ajustes do sistema</p><h1>Configurações</h1></div><div class="actions"><button class="btn" data-act="cfg-print">${ic('print')}Imprimir relatório</button></div></div>
   <div class="seg cfg-tabs" role="tablist">${tabs.map(([k, l]) => `<button data-act="cfg-tab" data-t="${k}" class="${t === k ? 'on' : ''}">${l}</button>`).join('')}</div>
-  ${t === 'fornecedores' ? cfgFornecedores() : t === 'itens' ? cfgItens() : t === 'checklists' ? cfgChecklists() : t === 'testes' ? cfgTestes() : t === 'mensagens' ? cfgMensagens() : t === 'modelos' ? cfgModelos() : t === 'aparencia' ? cfgAparencia() : t === 'impressoras' ? cfgImpressoras() : t === 'agenda' ? cfgAgenda() : t === 'importar' || t === 'dados' ? cfgDados() : cfgPagamentos()}`;
+  ${t === 'fornecedores' ? cfgFornecedores() : t === 'itens' ? cfgItens() : t === 'checklists' ? cfgChecklists() : t === 'prazos' ? cfgPrazos() : t === 'testes' ? cfgTestes() : t === 'mensagens' ? cfgMensagens() : t === 'modelos' ? cfgModelos() : t === 'aparencia' ? cfgAparencia() : t === 'impressoras' ? cfgImpressoras() : t === 'agenda' ? cfgAgenda() : t === 'importar' || t === 'dados' ? cfgDados() : cfgPagamentos()}`;
 };
 function cfgPagamentos() {
   const c = cfgPag();
@@ -12085,7 +12099,9 @@ let rodapeEnxuto = function () {
 window.addEventListener('resize', () => { try { rodapeEnxuto(); } catch { } });
 document.addEventListener('pointerdown', e => { if (!e.target.closest || !e.target.closest('.sf-menu, .sf-mais')) document.querySelectorAll('.sf-menu').forEach(x => x.remove()); }, true);
 /* ======================= v364: olhinho da página inicial — esconde os valores em R$ (só asteriscos) ======================= */
-const valOcultos = () => { try { return lsGet('bancada-ocultar-val') === '1'; } catch { return false; } };
+/* v17: na página inicial os valores começam SEMPRE escondidos; o olho mostra por 1 minuto (ou até sair da página inicial) e esconde de novo sozinho */
+let VAL_MOSTRA_ATE = 0, VAL_T = 0;
+const valOcultos = () => !(Date.now() < VAL_MOSTRA_ATE);
 const RX_RS = /(R\$|−R\$|-R\$)[\s ]*-?[\d.]+(,\d+)?([\s ]*(mil|mi|bi)\b)?/g;
 function mascararValores(raiz) {
   if (!raiz) return; const w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement && !n.parentElement.closest('script,style,textarea,input,.ini-hora') && /R\$/.test(n.data) ? 1 : 2 }), L = [];
@@ -12093,7 +12109,9 @@ function mascararValores(raiz) {
   /* valor que vem separado do "R$" (ex.: <small>R$</small><b>1.234,56</b>) */
   raiz.querySelectorAll('.stat, .stat *, .home-grid b, .home-grid strong, .home-grid .mono').forEach(el => { if (el.children.length) return; const t = el.textContent; if (/^[\s ]*-?[\d.]+,\d{2}[\s ]*$/.test(t)) el.textContent = '*****'; });
 }
-ACT['ini-olho'] = () => { try { lsSet('bancada-ocultar-val', valOcultos() ? '0' : '1'); } catch { } render(); toast(valOcultos() ? 'Valores escondidos. Toque no olho para mostrar.' : 'Valores à mostra.'); };
+ACT['ini-olho'] = () => { clearTimeout(VAL_T); if (valOcultos()) { VAL_MOSTRA_ATE = Date.now() + 60000; VAL_T = setTimeout(() => { VAL_MOSTRA_ATE = 0; if (S.route === 'inicio') render(); }, 60000); } else VAL_MOSTRA_ATE = 0; render(); toast(valOcultos() ? 'Valores escondidos.' : 'Valores à mostra por 1 minuto. Depois escondem sozinhos.'); };
+addEventListener('hashchange', () => { if (S.route !== 'inicio') { VAL_MOSTRA_ATE = 0; clearTimeout(VAL_T); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { VAL_MOSTRA_ATE = 0; clearTimeout(VAL_T); } });
 /* medidas: texto curto com exemplo (segue o tipo do item) e ajuda completa no (?) */
 function medDica(pf) { const ex = pf && pf.k === 'toner' ? 'toner 110 g' : pf && (pf.k === 'tinta' || pf.k === 'cartucho') ? 'tinta 70 ml · galão 5 L' : pf && pf.k === 'cabo' ? 'cabo 1,5 m' : 'tinta 70 ml · toner 110 g · galão 5 L'; return `Quanto o item tem de conteúdo, peso ou tamanho. Ex.: ${ex}. Marque a principal: é por ela que o estoque baixa.`; }
 ACT['med-ajuda'] = () => openModal('O que colocar em Medidas', `<p style="margin-top:0">Informe quanto o item tem de <b>conteúdo, peso ou tamanho</b>. Pode ter mais de uma medida.</p>
@@ -12991,6 +13009,230 @@ setTimeout(() => { try { Object.assign(ACT_PERM, { 'cfa-foto': '', 'cfa-nativa':
   new MutationObserver(marca).observe(md, { childList: true }); marca();
   document.addEventListener('touchmove', e => { const t = e.target; if (t && t.closest && t.closest('.sheet-f, .bottom') && !t.closest('.ul-menu')) e.preventDefault(); }, { passive: false });
 })();
+/* v17 (regra de todo o aplicativo): listas de marcar com muitas opções (6 ou mais) não aparecem inteiras.
+   Ficam só os itens escolhidos (cada um com o espaço de observação, onde ela é guardada) e o botão “＋ Adicionar ▾”, que abre todas as opções.
+   Escolheu uma: ela entra marcada e aparece o espaço de observação logo abaixo; dá para adicionar outra e outra. */
+function cmpPreparar(raiz) {
+  (raiz || document).querySelectorAll('.chks:not([data-cmp])').forEach(box => {
+    const cbs = box.querySelectorAll('input[type=checkbox]'); if (cbs.length < 6) return;
+    box.dataset.cmp = '1'; box.classList.add('cmp-src'); const ui = document.createElement('div'); ui.className = 'cmp'; box.after(ui); cmpPintar(box);
+  });
+}
+const cmpTxt = cb => ((cb.closest('label') || cb.parentElement || {}).textContent || cb.value || '').trim();
+function cmpPintar(box, foco) {
+  const ui = box.nextElementSibling; if (!ui || !ui.classList.contains('cmp')) return;
+  const cbs = [...box.querySelectorAll('input[type=checkbox]')], obsOk = !!box.closest('#os-chkbox'), aberto = !!ui.querySelector('.cmp-menu:not([hidden])');
+  const sel = cbs.filter(c => c.checked), resto = cbs.filter(c => !c.checked && !c.closest('.chq-oculta')); /* opção do mesmo grupo de uma já marcada (ex.: “Liga normalmente” × “Liga com falha”) não aparece */
+  ui.innerHTML = sel.map(c => { const i = cbs.indexOf(c); return `<div class="cmp-row"><span class="cmp-n">✓ ${esc(cmpTxt(c))}</span>${obsOk ? `<input class="cmp-obs" data-i="${i}" value="${esc(c.dataset.obs || '')}" placeholder="Observação (opcional). Ex.: no canto superior" autocomplete="off">` : ''}<button type="button" class="cmp-x" data-i="${i}" title="Tirar" aria-label="Tirar">×</button></div>`; }).join('')
+    + (sel.length ? '' : '<p class="muted cmp-vazio">Nada marcado.</p>')
+    + (resto.length ? `<div class="cmp-add-w"><button type="button" class="btn sm cmp-add">＋ Adicionar ${aberto ? '▴' : '▾'}</button><div class="cmp-menu"${aberto ? '' : ' hidden'}>${resto.map(c => `<button type="button" class="cmp-op" data-i="${cbs.indexOf(c)}">${esc(cmpTxt(c))}</button>`).join('')}</div></div>` : '');
+  if (foco != null) { const o = ui.querySelector(`.cmp-obs[data-i="${foco}"]`); if (o) try { o.focus(); } catch { } }
+}
+document.addEventListener('click', e => {
+  const t = e.target; if (!t || !t.closest) return; const ui = t.closest('.cmp'); if (!ui) return; const box = ui.previousElementSibling; if (!box || !box.dataset.cmp) return;
+  const cbs = [...box.querySelectorAll('input[type=checkbox]')];
+  if (t.closest('.cmp-add')) { const m = ui.querySelector('.cmp-menu'); if (m) { m.hidden = !m.hidden; t.closest('.cmp-add').textContent = '＋ Adicionar ' + (m.hidden ? '▾' : '▴'); } return; }
+  const op = t.closest('.cmp-op'), x = t.closest('.cmp-x'); if (!op && !x) return;
+  const cb = cbs[+(op || x).dataset.i]; if (!cb) return; e.preventDefault();
+  cb.checked = !!op; if (!op) cb.dataset.obs = ''; cb.dispatchEvent(new Event('change', { bubbles: true }));
+  const m = ui.querySelector('.cmp-menu'); if (m) m.hidden = true; setTimeout(() => cmpPintar(box, op ? cbs.indexOf(cb) : null), 0);
+});
+document.addEventListener('input', e => { const t = e.target; if (!t || !t.classList || !t.classList.contains('cmp-obs')) return; const box = t.closest('.cmp') && t.closest('.cmp').previousElementSibling; const cb = box && box.querySelectorAll('input[type=checkbox]')[+t.dataset.i]; if (cb) cb.dataset.obs = t.value; });
+let CMP_T = 0; new MutationObserver(() => { clearTimeout(CMP_T); CMP_T = setTimeout(() => { cmpPreparar(document.getElementById('modals')); cmpPreparar(document.getElementById('view')); }, 60); }).observe(document.body, { childList: true, subtree: true });
+/* ======================= v17: OS por voz =======================
+   Fica no topo da Nova OS. Uma etapa por vez: a pergunta aparece em letras grandes, o aplicativo escuta e mostra o que entendeu,
+   com opções para tocar. Preenche os campos da própria Nova OS; no fim, a pessoa confere e toca em Registrar entrada.
+   Falar as perguntas em voz alta é opcional (padrão: só na tela). */
+const VZ_ETAPAS = [
+  { k: 'cliente', q: 'Qual é o cliente?', dica: 'Diga o nome ou o telefone. Ex.: “Maria Souza” ou “81 99999 1234”.' },
+  { k: 'equip', q: 'Como quer informar o equipamento?', dica: 'Tire a foto da etiqueta, leia o código ou diga “narrar”.' },
+  { k: 'tipo', q: 'Qual é o tipo do equipamento?', dica: 'Ex.: “impressora”, “notebook”, “celular”.' },
+  { k: 'marca', q: 'Qual é a marca?', dica: 'Ex.: “HP”, “Dell”, “Samsung”.' },
+  { k: 'modelo', q: 'Qual é o modelo?', dica: 'Diga o nome ou toque numa opção da lista. Ex.: “LaserJet M1132”.' },
+  { k: 'serie', q: 'Qual é o número de série?', dica: 'Diga letra por letra, ou “pular”.' },
+  { k: 'senha', q: 'Tem senha ou PIN?', dica: 'Diga a senha, ou “não tem”.' },
+  { k: 'acess', q: 'Quais acessórios ficaram?', dica: 'Ex.: “fonte e cabo de energia”, ou “nenhum”.' },
+  { k: 'estado', q: 'Como está o equipamento?', dica: 'Ex.: “carcaça riscada, tela trincada no canto”.' },
+  { k: 'defeito', q: 'Qual é o defeito relatado pelo cliente?', dica: 'Ex.: “não liga”, “mancha na impressão”.' },
+  { k: 'prev', q: 'Qual é a previsão de entrega?', dica: 'Ex.: “sexta-feira”, “daqui a 3 dias”, “dia 15”.' },
+  { k: 'fim', q: 'Confira e conclua', dica: 'Toque num item para voltar a ele. Diga “concluir” para terminar.' }
+];
+const VZ = { i: 0, txt: '', ouvindo: false, rec: null, ops: [] };
+const vzFalarOn = () => { try { return lsGet('bancada-voz-falar') === '1'; } catch { return false; } };
+const vzSR = () => window.SpeechRecognition || window.webkitSpeechRecognition;
+function vzFalar(t) { if (!vzFalarOn() || !window.speechSynthesis) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'pt-BR'; speechSynthesis.speak(u); } catch { } }
+const vzEl = id => document.getElementById(id);
+function vzVal(id) { const e = vzEl(id); if (!e) return ''; return e.tagName === 'SELECT' ? (e.value ? e.options[e.selectedIndex].text : '') : e.value; }
+function vzPor(id, v) { const e = vzEl(id); if (!e) return; if (e.tagName === 'SELECT') { let o = [...e.options].find(o => norm(o.text) === norm(v) || o.value === v); if (!o) { o = document.createElement('option'); o.textContent = v; e.appendChild(o); } e.value = o.value; e.dispatchEvent(new Event('change', { bubbles: true })); return; } e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }
+ACT['os-voz'] = () => {
+  if (!vzEl('os-cli')) { toast('Abra a Nova OS primeiro.'); return; }
+  VZ.i = VZ.retomar ? VZ_ETAPAS.findIndex(e => e.k === 'tipo') : 0; VZ.retomar = false; VZ.txt = ''; VZ.ops = [];
+  openModal('OS por voz', `<div class="vz"><div class="vz-passo" id="vz-passo"></div><h2 class="vz-q" id="vz-q"></h2><p class="muted vz-dica" id="vz-dica"></p>
+    <div class="vz-ouvido" id="vz-ouvido" aria-live="polite"></div><div class="vz-ops" id="vz-ops"></div>
+    <div class="vz-mic"><button type="button" class="btn vz-mic-b" id="vz-mic" data-act="vz-ouvir">🎤 Falar</button><input id="vz-txt" placeholder="Ou digite aqui e toque em Próximo" autocomplete="off"></div>
+    <label class="rf-chk vz-falar"><input type="checkbox" id="vz-falar"${vzFalarOn() ? ' checked' : ''}> Ler as perguntas em voz alta</label></div>`,
+    `<button type="button" class="btn" data-act="vz-voltar">← Voltar</button><button type="button" class="btn" data-act="vz-pular">Pular</button><button type="button" class="btn" data-act="close">Fechar</button><button type="button" class="btn primary" data-act="vz-prox">Próximo →</button>`, { wide: true });
+  vzMostrar();
+};
+function vzMostrar() {
+  const E = VZ_ETAPAS[VZ.i]; if (!E || !vzEl('vz-q')) return; vzParar(); VZ.txt = ''; VZ.ops = [];
+  vzEl('vz-passo').textContent = `Etapa ${VZ.i + 1} de ${VZ_ETAPAS.length}`; vzEl('vz-q').textContent = E.q; vzEl('vz-dica').textContent = E.dica;
+  vzEl('vz-ouvido').innerHTML = ''; vzEl('vz-txt').value = ''; vzEl('vz-txt').hidden = E.k === 'fim'; vzEl('vz-mic').hidden = E.k === 'fim' || E.k === 'equip';
+  const prox = document.querySelector('[data-act="vz-prox"]'); if (prox) prox.textContent = E.k === 'fim' ? 'Concluir ✓' : 'Próximo →';
+  vzOpcoes(''); vzFalar(E.q);
+  if (E.k !== 'fim' && E.k !== 'equip' && vzSR()) setTimeout(() => vzOuvir(), vzFalarOn() ? 1600 : 250);
+}
+/* opções de cada etapa (filtradas pelo que foi dito) */
+function vzOpcoes(t) {
+  const E = VZ_ETAPAS[VZ.i], box = vzEl('vz-ops'); if (!box) return; const q = norm(t || ''), dq = String(t || '').replace(/\D/g, '');
+  let ops = [];
+  if (E.k === 'cliente') {
+    if (q.length >= 2 || dq.length >= 4) { const pal = q.split(/\s+/).filter(x => x.length > 1);
+      ops = S.clientes.filter(c => !c.excluido).map(c => { const n = norm(c.nome || ''), tel = agTelsCli(c).join(' ').replace(/\D/g, ''); let p = 0; if (dq.length >= 4 && tel.includes(dq)) p += 10; pal.forEach(w => { if (n.includes(w)) p += 2; }); if (n.startsWith(pal[0] || '\u0000')) p += 1; return [c, p]; }).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]).slice(0, 6)
+        .map(([c]) => ({ v: c.id, t: c.nome, s: agTelsCli(c)[0] || '' }));
+      ops.push({ v: '__novo', t: `＋ Cadastrar novo cliente${t ? ': “' + t + '”' : ''}`, s: 'nome e telefone que você disse' }); }
+  } else if (E.k === 'equip') ops = [{ v: 'foto', t: '📷 Tirar foto da etiqueta' }, { v: 'codigo', t: '▦ Ler código de barras / QR' }, { v: 'narrar', t: '🎤 Narrar (tipo, marca e modelo)' }];
+  else if (E.k === 'tipo') ops = TIPOS_EQ.filter(x => !q || norm(x).includes(q) || q.includes(norm(x).split(' ')[0])).map(x => ({ v: x, t: x }));
+  else if (E.k === 'marca') { const M0 = [...new Set([...S.os.map(o => o.marca).filter(Boolean), ...((S.marcas || []).map(m => m.nome || m))])].sort(); ops = M0.filter(x => !q || norm(x).includes(q)).slice(0, 12).map(x => ({ v: x, t: x })); }
+  else if (E.k === 'modelo') ops = vzModelos().filter(x => !q || q.split(/\s+/).every(w => norm(x).includes(w))).slice(0, 15).map(x => ({ v: x, t: x }));
+  else if (E.k === 'acess') { const A = [...document.querySelectorAll('#os-accbox [data-v], #os-accbox button')].map(b => (b.dataset.v || b.textContent).replace(/^[+✓]\s*/, '').trim()).filter(Boolean); ops = [...new Set(A)].map(x => ({ v: x, t: x })); }
+  else if (E.k === 'estado') { const C = [...document.querySelectorAll('#os-chkbox .chks input[type=checkbox]')]; ops = C.filter(c => !c.checked && !c.closest('.chq-oculta')).map(c => ({ v: c.value, t: c.value })); }
+  else if (E.k === 'prev') ops = [{ v: previsaoPara(vzVal('os-tipo')), t: `Prazo padrão de ${vzVal('os-tipo') || 'equipamento'} (${prazoOS(vzVal('os-tipo'))} dias) · ${dBR(previsaoPara(vzVal('os-tipo')))}` }, ...[['hoje', 0], ['amanhã', 1], ['2 dias', 2], ['3 dias', 3], ['1 semana', 7]].map(([t0, n]) => ({ v: addDays(today(), n), t: t0 + ' · ' + dBR(addDays(today(), n)) }))];
+  else if (E.k === 'fim') { const R = vzResumo(); box.innerHTML = `<div class="vz-res">${R.map(([k, l, v]) => `<button type="button" class="vz-res-i" data-act="vz-ir" data-k="${k}"><span>${l}</span><b>${esc(v || '—')}</b></button>`).join('')}</div>`; return; }
+  VZ.ops = ops;
+  box.innerHTML = ops.length ? ops.map((o, n) => `<button type="button" class="vz-op" data-act="vz-op" data-n="${n}"><span class="vz-n">${n + 1}</span><span class="grow"><b>${esc(o.t)}</b>${o.s ? `<small>${esc(o.s)}</small>` : ''}</span></button>`).join('') : (E.k === 'modelo' && VZ.carregando ? '<p class="muted"><span class="spin"></span> Buscando a lista de modelos…</p>' : '');
+}
+function vzResumo() { return [['cliente', 'Cliente', vzVal('os-cli')], ['tipo', 'Tipo', vzVal('os-tipo')], ['marca', 'Marca', vzVal('os-marca')], ['modelo', 'Modelo', vzVal('os-modelo')], ['serie', 'Nº de série', vzVal('os-serie')], ['senha', 'Senha', vzVal('pw-txt') ? '••••' : ''], ['acess', 'Acessórios', vzVal('os-acc')], ['estado', 'Estado', [...document.querySelectorAll('#os-chkbox .chks input:checked')].map(c => c.value).concat(vzVal('os-est') || []).filter(Boolean).join(', ')], ['defeito', 'Defeito', vzVal('os-def')], ['prev', 'Previsão', vzVal('os-prev') ? dBR(vzVal('os-prev')) : '']]; }
+/* lista de modelos: os que já apareceram nas OS + catálogo guardado na nuvem por 7 dias (pedido à IA quando falta ou venceu) */
+function vzModelos() {
+  const tipo = vzVal('os-tipo'), marca = vzVal('os-marca'), k = norm(tipo + '|' + marca), cat = get('ajustes', 'modelos-catalogo') || {}, c = (cat.lista || {})[k];
+  const hist = S.os.filter(o => norm(o.marca || '') === norm(marca) && (!tipo || o.tipoEquip === tipo)).map(o => o.modelo).filter(Boolean);
+  if (marca && (!c || Date.now() - (c.at || 0) > 7 * 864e5) && !VZ.carregando && !VZ.pedido?.[k]) vzModelosIA(tipo, marca, k);
+  return [...new Set([...hist, ...((c && c.m) || [])])];
+}
+async function vzModelosIA(tipo, marca, k) {
+  VZ.pedido = VZ.pedido || {}; VZ.pedido[k] = 1; VZ.carregando = true; vzOpcoes(VZ.txt);
+  try { const s = await iaSample(); if (!s) throw 0;
+    const r = await comPrazo(s.json(`Liste os modelos de ${tipo} da marca ${marca} vendidos no Brasil (dos mais recentes aos mais antigos, inclusive os mais comuns em assistência técnica). Responda SOMENTE um JSON {"modelos": ["...", "..."]} com até 60 nomes curtos de modelo (sem a marca). Não invente.`), 45000, 'ia_lenta');
+    const L = ((r && r.modelos) || []).map(x => String(x).trim()).filter(Boolean).slice(0, 80);
+    if (L.length) { const cat = get('ajustes', 'modelos-catalogo') || {}; const lista = { ...(cat.lista || {}), [k]: { m: L, at: Date.now() } }; await save('ajustes', 'modelos-catalogo', { ...cat, lista }); }
+  } catch { } finally { VZ.carregando = false; if (VZ_ETAPAS[VZ.i] && VZ_ETAPAS[VZ.i].k === 'modelo') vzOpcoes(VZ.txt); }
+}
+/* escuta */
+function vzParar() { try { VZ.rec && VZ.rec.abort(); } catch { } VZ.rec = null; VZ.ouvindo = false; const b = vzEl('vz-mic'); if (b) { b.classList.remove('on'); b.textContent = '🎤 Falar'; } }
+function vzOuvir() {
+  const SR = vzSR(); if (!SR) { toast('Este navegador não reconhece voz. Digite no campo.'); return; } if (VZ.ouvindo) { vzParar(); return; }
+  const r = new SR(); r.lang = 'pt-BR'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1; VZ.rec = r; VZ.ouvindo = true;
+  const b = vzEl('vz-mic'); if (b) { b.classList.add('on'); b.textContent = '● Ouvindo… (toque para parar)'; }
+  let final = '';
+  r.onresult = ev => { let t = ''; for (let i = 0; i < ev.results.length; i++) { t += ev.results[i][0].transcript; if (ev.results[i].isFinal) final = t; } VZ.txt = t.trim(); const o = vzEl('vz-ouvido'); if (o) o.innerHTML = `“${esc(VZ.txt)}”`; vzOpcoes(VZ.txt); };
+  r.onerror = e => { if (e && e.error === 'not-allowed') toast('Permita o uso do microfone para o aplicativo.'); };
+  r.onend = () => { VZ.ouvindo = false; const b2 = vzEl('vz-mic'); if (b2) { b2.classList.remove('on'); b2.textContent = '🎤 Falar'; } if (final) vzComando(final.trim()); };
+  try { r.start(); } catch { vzParar(); }
+}
+/* o que foi dito: comando, número da opção ou resposta */
+function vzComando(t) {
+  const n = norm(t), E = VZ_ETAPAS[VZ.i];
+  if (/^(voltar|volta)$/.test(n)) return ACT['vz-voltar']();
+  if (/^(pular|proximo|próximo|nao tem|não tem|nenhum|nenhuma|sem senha)$/.test(n)) return ACT['vz-pular']();
+  if (/^(concluir|terminar|finalizar)$/.test(n)) { VZ.i = VZ_ETAPAS.length - 1; return ACT['vz-prox'](); }
+  const ord = { primeiro: 1, primeira: 1, um: 1, segundo: 2, segunda: 2, dois: 2, terceiro: 3, terceira: 3, tres: 3, quarto: 4, quarta: 4, quatro: 4, quinto: 5, quinta: 5, cinco: 5, sexto: 6, seis: 6 };
+  const m = n.match(/^(?:o |a |opcao |numero )?(\d|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|quint[oa]|sexto|um|dois|tres|quatro|cinco|seis)$/);
+  if (m && VZ.ops.length) { const k = /^\d$/.test(m[1]) ? +m[1] : ord[m[1]]; if (VZ.ops[k - 1]) return vzEscolher(VZ.ops[k - 1]); }
+  if (E.k === 'cliente') return; /* mostra os clientes parecidos; a pessoa toca ou diz “o primeiro” */
+  if (E.k === 'modelo' && VZ.ops.length === 1 && norm(VZ.ops[0].t) === n) return vzEscolher(VZ.ops[0]);
+  if (['tipo', 'marca', 'modelo', 'serie', 'senha', 'acess', 'estado', 'defeito', 'prev'].includes(E.k)) { vzEl('vz-txt').value = t; ACT['vz-prox'](); }
+}
+async function vzEscolher(o) {
+  const E = VZ_ETAPAS[VZ.i];
+  if (E.k === 'cliente') {
+    if (o.v === '__novo') { const t = VZ.txt || vzEl('vz-txt').value || '', tel = (t.match(/[\d\s()-]{8,}/) || [''])[0].replace(/\D/g, ''), nome = t.replace(/[\d()-]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!nome) { toast('Diga o nome do cliente (e o telefone, se tiver).'); return; }
+      const id = uid(), dados = { nome: nome.replace(/\b\p{L}/gu, c => c.toUpperCase()), telefone: tel ? telFmt(tel) : '', at: Date.now(), por: OPID() };
+      if (!(await save('clientes', id, dados))) return; try { agAoSalvar(id, get('clientes', id), null); } catch { }
+      const sel = vzEl('os-cli'); if (sel) { const op = document.createElement('option'); op.value = id; op.textContent = dados.nome; sel.appendChild(op); sel.value = id; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+      toastOk('Cliente cadastrado: ' + dados.nome + (dados.telefone ? ' · ' + dados.telefone : '') + '.'); }
+    else { const sel = vzEl('os-cli'); if (sel) { if (![...sel.options].some(x => x.value === o.v)) { const op = document.createElement('option'); op.value = o.v; op.textContent = o.t; sel.appendChild(op); } sel.value = o.v; sel.dispatchEvent(new Event('change', { bubbles: true })); } }
+    return vzAvancar();
+  }
+  if (E.k === 'equip') {
+    if (o.v === 'narrar') return vzAvancar();
+    if (o.v === 'codigo') { VZ.retomar = true; closeModal(); setTimeout(() => ACT['cam-scan']({ dataset: { target: 'eq:os' } }), 50); toast('Depois de ler, toque de novo em “OS por voz”: ele continua do tipo do equipamento, já preenchido.', 7000); return; }
+    if (o.v === 'foto') { VZ.retomar = true; const i = document.querySelector('input.eq-idfoto[data-p="os"]'); closeModal(); if (i) setTimeout(() => i.closest('label') ? i.closest('label').click() : i.click(), 50); toast('Depois da foto, toque de novo em “OS por voz”: ele continua do tipo do equipamento, já preenchido.', 7000); return; }
+  }
+  if (E.k === 'tipo') vzPor('os-tipo', o.v); else if (E.k === 'marca') vzPor('os-marca', o.v); else if (E.k === 'modelo') vzPor('os-modelo', o.v);
+  else if (E.k === 'acess') { const a = vzVal('os-acc'); vzPor('os-acc', [a, o.v].filter(Boolean).join(', ')); vzOpcoes(''); return; }
+  else if (E.k === 'estado') { const c = [...document.querySelectorAll('#os-chkbox .chks input[type=checkbox]')].find(x => x.value === o.v); if (c) { c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); } vzOpcoes(''); return; }
+  else if (E.k === 'prev') vzPor('os-prev', o.v);
+  vzAvancar();
+}
+function vzAvancar() { if (VZ.i < VZ_ETAPAS.length - 1) { VZ.i++; vzMostrar(); } }
+/* datas faladas */
+function vzData(t) {
+  const n = norm(t), hoje = today(), sem = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'], meses = ['janeiro', 'fevereiro', 'marco', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  if (/hoje/.test(n)) return hoje; if (/depois de amanha/.test(n)) return addDays(hoje, 2); if (/amanha/.test(n)) return addDays(hoje, 1);
+  let m = n.match(/(\d+)\s*(dia|dias|semana|semanas)/); if (m) return addDays(hoje, +m[1] * (/semana/.test(m[2]) ? 7 : 1));
+  if (/uma semana|1 semana/.test(n)) return addDays(hoje, 7);
+  const ws = sem.findIndex(w => n.includes(w)); if (ws >= 0) { const d = new Date(); let k = (ws - d.getDay() + 7) % 7; if (!k) k = 7; return addDays(hoje, k); }
+  m = n.match(/dia\s*(\d{1,2})(?:\s*de\s*([a-z]+))?/) || n.match(/^(\d{1,2})(?:\s*de\s*([a-z]+))?$/) || n.match(/(\d{1,2})\/(\d{1,2})/);
+  if (m) { const d = new Date(); let mes = d.getMonth(); if (m[2]) { const mi = /^\d+$/.test(m[2]) ? +m[2] - 1 : meses.indexOf(m[2]); if (mi >= 0) mes = mi; } else if (+m[1] < d.getDate()) mes++; const dt = new Date(d.getFullYear() + (mes > 11 ? 1 : 0), mes % 12, +m[1]); if (dt < new Date(d.toDateString())) dt.setFullYear(dt.getFullYear() + 1); return isoOf(dt); }
+  return '';
+}
+function vzAplicarTexto(t) {
+  const E = VZ_ETAPAS[VZ.i]; t = String(t || '').trim(); if (!t) return true;
+  if (E.k === 'cliente') { if (VZ.ops.length) { vzEscolher(VZ.ops[0]); return false; } return true; }
+  if (E.k === 'tipo') { const tp = TIPOS_EQ.find(x => norm(x) === norm(t)) || tipoDoTexto(t) || (VZ.ops[0] && VZ.ops[0].v); if (tp) vzPor('os-tipo', tp); }
+  else if (E.k === 'marca') vzPor('os-marca', t.replace(/\b\p{L}/gu, c => c.toUpperCase()));
+  else if (E.k === 'modelo') vzPor('os-modelo', (VZ.ops.length === 1 ? VZ.ops[0].v : t));
+  else if (E.k === 'serie') vzPor('os-serie', t.toUpperCase().replace(/\s+/g, ''));
+  else if (E.k === 'senha') { const p = vzEl('pw-txt'); if (p) { p.value = t.replace(/\s+/g, ''); p.dispatchEvent(new Event('input', { bubbles: true })); } }
+  else if (E.k === 'acess') { const a = vzVal('os-acc'); vzPor('os-acc', [a, t].filter(Boolean).join(', ')); }
+  else if (E.k === 'estado') { const C = [...document.querySelectorAll('#os-chkbox .chks input[type=checkbox]')], resto = [];
+    t.split(/,| e /).map(x => x.trim()).filter(Boolean).forEach(parte => { const np = norm(parte), c = C.find(x => !x.checked && (norm(x.value).includes(np) || np.includes(norm(x.value)))); if (c) { c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); } else resto.push(parte); });
+    if (resto.length) { const e0 = vzVal('os-est'); vzPor('os-est', [e0, resto.join(', ')].filter(Boolean).join(', ')); } }
+  else if (E.k === 'defeito') vzPor('os-def', [vzVal('os-def'), t].filter(Boolean).join('. '));
+  else if (E.k === 'prev') { const d = vzData(t); if (!d) { toast('Não entendi a data. Ex.: “sexta-feira” ou “daqui a 3 dias”.'); return false; } vzPor('os-prev', d); }
+  return true;
+}
+Object.assign(ACT, {
+  'vz-ouvir': () => vzOuvir(),
+  'vz-op': el => { const o = VZ.ops[+el.dataset.n]; if (o) vzEscolher(o); },
+  'vz-voltar': () => { if (VZ.i > 0) { VZ.i--; vzMostrar(); } },
+  'vz-pular': () => { if (VZ.i < VZ_ETAPAS.length - 1) { VZ.i++; vzMostrar(); } },
+  'vz-ir': el => { const i = VZ_ETAPAS.findIndex(e => e.k === el.dataset.k); if (i >= 0) { VZ.i = i; vzMostrar(); } },
+  'vz-prox': () => { const E = VZ_ETAPAS[VZ.i]; if (E.k === 'fim') { vzParar(); closeModal(); toastOk('OS preenchida. Confira os campos e toque em “Registrar entrada”.'); return; }
+    const t = (vzEl('vz-txt') || {}).value || VZ.txt; if (vzAplicarTexto(t) === false) return; vzAvancar(); }
+});
+document.addEventListener('change', e => { if (e.target && e.target.id === 'vz-falar') { try { lsSet('bancada-voz-falar', e.target.checked ? '1' : '0'); } catch { } if (e.target.checked) vzFalar(VZ_ETAPAS[VZ.i].q); else try { speechSynthesis.cancel(); } catch { } } });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'vz-txt') { e.preventDefault(); ACT['vz-prox'](); } });
+document.addEventListener('input', e => { if (e.target && e.target.id === 'vz-txt') { VZ.txt = e.target.value; vzOpcoes(VZ.txt); } });
+new MutationObserver(() => { if (VZ.rec && !vzEl('vz-q')) vzParar(); }).observe(document.getElementById('modals'), { childList: true });
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'os-voz': 'os', 'vz-ouvir': '', 'vz-op': '', 'vz-voltar': '', 'vz-pular': '', 'vz-ir': '', 'vz-prox': '' }); Object.assign(AJUDA, { 'os-voz': 'Preenche a OS falando: cliente, equipamento, defeito, previsão… uma pergunta por vez. Ex.: diga “Maria Souza”, depois “impressora”, “HP”…', 'vz-ouvir': 'Liga o microfone para responder falando.', 'vz-prox': 'Usa o que foi dito ou digitado e passa para a próxima pergunta.', 'vz-pular': 'Deixa esta pergunta em branco e passa para a próxima.', 'vz-voltar': 'Volta para a pergunta anterior.' }); } catch { } }, 0);
+/* v17: previsão de entrega da OS configurável — um padrão geral e, se quiser, um prazo para cada tipo de equipamento
+   (ex.: impressora 5 dias, notebook 3 dias), em dias corridos ou só dias úteis. Configurações → Previsão de entrega. */
+const prazosDoc = () => get('ajustes', 'prazos-os') || {};
+function prazoOS(tipo) { const d = prazosDoc(), n = (d.porTipo || {})[tipo]; return Number.isFinite(+n) && n !== '' && n != null ? +n : Number.isFinite(+d.padrao) && d.padrao !== '' && d.padrao != null ? +d.padrao : 3; }
+function previsaoPara(tipo) { const n = prazoOS(tipo); if (!prazosDoc().uteis) return addDays(today(), n); let d = today(), k = 0; while (k < n) { d = addDays(d, 1); const w = new Date(d + 'T12:00:00').getDay(); if (w !== 0 && w !== 6) k++; } return d; }
+function cfgPrazos() {
+  const d = prazosDoc(), tipos = [...new Set([...TIPOS_EQ, ...cbValores('tipoEquip')])];
+  return `<section class="panel"><div class="panel-head"><div><h2>Previsão de entrega da OS</h2><p class="muted" style="font-size:.85rem">Quantos dias depois da entrada a OS nova já vem com a previsão de entrega. Ex.: impressora 5 dias, notebook 3 dias. Dá para mudar a data em cada OS.</p></div></div>
+    <div class="fg" style="max-width:520px">${field('Padrão para todos os equipamentos (dias)', `<input type="number" min="0" max="365" id="pz-padrao" value="${esc(d.padrao ?? 3)}" inputmode="numeric">`)}
+      <label class="rf-chk" style="grid-column:1/-1"><input type="checkbox" id="pz-uteis"${d.uteis ? ' checked' : ''}> Contar só dias úteis (pula sábado e domingo)</label></div>
+    <p class="muted" style="font-size:.85rem;margin:12px 0 6px">Prazo diferente por tipo de equipamento (deixe em branco para usar o padrão):</p>
+    <div class="pz-l">${tipos.map(t => `<label class="pz-r"><span>${esc(t)}</span><input type="number" min="0" max="365" class="pz-t" data-t="${esc(t)}" value="${esc((d.porTipo || {})[t] ?? '')}" placeholder="${esc(String(d.padrao ?? 3))}" inputmode="numeric"><small class="muted">dias</small></label>`).join('')}</div>
+    <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" data-act="pz-salvar">Salvar prazos</button></div></section>`;
+}
+ACT['pz-salvar'] = async () => { const pd = $('#pz-padrao'), porTipo = {}; document.querySelectorAll('.pz-t').forEach(i => { if (String(i.value).trim() !== '') porTipo[i.dataset.t] = Math.max(0, Math.min(365, +i.value || 0)); });
+  if (await save('ajustes', 'prazos-os', { padrao: Math.max(0, Math.min(365, +(pd && pd.value) || 0)), uteis: !!($('#pz-uteis') || {}).checked, porTipo, alteradoEm: Date.now(), por: OPID() })) toastOk('Prazos de entrega salvos. As próximas OS já vêm com a nova previsão.'); };
+/* na OS nova: ao trocar o tipo, a previsão acompanha (se a pessoa não mudou a data à mão) */
+document.addEventListener('input', e => { if (e.isTrusted && e.target && e.target.id === 'os-prev') e.target.dataset.manual = '1'; }, true);
+document.addEventListener('change', e => { const t = e.target; if (!t) return; if (t.id === 'os-prev' && e.isTrusted) t.dataset.manual = '1';
+  if (t.id === 'os-tipo') { const pv = $('#os-prev'), novo = !/Editar entrada/.test(((t.closest('.sheet') || document).querySelector('.sheet-h h2') || {}).textContent || ''); if (pv && novo && !pv.dataset.manual) pv.value = previsaoPara(t.value); } });
+setTimeout(() => { try { ACT_PERM['pz-salvar'] = 'config'; AJUDA['pz-salvar'] = 'Salva os prazos de entrega. Ex.: impressora 5 dias, notebook 3 dias.'; } catch { } }, 0);
+ACT['item-prod-ed'] = el => { const p = get('produtos', el.dataset.pid); if (!p) { toast('Produto não encontrado no cadastro.'); return; } pedirSenha('produtos', 'Editar o produto ' + p.nome, () => prodForm(p.id)); };
+ACT['ir-cad-aut'] = el => { const it = M.itens && M.itens[+el.dataset.i]; pedirSenha('produtos', 'Cadastrar o produto ' + ((it && it.nome) || ''), () => ACT['ir-cad'](el)); };
+ACT['ci-cad-aut'] = el => { const it = S.cart && S.cart.itens[+el.dataset.i]; pedirSenha('produtos', 'Cadastrar o produto ' + ((it && it.nome) || ''), () => ACT['ci-cad'](el)); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'item-prod-ed': '', 'ir-cad-aut': '', 'ci-cad-aut': '' }); Object.assign(AJUDA, { 'item-prod-ed': 'Abre o cadastro deste produto para editar. Ex.: corrigir o preço ou o nome. Quem não tem permissão pede autorização.', 'ir-cad-aut': 'Cadastra este item avulso como produto. Quem não tem permissão pede autorização.', 'ci-cad-aut': 'Cadastra este item avulso como produto. Quem não tem permissão pede autorização.' }); } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -13139,7 +13381,7 @@ function chkHTML(tipo, resp, legado) {
       ${outras.map(q => { const k = esc(p.id + ':' + q.id), v = val(p, q); return q.tipo === 'opcoes'
         ? `<div class="chq" data-k="${k}" data-t="${esc(q.texto)}" data-obr="${q.obrig ? 1 : ''}"><span class="chq-l">${esc(q.texto)}${q.obrig ? ' *' : ''}</span><div class="seg chq-ops">${(q.opcoes || []).map(op => `<label class="${v === op ? 'on' : ''}"><input type="radio" name="chq-${k}" value="${esc(op)}"${v === op ? ' checked' : ''}>${esc(op)}</label>`).join('')}</div></div>`
         : `<div class="chq" data-k="${k}" data-t="${esc(q.texto)}" data-obr="${q.obrig ? 1 : ''}"><label class="chq-l" for="chq-${k}">${esc(q.texto)}${q.obrig ? ' *' : ''}</label><input id="chq-${k}" name="chq-${k}" value="${esc(v || '')}" autocomplete="off"></div>`; }).join('')}
-      ${marc.length ? `<div class="chks">${marc.map(q => { const k = esc(p.id + ':' + q.id); const gr = chkGrupo(q.texto, txts); return `<label class="chq" data-k="${k}" data-t="${esc(q.texto)}"${gr ? ` data-grp="${esc(gr)}"` : ''}><input type="checkbox" name="chk" value="${esc(q.texto)}"${val(p, q) === true || val(p, q) === 'sim' ? ' checked' : ''}>${esc(q.texto)}</label>`; }).join('')}</div>` : ''}</div>`;
+      ${marc.length ? `<div class="chks">${marc.map(q => { const k = esc(p.id + ':' + q.id); const gr = chkGrupo(q.texto, txts); return `<label class="chq" data-k="${k}" data-t="${esc(q.texto)}"${gr ? ` data-grp="${esc(gr)}"` : ''}><input type="checkbox" name="chk" value="${esc(q.texto)}" data-obs="${esc(resp[p.id + ':' + q.id + ':obs'] || '')}"${val(p, q) === true || val(p, q) === 'sim' ? ' checked' : ''}>${esc(q.texto)}</label>`; }).join('')}</div>` : ''}</div>`;
   }).join('');
 }
 function chkColetar(f) {
@@ -13147,7 +13389,7 @@ function chkColetar(f) {
   f.querySelectorAll('.chq').forEach(el => {
     const k = el.dataset.k, t = el.dataset.t, cb = el.matches('label') ? el.querySelector('input[type=checkbox]') : null;
     el.classList.remove('falta');
-    if (cb) { resp[k] = cb.checked; if (cb.checked) lista.push(t); return; }
+    if (cb) { resp[k] = cb.checked; const ob = cb.checked ? String(cb.dataset.obs || '').trim() : ''; if (ob) resp[k + ':obs'] = ob; if (cb.checked) lista.push(t + (ob ? ' (' + ob + ')' : '')); return; }
     const r = el.querySelector('input[type=radio]:checked'), tx = el.querySelector('input:not([type=radio])'), v = r ? r.value : tx ? tx.value.trim() : '';
     resp[k] = v; if (v) lista.push(t + ': ' + v); else if (el.dataset.obr) { faltam.push(t); el.classList.add('falta'); }
   });
@@ -13462,10 +13704,11 @@ const recParaLaudo = tipo => { const v = new Set(), out = []; [...recDoTipo(tipo
 async function recSalvar(tipo, lista) { const d = recDoc(), porTipo = { ...(d.porTipo || {}) }; if (lista === null) delete porTipo[tipo]; else porTipo[tipo] = lista; return save('ajustes', 'recomendacoes', { ...d, porTipo, alteradoEm: Date.now(), alteradoPor: OPID() }); }
 function recLaudoHTML(tipo, atual) {
   const txt = norm(atual || ''), L = recParaLaudo(tipo);
-  return `<p class="muted rec-tit">Recomendações salvas para ${esc(tipo)} (toque para incluir):</p>
-    <div class="rec-chips">${L.map(r => `<button type="button" class="rec-chip${txt.includes(norm(r)) ? ' on' : ''}" data-act="rec-usar" data-v="${esc(r)}" title="${esc(r)}">${txt.includes(norm(r)) ? '✓ ' : '+ '}${esc(r)}</button>`).join('') || '<span class="muted">Nenhuma ainda.</span>'}</div>
+  /* v17 (regra): a lista não aparece inteira; abre no “＋ Recomendações salvas ▾” */
+  return `<div class="cmp-add-w">${L.length ? `<button type="button" class="btn sm cmp-add" data-act="rec-menu">＋ Recomendações salvas para ${esc(tipo)} ▾</button><div class="cmp-menu" hidden>${L.map(r => `<button type="button" class="cmp-op${txt.includes(norm(r)) ? ' on' : ''}" data-act="rec-usar" data-v="${esc(r)}" title="${esc(r)}">${txt.includes(norm(r)) ? '✓ ' : '+ '}${esc(r)}</button>`).join('')}</div>` : '<span class="muted" style="font-size:.85rem">Nenhuma recomendação salva ainda.</span>'}</div>
     <div class="acc-novo"><input id="lf-rec-novo" placeholder="Nova recomendação (fica salva para os próximos laudos)" autocomplete="off"><button type="button" class="btn sm" data-act="rec-nova">${ic('plus')}Salvar e incluir</button></div>`;
 }
+ACT['rec-menu'] = el => { const m = el.nextElementSibling; if (m) { m.hidden = !m.hidden; el.textContent = el.textContent.replace(/[▾▴]$/, m.hidden ? '▾' : '▴'); } };
 const recRedraw = () => { const b = $('#lf-recbox'); if (b) b.innerHTML = recLaudoHTML(b.dataset.tipo, ($('#lf-obs') || {}).value); };
 ACT['rec-usar'] = el => { const ta = $('#lf-obs'); if (!ta) return; const v = el.dataset.v, linhas = ta.value.split('\n').map(x => x.trim()).filter(Boolean), i = linhas.findIndex(x => norm(x) === norm(v)); if (i >= 0) linhas.splice(i, 1); else linhas.push(v); ta.value = linhas.join('\n'); ta.dispatchEvent(new Event('input', { bubbles: true })); recRedraw(); };
 ACT['rec-nova'] = async () => {
@@ -18623,7 +18866,7 @@ function dupUso() { const m = new Map(); for (const c of DUP_COLS()) for (const 
 /* v17: “Deixar” — cadastros parecidos que são pessoas diferentes ficam separados e não voltam a aparecer juntos */
 const dupPar = (a, b) => [a, b].sort().join('|');
 function dupSeparados() { const d = get('ajustes', 'clientes-separados'); return new Set((d && d.pares) || []); }
-async function dupSepararSalvar(idsDeixa, grupoIds) { const st = dupSeparados(); for (const a of idsDeixa) for (const b of grupoIds) if (a !== b) st.add(dupPar(a, b)); const d = get('ajustes', 'clientes-separados') || {}; return save('ajustes', 'clientes-separados', { ...d, pares: [...st], alteradoEm: Date.now() }); }
+async function dupSepararSalvar(idsDeixa, grupoIds) { const st = (M.dup && M.dup.sep) || dupSeparados(); if (M.dup) M.dup.sep = st; for (const a of idsDeixa) for (const b of grupoIds) if (a !== b) st.add(dupPar(a, b)); const d = get('ajustes', 'clientes-separados') || {}; return save('ajustes', 'clientes-separados', { ...d, pares: [...st], alteradoEm: Date.now() }); }
 function dupGrupos() {
   const cli = S.clientes.filter(c => !c.excluido && !c.exemplo), pai = new Map(cli.map(c => [c.id, c.id]));
   const ach = x => { while (pai.get(x) !== x) { pai.set(x, pai.get(pai.get(x))); x = pai.get(x); } return x; };
@@ -18653,7 +18896,8 @@ function dupCard(c, k, gi, S0) {
 function dupGrupoHTML(k, gi) {
   const g = dupG(k, gi), S0 = dupSel(k, gi), nx = S0.marc.size, nd = S0.deixa.size, ne = S0.exc.size;
   const comum = k === 't' ? (() => { const cont = new Map(); g.forEach(c => new Set(agTelsCli(c).map(agTel8)).forEach(t => cont.set(t, (cont.get(t) || 0) + 1))); const t8 = [...cont].filter(([, n]) => n > 1).map(([t]) => t); return g.flatMap(c => agTelsCli(c)).filter((t, i, A) => t8.includes(agTel8(t)) && A.findIndex(y => agTel8(y) === agTel8(t)) === i).join(' · '); })() : g[0].nome;
-  return `<div class="dup-g" data-k="${k}" data-i="${gi}"><div class="dup-h"><b>${esc(comum)}</b><span class="chip">${g.length} cadastros</span></div>${g.map(c => dupCard(c, k, gi, S0)).join('')}
+  const sel = M.dup.lote && M.dup.lote.has(dupKey(k, gi));
+  return `<div class="dup-g${sel ? ' dup-sel-on' : ''}" data-k="${k}" data-i="${gi}"><div class="dup-h"><label class="rf-chk" title="Selecionar este grupo para aplicar Juntar, Excluir ou Deixar em vários de uma vez"><input type="checkbox" class="dup-sel"${sel ? ' checked' : ''}></label><b>${esc(comum)}</b><span class="chip">${g.length} cadastros</span></div>${g.map(c => dupCard(c, k, gi, S0)).join('')}
     <div class="dup-pe"><small class="muted">${k === 't' ? `Fica 1 · ${nx} para excluir${nd ? ` · ${nd} deixado${nd === 1 ? '' : 's'} separado${nd === 1 ? '' : 's'}` : ''}. Ao marcar um para ficar, os outros ficam marcados para excluir.` : `Os marcados em “Juntar” viram um cadastro só${nd ? ` · ${nd} deixado${nd === 1 ? '' : 's'} separado${nd === 1 ? '' : 's'}` : ''}.`} O histórico deles passa para o que fica. Os marcados em <b>Deixar</b> continuam como cadastros separados.</small><button type="button" class="btn sm ${!nx && nd ? 'primary' : k === 't' ? 'danger' : 'primary'}" data-act="${k === 't' ? 'dup-excluir' : 'dup-unificar'}" data-i="${gi}">${!nx && !ne && nd ? 'Manter separados' : k === 'n' && ne ? `Aplicar (${[nx && 'juntar ' + nx, 'excluir ' + ne, nd && 'deixar ' + nd].filter(Boolean).join(', ')})` : k === 't' ? `Excluir ${nx === 1 ? 'o marcado' : 'os ' + nx + ' marcados'}` : 'Unificar'}</button></div></div>`;
 }
 /* busca e tipo filtram pelos dados; a lista mostra 30 grupos por vez (rápido mesmo com centenas de duplicados) */
@@ -18662,12 +18906,14 @@ function dupRes() {
   const D = M.dup;
   const sec = (k, t, dica) => { if (D.t && D.t !== k) return ''; const L = dupFiltrados(k), lim = D.lim[k];
     return `<div class="dup-sec" data-k="${k}"><h3 style="margin:14px 0 4px">${t} <span class="chip">${L.length}</span></h3><p class="muted" style="margin:0 0 6px;font-size:.84rem">${dica}</p>${L.length ? L.slice(0, lim).map(([, gi]) => dupGrupoHTML(k, gi)).join('') : '<p class="muted" style="margin:6px 0">Nenhum.</p>'}${L.length > lim ? `<p style="text-align:center;margin:8px 0"><button type="button" class="btn" data-act="dup-mais" data-k="${k}">Mostrar mais ${Math.min(30, L.length - lim)} (faltam ${L.length - lim})</button></p>` : ''}</div>`; };
-  return sec('t', 'Mesmo telefone', 'Cadastros com o mesmo número. Marque qual <b>fica</b>: os outros já ficam marcados para <b>excluir</b> (e, se marcar <b>Excluir</b> no que fica, outro passa a ficar). O histórico deles (OS, vendas, orçamentos, aluguéis, contratos, contas) passa para o que fica, e os telefones e dados que faltarem nele são completados. Se for <b>outra pessoa</b>, marque <b>Deixar</b>: os cadastros continuam separados e não aparecem mais aqui.')
+  const nl = (D.lote || new Set()).size;
+  const lote = `<div class="dup-lote"><label class="rf-chk"><input type="checkbox" id="dup-todos"> Selecionar todos os mostrados</label><span class="muted" id="dup-lote-n">${nl} grupo${nl === 1 ? '' : 's'} selecionado${nl === 1 ? '' : 's'}</span><span class="actions"><button type="button" class="btn sm" data-act="dup-lote" data-a="juntar"${nl ? '' : ' disabled'} title="Em cada grupo selecionado, junta todos no cadastro principal (o que tem mais histórico)">Juntar</button><button type="button" class="btn sm danger" data-act="dup-lote" data-a="excluir"${nl ? '' : ' disabled'} title="Em cada grupo selecionado, fica só o cadastro principal; os outros vão para a lixeira (o histórico passa para o principal)">Excluir</button><button type="button" class="btn sm" data-act="dup-lote" data-a="deixar"${nl ? '' : ' disabled'} title="Em cada grupo selecionado, todos continuam separados (são pessoas diferentes) e não aparecem mais aqui">Deixar</button></span></div>`;
+  return lote + sec('t', 'Mesmo telefone', 'Cadastros com o mesmo número. Marque qual <b>fica</b>: os outros já ficam marcados para <b>excluir</b> (e, se marcar <b>Excluir</b> no que fica, outro passa a ficar). O histórico deles (OS, vendas, orçamentos, aluguéis, contratos, contas) passa para o que fica, e os telefones e dados que faltarem nele são completados. Se for <b>outra pessoa</b>, marque <b>Deixar</b>: os cadastros continuam separados e não aparecem mais aqui.')
     + sec('n', 'Mesmo nome, telefones diferentes', 'Mesmo cliente cadastrado com números diferentes. Escolha o cadastro principal (<b>Fica</b>) e deixe marcado <b>Juntar</b> nos outros: todos os telefones vão para o principal e o histórico também. Cadastro errado ou que não serve: marque <b>Excluir</b> (vai para a lixeira). Se for <b>outra pessoa</b>, marque <b>Deixar</b>: os cadastros continuam separados e não aparecem mais aqui.');
 }
 function dupRender() { const b = $('#dup-res'); if (b) b.innerHTML = dupRes(); const D = M.dup, el = $('#dup-n'); if (el) el.textContent = D.q || D.t ? `${(D.t !== 'n' ? dupFiltrados('t').length : 0) + (D.t !== 't' ? dupFiltrados('n').length : 0)} grupos` : ''; }
 function dupAbrir() {
-  M.dup = { ...dupGrupos(), uso: dupUso(), sel: {}, feito: {}, lim: { t: 30, n: 30 }, q: '', t: '' }; const D = M.dup;
+  M.dup = { ...dupGrupos(), uso: dupUso(), sel: {}, feito: {}, lote: new Set(), lim: { t: 30, n: 30 }, q: '', t: '' }; const D = M.dup;
   openModal('Clientes duplicados', `<p class="muted" style="margin-top:0">${D.tel.length} grupo${D.tel.length === 1 ? '' : 's'} com o mesmo telefone · ${D.nome.length} com o mesmo nome e telefones diferentes. Os cadastros excluídos vão para a lixeira e podem ser restaurados com senha.</p>
     <fieldset class="rpf"><legend>${ic('search')}Filtros <span class="muted" id="dup-n" style="font-weight:500;font-size:.85rem"></span></legend><div class="rpf-g"><label class="f"><span>Buscar</span><input id="dup-q" placeholder="Nome ou telefone" autocomplete="off"></label><label class="f"><span>Tipo</span><select id="dup-t"><option value="">Todos</option><option value="t">Mesmo telefone</option><option value="n">Mesmo nome, telefones diferentes</option></select></label></div></fieldset>
     <div id="dup-res">${dupRes()}</div>`,
@@ -18677,6 +18923,10 @@ let _dupT = 0;
 document.addEventListener('input', e => { if (e.target && e.target.id === 'dup-q' && M.dup) { M.dup.q = e.target.value; M.dup.lim = { t: 30, n: 30 }; clearTimeout(_dupT); _dupT = setTimeout(dupRender, 250); } });
 document.addEventListener('change', e => {
   const t = e.target; if (!t || !M.dup) return; if (t.id === 'dup-t') { M.dup.t = t.value; M.dup.lim = { t: 30, n: 30 }; dupRender(); return; }
+  if (t.id === 'dup-todos' || t.classList.contains('dup-sel')) { const D = M.dup; D.lote = D.lote || new Set();
+    if (t.id === 'dup-todos') document.querySelectorAll('#dup-res .dup-g').forEach(g => { const key = dupKey(g.dataset.k, +g.dataset.i); if (t.checked) D.lote.add(key); else D.lote.delete(key); const c = g.querySelector('.dup-sel'); if (c) c.checked = t.checked; g.classList.toggle('dup-sel-on', t.checked); });
+    else { const g = t.closest('.dup-g'), key = dupKey(g.dataset.k, +g.dataset.i); if (t.checked) D.lote.add(key); else D.lote.delete(key); g.classList.toggle('dup-sel-on', t.checked); }
+    const n = D.lote.size, nEl = $('#dup-lote-n'); if (nEl) nEl.textContent = `${n} grupo${n === 1 ? '' : 's'} selecionado${n === 1 ? '' : 's'}`; document.querySelectorAll('[data-act="dup-lote"]').forEach(b => b.disabled = !n); return; }
   const gEl = t.closest && t.closest('.dup-g'); if (!gEl || !t.closest('#dup-res')) return;
   const k = gEl.dataset.k, gi = +gEl.dataset.i, g = dupG(k, gi), S0 = dupSel(k, gi), outros = id => g.filter(c => c.id !== id).map(c => c.id);
   if (t.classList.contains('dup-d')) { const id = t.value; if (t.checked) { S0.deixa.add(id); S0.marc.delete(id); S0.exc.delete(id); } else { S0.deixa.delete(id); S0.marc.add(id); } gEl.outerHTML = dupGrupoHTML(k, gi); return; }
@@ -18711,6 +18961,14 @@ async function dupJuntar(dest, ids, acao) {
   try { logReg(acao, 'clientes', dest, `${acao === 'unificou' ? 'Unificou' : 'Excluiu duplicados de'} ${k.nome}: ${outros.map(o => o.nome + (agTelsCli(o)[0] ? ' (' + agTelsCli(o)[0] + ')' : '')).join(', ')} · ${movidos} registro${movidos === 1 ? '' : 's'} do histórico passaram para ${k.nome}`.slice(0, 300), []); } catch { }
   return movidos;
 }
+async function dupAplicar(k, gi) {
+  const S0 = dupSel(k, gi), dest = S0.fica, grupo = dupG(k, gi).map(c => c.id), nd = (get('clientes', dest) || {}).nome || '';
+  const ids = [...S0.marc].filter(id => id !== dest && !S0.deixa.has(id) && !S0.exc.has(id)), deixa = [...S0.deixa], exc = [...S0.exc].filter(id => id !== dest);
+  if (deixa.length) await dupSepararSalvar(deixa, grupo);
+  if (exc.length) { for (const c of DUP_COLS()) for (const x of [...(S[c] || [])]) if (x && exc.includes(x.clienteId)) await save(c, x.id, { ...x, clienteId: dest }); const nomes = exc.map(id => (get('clientes', id) || {}).nome || id); for (const id of exc) await del('clientes', id); try { logReg('excluiu', 'clientes', dest, `Excluiu cadastros parecidos com ${nd}: ${nomes.join(', ')}`.slice(0, 300), []); } catch { } }
+  if (ids.length) await dupJuntar(dest, ids, k === 't' ? 'excluiu' : 'unificou');
+  M.dup.feito[dupKey(k, gi)] = true;
+}
 function dupLer(el) { const gEl = el.closest('.dup-g'), k = gEl.dataset.k, gi = +gEl.dataset.i, S0 = dupSel(k, gi); return { k, gi, gEl, dest: S0.fica, ids: [...S0.marc].filter(id => id !== S0.fica && !S0.deixa.has(id) && !S0.exc.has(id)), deixa: [...S0.deixa], exc: [...(S0.exc || [])].filter(id => id !== S0.fica), grupo: dupG(k, gi).map(c => c.id) }; }
 /* depois de excluir ou unificar, o grupo sai da lista ali mesmo, sem fechar nem recarregar a janela */
 async function dupFazer(el, acao) {
@@ -18731,6 +18989,16 @@ async function dupFazer(el, acao) {
 /* editar um cadastro direto da janela de duplicados: ao salvar, volta para a mesma janela com os dados novos */
 function dupAtualizar(id) { const D = M.dup; if (!D || !$('#dup-res')) return; const c = get('clientes', id); if (!c) return; ['tel', 'nome'].forEach(k => D[k].forEach((g, gi) => { const i = g.findIndex(x => x.id === id); if (i >= 0) g[i] = c; })); const st = $('#dup-res').closest('.sheet-b'), y = st ? st.scrollTop : 0; dupRender(); if (st) st.scrollTop = y; const el = document.querySelector(`.dup-c[data-id="${CSS.escape(id)}"]`); if (el) { el.classList.add('dup-novo'); setTimeout(() => el.classList.remove('dup-novo'), 1600); } }
 Object.assign(ACT, {
+  'dup-lote': el => { const D = M.dup, a = el.dataset.a, sel = [...(D.lote || [])].filter(key => !D.feito[key]); if (!sel.length) { toast('Selecione pelo menos um grupo.'); return; }
+    const nome = { juntar: 'juntar', excluir: 'excluir', deixar: 'deixar separados' }[a];
+    const run = async () => { el.disabled = true; let n = 0;
+      for (const key of sel) { const k = key[0], gi = +key.slice(1), g = dupG(k, gi), S0 = dupSel(k, gi), outros = g.map(c => c.id).filter(id => id !== S0.fica);
+        S0.marc = new Set(); S0.deixa = new Set(); S0.exc = new Set();
+        if (a === 'deixar') S0.deixa = new Set(outros); else if (a === 'excluir' && k === 'n') S0.exc = new Set(outros); else S0.marc = new Set(outros);
+        try { await dupAplicar(k, gi); n++; el.textContent = `${n} de ${sel.length}…`; } catch (e) { toast('Não foi possível concluir um grupo: ' + (e.message || e)); } }
+      D.lote = new Set(); const st = $('#dup-res') ? $('#dup-res').closest('.sheet-b') : null, y = st ? st.scrollTop : 0; dupRender(); if (st) st.scrollTop = y;
+      toastOk(a === 'deixar' ? `${n} grupo${n === 1 ? '' : 's'} mantido${n === 1 ? '' : 's'} separado${n === 1 ? '' : 's'}: não aparecem mais como duplicados.` : `${n} grupo${n === 1 ? '' : 's'} resolvido${n === 1 ? '' : 's'} (${nome}). Os cadastros que saíram estão na lixeira.`); };
+    if (a === 'deixar') arm(el, `Confirmar: deixar ${sel.length}`, run); else arm(el, `Confirmar: ${nome} ${sel.length}`, () => pedirSenha('excluir', `Clientes duplicados: ${nome} ${sel.length} grupo${sel.length === 1 ? '' : 's'}`, run)); },
   'cli-dups': () => dupAbrir(),
   'dup-editar': el => editarCliente(el.dataset.id),
   'dup-mais': el => { const k = el.dataset.k; M.dup.lim[k] += 30; const st = el.closest('.sheet-b'), y = st ? st.scrollTop : 0; dupRender(); if (st) st.scrollTop = y; },
@@ -18749,8 +19017,8 @@ Object.assign(ACT, {
     previewRel(tit, `<div class="doc">${docHead(tit, tot + ' grupo' + (tot === 1 ? '' : 's') + (f ? ' · ' + esc(f) : ''), 'Emitido em ' + tsBR(Date.now()))}<div class="rl-res">${res.join('')}</div>${corpo || '<p class="cl">Nenhum duplicado com estes filtros.</p>'}${docFoot()}</div>`, RT_CSS, 'Clientes-duplicados_' + today() + '.pdf');
   }
 });
-Object.assign(ACT_PERM, { 'dup-editar': 'clientes', 'cli-dups': 'clientes', 'dup-excluir': 'clientes', 'dup-unificar': 'clientes', 'dup-print': 'clientes' });
-setTimeout(() => { try { Object.assign(AJUDA, { 'cli-dups': 'Procura clientes cadastrados mais de uma vez: com o mesmo telefone (para excluir os repetidos) ou com o mesmo nome e telefones diferentes (para unificar num cadastro só).', 'dup-excluir': 'Exclui os cadastros marcados em “Excluir”. O histórico deles passa para o cadastro que fica. Pede senha; os excluídos vão para a lixeira.', 'dup-unificar': 'Junta os cadastros marcados no principal: telefones, dados que faltam e histórico. Pede senha; os outros vão para a lixeira.', 'dup-print': 'Imprime os grupos de duplicados que aparecem no filtro.', 'dup-editar': 'Abre o cadastro para corrigir o nome ou o telefone; ao salvar, volta para esta janela.' }); } catch { } }, 0);
+Object.assign(ACT_PERM, { 'dup-lote': 'clientes', 'dup-editar': 'clientes', 'cli-dups': 'clientes', 'dup-excluir': 'clientes', 'dup-unificar': 'clientes', 'dup-print': 'clientes' });
+setTimeout(() => { try { Object.assign(AJUDA, { 'dup-lote': 'Aplica a mesma escolha em todos os grupos selecionados. Ex.: marque 10 grupos e toque em Deixar para manter todos separados.', 'cli-dups': 'Procura clientes cadastrados mais de uma vez: com o mesmo telefone (para excluir os repetidos) ou com o mesmo nome e telefones diferentes (para unificar num cadastro só).', 'dup-excluir': 'Exclui os cadastros marcados em “Excluir”. O histórico deles passa para o cadastro que fica. Pede senha; os excluídos vão para a lixeira.', 'dup-unificar': 'Junta os cadastros marcados no principal: telefones, dados que faltam e histórico. Pede senha; os outros vão para a lixeira.', 'dup-print': 'Imprime os grupos de duplicados que aparecem no filtro.', 'dup-editar': 'Abre o cadastro para corrigir o nome ou o telefone; ao salvar, volta para esta janela.' }); } catch { } }, 0);
 /* volta do Google: mostra o resultado e abre a tela da agenda */
 setTimeout(() => { try { const h = location.hash || ''; if (/google=ok/.test(h)) { history.replaceState(null, '', location.href.split('#')[0]); setTimeout(() => { S.cfgTab = 'agenda'; try { go('config'); } catch { } try { if (agCfg().auto !== true) save('ajustes', 'agenda-google', { ...agCfg(), auto: true, alteradoEm: Date.now() }); } catch { } toast('Agenda do Google ligada, com envio automático: cada cliente salvo vai sozinho para a agenda. Para os clientes antigos, toque em Comparar com a agenda.', 9000); }, 2500); } else if (/google=erro/.test(h)) { const m = decodeURIComponent((h.match(/msg=([^&]+)/) || [, ''])[1]); history.replaceState(null, '', location.href.split('#')[0]); setTimeout(() => toast('Não foi possível ligar a agenda do Google' + (m ? ': ' + m : '.'), 9000), 2500); } } catch { } }, 0);
 /* ======================= autorização à distância =======================
