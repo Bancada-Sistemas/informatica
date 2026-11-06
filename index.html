@@ -1996,24 +1996,26 @@ function failMsg(e) {
    se em 2,5 s não houver resposta, a gravação já está guardada no aparelho (fila) e sobe sozinha depois. Erro de verdade (ex.: sem permissão) aparece na hora ou depois. */
 function gravarOuFila(pr) { let passou = false; pr.catch(e => { if (passou) toast(failMsg(e)); }); return Promise.race([pr.then(() => 'ok'), new Promise(r => setTimeout(() => { passou = true; r('fila'); }, 2500))]); }
 /* v17: numeração sem repetir — sem internet, dois aparelhos podem usar o mesmo número (ex.: as duas OS 0011).
-   Quando a internet volta, o mais antigo fica com o número; o deste aparelho passa para o próximo livre (ex.: 0012) e o aplicativo avisa. */
+   Quando a internet volta, a criada primeiro fica com o número; as outras ganham letra: 0011-B, 0011-C… e o aplicativo avisa. */
 const NUM_COLS = ['os', 'vendas', 'orcamentos', 'alugueis', 'contratos'], NUM_NOME = { os: 'OS', vendas: 'Venda nº', orcamentos: 'Orçamento', alugueis: 'Aluguel', contratos: 'Contrato' }, MEUS_K = 'bancada-meus-novos';
 function meusNovos() { try { return JSON.parse(lsGet(MEUS_K) || '{}') || {}; } catch { return {}; } }
 function meuNovo(col, id) { try { const m = meusNovos(), lim = Date.now() - 30 * 864e5; for (const k of Object.keys(m)) if (m[k] < lim) delete m[k]; m[col + '/' + id] = Date.now(); lsSet(MEUS_K, JSON.stringify(m)); } catch { } }
+const numBase = x => Number(x.numeroBase || x.numero) || 0;
 let NUM_T = 0;
 function numConferirLogo() { clearTimeout(NUM_T); NUM_T = setTimeout(numConferir, 4000); }
 async function numConferir() {
   if (!DB || !S.loaded || !navigator.onLine) return; const m = meusNovos(); if (!Object.keys(m).length) return;
   for (const col of NUM_COLS) {
-    const L = S[col] || [], grupos = {}; L.forEach(x => { const n = Number(x.numero) || 0; if (n > 0) (grupos[n] = grupos[n] || []).push(x); });
-    let prox = Math.max(0, ...L.map(x => Number(x.numero) || 0));
+    const grupos = {}; (S[col] || []).forEach(x => { const n = numBase(x); if (n > 0) (grupos[n] = grupos[n] || []).push(x); });
     for (const [n, g] of Object.entries(grupos)) {
       if (g.length < 2) continue;
       g.sort((a, b) => ((a.at || a.criadoEm || 0) - (b.at || b.criadoEm || 0)) || String(a.id).localeCompare(String(b.id)));
-      for (const x of g.slice(1)) { if (!m[col + '/' + x.id]) continue;
-        const novo = ++prox, { id, ...dados } = x;
-        if (await save(col, id, { ...dados, numero: novo, numeroAntes: [...(x.numeroAntes || []), Number(n)] })) {
-          const msg = `${NUM_NOME[col]} ${pad(Number(n))} deste aparelho virou ${pad(novo)}: outro aparelho já tinha usado o número ${pad(Number(n))} enquanto estavam sem internet.`;
+      for (let k = 1; k < g.length; k++) { const x = g[k]; if (!m[col + '/' + x.id]) continue;
+        const novo = pad(Number(n)) + '-' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.min(k, 25)];
+        if (String(x.numero) === novo) continue;
+        const { id, ...dados } = x;
+        if (await save(col, id, { ...dados, numero: novo, numeroBase: Number(n) })) {
+          const msg = `${NUM_NOME[col]} ${pad(Number(n))} deste aparelho virou ${novo}: outro aparelho também usou o número ${pad(Number(n))} enquanto estavam sem internet.`;
           toast(msg, 10000); try { diagReg('Numeração corrigida: ' + msg); } catch { }
         } } }
   }
@@ -2050,7 +2052,7 @@ function desfazerBarra(lixId, col, resumo) {
   d.innerHTML = `<span class="grow"><b>Excluído:</b> ${esc((typeof LIX_NOMES !== 'undefined' && LIX_NOMES[col]) || 'registro')}${resumo ? ' · ' + esc(String(resumo).slice(0, 70)) : ''}</span><button type="button" class="btn sm primary" data-act="desfazer-del" data-id="${lixId}">↶ Desfazer exclusão</button><button type="button" class="icon-btn" data-act="desfazer-fechar" aria-label="Fechar" title="Fechar">×</button>`;
   document.body.appendChild(d); window._desfT = setTimeout(() => d.remove(), 20000);
 }
-const nextNum = col => Math.max(0, ...S[col].map(x => Number(x.numero) || 0)) + 1;
+const nextNum = col => Math.max(0, ...S[col].map(x => numBase(x))) + 1;
 
 /* abre WhatsApp, e-mail etc. sempre em outra aba: nunca troca a página do Bancada (isso derrubava a conexão com a nuvem) */
 function abrirExterno(url) {
@@ -2066,7 +2068,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 381;
+const APP_VER = 17, APP_BUILD = 382;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -4510,7 +4512,7 @@ async function htmlToPdf(css, inner, opts = {}) {
     try { pdfCoresSeguras(host); } catch { }
     if (opts.roll) fmt = [opts.roll, Math.max(40, Math.ceil(host.scrollHeight * 25.4 / 96 + 2 * mg + 1))];
     return await window.html2pdf().set({
-      margin: mg, image: { type: 'jpeg', quality: .95 },
+      margin: mg, image: { type: 'jpeg', quality: .85 },
       html2canvas: { scale: 2, useCORS: true, backgroundColor: '#fff', logging: false },
       jsPDF: { unit: 'mm', format: fmt, orientation: opts.orientation || 'portrait' },
       pagebreak: opts.roll ? { mode: [] } : (opts.pagebreak || { mode: ['css', 'legacy'], avoid: ['tr', 'figure', '.sig', 'h3'] })
@@ -6292,6 +6294,7 @@ document.addEventListener('change', e => {
 function loadImg(file) { return new Promise((res, rej) => { const u = URL.createObjectURL(file); const img = new Image(); img.onload = () => res(img); img.onerror = () => rej(new Error('imagem')); img.src = u; }); }
 function drawScaled(img, max) { const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, k = Math.min(1, max / Math.max(w, h)); const cv = document.createElement('canvas'); cv.width = Math.round(w * k); cv.height = Math.round(h * k); const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(img, 0, 0, cv.width, cv.height); return cv; }
 const toBlob = (cv, q) => new Promise(r => cv.toBlob(r, 'image/jpeg', q));
+async function imgLeve(src, max, q) { try { const im = new Image(); im.src = src; await im.decode(); const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)); if (k >= 1 && src.length < 400000) return src; const cv = document.createElement('canvas'); cv.width = Math.round(im.naturalWidth * k); cv.height = Math.round(im.naturalHeight * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); const r = cv.toDataURL('image/jpeg', q); cv.width = cv.height = 0; return r; } catch { return null; } }
 async function inlineBlobs(html) {
   const ids = [...new Set([...html.matchAll(/src="\/_blob\/([A-Za-z0-9_-]+)"/g)].map(m => m[1]))];
   for (const id of ids) {
@@ -6302,6 +6305,10 @@ async function inlineBlobs(html) {
       html = html.split(`src="/_blob/${id}"`).join(`src="${d}"`);
     } catch { }
   }
+  /* v17: fotos grandes ficam leves no PDF (até 1200 px). Fotos da câmera em tamanho cheio gastavam tanta memória
+     que, ao abrir o WhatsApp para enviar, o celular fechava o WhatsApp ou o aplicativo */
+  try { const grandes = [...new Set([...html.matchAll(/src="(data:image\/(?:jpeg|jpg|png|webp);base64,[^"]{250000,})"/g)].map(m => m[1]))];
+    for (const d of grandes) { const leve = await imgLeve(d, 1200, .82); if (leve && leve.length < d.length) html = html.split(d).join(leve); } } catch { }
   return html;
 }
 
@@ -18020,10 +18027,16 @@ function usoHoje() { try { const u = JSON.parse(localStorage.getItem('bancada-us
    Cada gravação leva _mod (hora do servidor); cada exclusão deixa um aviso em _apagados. Uma vez por dia (ou se a cópia do aparelho
    estiver incompleta) faz a leitura completa, como antes. O limite grátis do Firebase é de 50 mil leituras por dia. */
 const SYNC_CHEIA_MS = 24 * 3600e3, SYNC_MARGEM = 5 * 60e3;
-const syncK = c => 'bancada-sync:' + (typeof EMP_COD !== 'undefined' ? EMP_COD || '' : '') + ':' + c;
+const syncK = c => 'bancada-sync2:' + (typeof EMP_COD !== 'undefined' ? EMP_COD || '' : '') + ':' + c;
 const syncLer = c => { try { return JSON.parse(lsGet(syncK(c)) || 'null'); } catch { return null; } };
 const syncGravar = (c, m) => { try { lsSet(syncK(c), JSON.stringify(m)); } catch { } };
 const SYNC_INFO = {};
+/* lista dos cadastros que existiam na nuvem na última sincronização: a cópia do aparelho pode guardar cadastros apagados
+   enquanto o aplicativo estava fechado (ex.: duplicados removidos); só entra o que está nesta lista */
+const syncIDB = () => new Promise((ok, no) => { try { const r = indexedDB.open('bancada-sync', 1); r.onupgradeneeded = () => r.result.createObjectStore('ids'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); } catch (e) { no(e); } });
+async function syncIdsLer(c) { try { const db = await syncIDB(); return await new Promise(ok => { const q = db.transaction('ids').objectStore('ids').get(syncK(c)); q.onsuccess = () => ok(q.result || null); q.onerror = () => ok(null); }); } catch { return null; } }
+const SYNC_IDS_T = {};
+function syncIdsGravar(c, mapa) { clearTimeout(SYNC_IDS_T[c]); SYNC_IDS_T[c] = setTimeout(async () => { try { const db = await syncIDB(); db.transaction('ids', 'readwrite').objectStore('ids').put([...mapa.keys()], syncK(c)); } catch { } }, 1500); }
 function fbAdapter(fs) {
   const FV = firebase.firestore.FieldValue, TS = firebase.firestore.Timestamp;
   const tsMs = v => v && typeof v.toMillis === 'function' ? v.toMillis() : 0;
@@ -18033,9 +18046,9 @@ function fbAdapter(fs) {
   const ehCol = ref => { try { return ref.parent && !ref.parent.parent && COLS.includes(ref.parent.id) ? ref.parent.id : ''; } catch { return ''; } };
   const comMod = (col, d) => col ? { ...fbEnc(d), _mod: FV.serverTimestamp() } : fbEnc(d);
   const docW = ref => { const col = ehCol(ref); return {
-    set: d => { usoConta('w'); const L = col && LOC[col]; if (L) { L.mapa.set(ref.id, limpa(fbEnc(d))); L.mod.set(ref.id, Date.now() + 864e5); L.emitir(); } return ref.set(comMod(col, d)); },
+    set: d => { usoConta('w'); const L = col && LOC[col]; if (L) { L.mapa.set(ref.id, limpa(fbEnc(d))); L.mod.set(ref.id, Date.now() + 864e5); L.emitir(); syncIdsGravar(col, L.mapa); } return ref.set(comMod(col, d)); },
     update: d => { usoConta('w'); const L = col && LOC[col]; if (L && L.mapa.has(ref.id)) { L.mapa.set(ref.id, { ...L.mapa.get(ref.id), ...limpa(fbEnc(d)) }); L.emitir(); } return ref.update(comMod(col, d)); },
-    delete: () => { usoConta('x'); const L = col && LOC[col]; if (L) { L.mapa.delete(ref.id); L.mod.delete(ref.id); L.emitir(); } if (col) { try { usoConta('w'); fs.collection('_apagados').doc(col + '__' + ref.id).set({ col, id: ref.id, _mod: FV.serverTimestamp() }).catch(() => { }); } catch { } } return ref.delete(); },
+    delete: () => { usoConta('x'); const L = col && LOC[col]; if (L) { L.mapa.delete(ref.id); L.mod.delete(ref.id); L.emitir(); syncIdsGravar(col, L.mapa); } if (col) { try { usoConta('w'); fs.collection('_apagados').doc(col + '__' + ref.id).set({ col, id: ref.id, _mod: FV.serverTimestamp() }).catch(() => { }); } catch { } } return ref.delete(); },
     get: async () => { usoConta('r'); return snapDoc(await ref.get()); },
     onSnapshot: (cb, er) => ref.onSnapshot(s => { if (!(s.metadata && s.metadata.fromCache)) usoConta('r'); cb(snapDoc(s)); }, e => fbErro(e, er))
   }; };
@@ -18044,7 +18057,7 @@ function fbAdapter(fs) {
   const apagadosOuvir = () => {
     if (APAG) return; const m = syncLer('_apagados'); let t = (m && m.t) || 0, prim = true;
     try { APAG = fs.collection('_apagados').where('_mod', '>', TS.fromMillis(Math.max(0, t - SYNC_MARGEM))).onSnapshot(q => {
-      q.docChanges().forEach(ch => { if (ch.type === 'removed') return; const d = ch.doc.data() || {}, mt = tsMs(d._mod); t = Math.max(t, mt); const L = LOC[d.col]; if (L && L.inc && L.mapa.has(d.id) && !((L.mod.get(d.id) || 0) > mt)) { L.mapa.delete(d.id); L.emitir(); } });
+      q.docChanges().forEach(ch => { if (ch.type === 'removed') return; const d = ch.doc.data() || {}, mt = tsMs(d._mod); t = Math.max(t, mt); const L = LOC[d.col]; if (L && L.inc && L.mapa.has(d.id) && !((L.mod.get(d.id) || 0) > mt)) { L.mapa.delete(d.id); L.emitir(); syncIdsGravar(d.col, L.mapa); } });
       if (!(q.metadata && q.metadata.fromCache)) { usoConta('r', prim ? Math.max(1, q.size) : q.docChanges().length); prim = false; syncGravar('_apagados', { t }); }
     }, () => { }); } catch { }
   };
@@ -18058,19 +18071,20 @@ function fbAdapter(fs) {
       return fs.collection(c).onSnapshot(q => {
         const srv = !(q.metadata && q.metadata.fromCache);
         q.docChanges().forEach(ch => { if (ch.type === 'removed') { L.mapa.delete(ch.doc.id); L.mod.delete(ch.doc.id); } else { L.mapa.set(ch.doc.id, limpa(ch.doc.data())); anotar(ch); } });
-        if (srv) { usoConta('r', prim ? Math.max(1, q.size) : q.docChanges().length); if (prim) syncGravar(c, { t, full: Date.now(), n: L.mapa.size }); else syncGravar(c, { ...(syncLer(c) || {}), t, n: L.mapa.size }); prim = false; }
+        if (srv) { usoConta('r', prim ? Math.max(1, q.size) : q.docChanges().length); if (prim) syncGravar(c, { t, full: Date.now(), n: L.mapa.size }); else syncGravar(c, { ...(syncLer(c) || {}), t, n: L.mapa.size }); prim = false; syncIdsGravar(c, L.mapa); }
         L.emitir();
       }, e => fbErro(e, er)); };
     if (!meta || !meta.full || Date.now() - meta.full > SYNC_CHEIA_MS) return cheio();
     (async () => {
-      let cache = null; try { cache = await fs.collection(c).get({ source: 'cache' }); } catch { cache = null; }
-      if (!cache || cache.size < Math.floor((meta.n || 0) * 0.97)) { cheio(); return; } /* a cópia do aparelho sumiu ou está incompleta: lê tudo */
-      cache.docs.forEach(d => { L.mapa.set(d.id, limpa(d.data())); const mt = tsMs(d.get('_mod')); if (mt) L.mod.set(d.id, mt); });
+      let cache = null, ids = null; try { [cache, ids] = await Promise.all([fs.collection(c).get({ source: 'cache' }), syncIdsLer(c)]); } catch { cache = null; }
+      const lista = ids ? new Set(ids) : null, docs = cache && lista ? cache.docs.filter(d => lista.has(d.id)) : [];
+      if (!cache || !lista || docs.length < Math.floor((meta.n || 0) * 0.97)) { cheio(); return; } /* a cópia do aparelho sumiu ou está incompleta: lê tudo */
+      docs.forEach(d => { L.mapa.set(d.id, limpa(d.data())); const mt = tsMs(d.get('_mod')); if (mt) L.mod.set(d.id, mt); });
       L.inc = true; SYNC_INFO[c] = 'só o que mudou'; L.emitir();
       fs.collection(c).where('_mod', '>', TS.fromMillis(Math.max(0, t - SYNC_MARGEM))).onSnapshot(q => {
         const srv = !(q.metadata && q.metadata.fromCache);
         q.docChanges().forEach(ch => { if (ch.type === 'removed') return; L.mapa.set(ch.doc.id, limpa(ch.doc.data())); anotar(ch); });
-        if (srv) { usoConta('r', Math.max(1, q.docChanges().length)); syncGravar(c, { ...meta, t, n: L.mapa.size }); }
+        if (srv) { usoConta('r', Math.max(1, q.docChanges().length)); syncGravar(c, { ...meta, t, n: L.mapa.size }); syncIdsGravar(c, L.mapa); }
         L.emitir();
       }, e => fbErro(e, er));
     })();
@@ -18083,7 +18097,7 @@ function fbAdapter(fs) {
   };
 }
 /* Sobre o aplicativo → Sincronizar tudo: na próxima abertura lê tudo da nuvem de novo (use se faltar algo) */
-ACT['sync-tudo'] = el => arm(el, 'Confirmar: ler tudo da nuvem de novo', () => { try { Object.keys(localStorage).filter(k => k.startsWith('bancada-sync:')).forEach(k => localStorage.removeItem(k)); } catch { } window.DIAG_MOTIVO = 'normal'; guardarRetomar(); location.reload(); });
+ACT['sync-tudo'] = el => arm(el, 'Confirmar: ler tudo da nuvem de novo', () => { try { Object.keys(localStorage).filter(k => /^bancada-sync2?:/.test(k)).forEach(k => localStorage.removeItem(k)); } catch { } window.DIAG_MOTIVO = 'normal'; guardarRetomar(); location.reload(); });
 setTimeout(() => { try { ACT_PERM['sync-tudo'] = ''; AJUDA['sync-tudo'] = 'Lê de novo todos os dados da nuvem. Normalmente o aplicativo só busca o que mudou desde a última vez (economiza o limite grátis de 50 mil leituras por dia do Firebase). Use se algum cadastro feito em outro aparelho não aparecer.'; } catch { } }, 0);
 try { if ('serviceWorker' in navigator && /github\.io$/.test(location.hostname)) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { })); } catch { }
 async function nuvemEmpresa() {
@@ -18389,8 +18403,14 @@ async function agAoSalvar(id, novo, ant) {
     const dados = agDadosCli(c, mudouTel ? finais : null); delete dados.nome; dados.id = g.id;
     const assin = JSON.stringify([c.email, c.logradouro, c.numero, c.bairro, c.cidade, c.uf, c.cep, c.doc, c.nascimento, finais.map(agTel8).sort()]);
     if (mudouTel || c.agAssin !== assin) { try { await agChamar('atualizar', dados); const c2 = get('clientes', c.id); if (c2) await save('clientes', c.id, { ...c2, agAssin: assin, _agSync: 1 }); } catch (e) { if (!/desconhecida/.test(e.message || '')) throw e; } }
-  } catch (e) { if (e && e.code !== 'sem-nuvem') console.warn('[agenda]', e); }
+    agPend(id, false);
+  } catch (e) { if (e && e.code !== 'sem-nuvem') { console.warn('[agenda]', e); const c = get('clientes', id), ja = agPend(id, true);
+    /* v17: antes a falha era silenciosa (o cliente simplesmente não aparecia no WhatsApp); agora avisa e tenta de novo sozinho */
+    if (!ja && c) toast(`“${c.nome}” não foi para a agenda do Google agora (${(e && e.message) || 'sem resposta'}). O aplicativo tenta de novo sozinho; também dá em Configurações → Agenda Google → Comparar.`, 9000); } }
 }
+function agPend(id, sim) { let L = []; try { L = JSON.parse(lsGet('bancada-ag-pend') || '[]') || []; } catch { } const ja = L.includes(id); if (sim && !ja) L.push(id); if (!sim) L = L.filter(x => x !== id); try { lsSet('bancada-ag-pend', JSON.stringify(L.slice(-200))); } catch { } return ja; }
+async function agPendTentar() { if (!S.loaded || !navigator.onLine || typeof agDisponivel !== 'function' || !agDisponivel()) return; let L = []; try { L = JSON.parse(lsGet('bancada-ag-pend') || '[]') || []; } catch { } for (const id of L) { if (!get('clientes', id)) { agPend(id, false); continue; } await agAoSalvar(id, get('clientes', id), null); } }
+setInterval(agPendTentar, 5 * 60e3); addEventListener('online', () => setTimeout(agPendTentar, 5000)); setTimeout(agPendTentar, 30000);
 function agAvisoDiv() { if (typeof pode === 'function' && !pode('agenda')) return; toast('Há nomes diferentes entre o Bancada e a agenda do Google. Abra Configurações → Agenda Google → Comparar para escolher qual fica.', 7000); }
 /* troca de telefone de cliente que já está na agenda: pede autorização superior */
 function agPrecisaAut(old, d) {
