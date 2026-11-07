@@ -2077,7 +2077,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 387;
+const APP_VER = 17, APP_BUILD = 388;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -9033,7 +9033,7 @@ const iniPad = (g, L) => { const pri = INI_ORD[g] || [], val = INI_VALOR[g] || [
 const INI_DEFS = g => g === 'atalhos' ? INI_ATALHOS : g === 'cards' ? INI_CARDS : INI_PAINEIS;
 const iniAlfa = (g, L) => { const d = INI_DEFS(g); return [...L].sort((a, b) => String((d[a] || [a])[0]).localeCompare(String((d[b] || [b])[0]), 'pt-BR')); };
 const iniCfg = () => {
-  const a = (S.ajustes || []).find(x => x.id === 'inicio'), C = a && a.cards ? a : INI_PADRAO, R = { ...C }, man = C.ordemManual || {}, des = C.desmarcados || {};
+  const a = (S.ajustes || []).find(x => x.id === 'inicio'), C = a && a.cards ? a : INI_PADRAO, R = { ...C }, man = C.ordemV === 2 ? (C.ordemManual || {}) : { ...(C.ordemManual || {}), cards: false } /* v17 b388: cartões voltam uma vez à ordem Agenda, Na bancada, Orçamentos em aberto, Aluguéis ativos, Estoque baixo */, des = C.desmarcados || {};
   ['atalhos', 'cards', 'paineis'].forEach(g => {
     const todos = Object.keys(INI_DEFS(g)), cur = (C[g] || []).filter(k => todos.includes(k));
     const L = [...cur, ...todos.filter(k => !cur.includes(k) && !(des[g] || []).includes(k))];
@@ -9154,7 +9154,7 @@ function iniEditorBody() {
     <div class="ini-grid">${E.verAtalhos ? grupo('atalhos', 'Atalhos escolhidos', INI_ATALHOS) : ''}${grupo('cards', 'Cartões de resumo', INI_CARDS)}${grupo('paineis', 'Painéis', INI_PAINEIS)}</div>`;
 }
 function iniAbrirEditor() {
-  const C = iniCfg(); M.ini = { cadeados: !!C.cadeados, verAtalhos: !!C.verAtalhos, atalhos: [...(C.atalhos || [])], cards: [...(C.cards || [])], paineis: [...(C.paineis || [])], ordemManual: { ...(C.ordemManual || {}) }, desmarcados: JSON.parse(JSON.stringify(C.desmarcados || {})) };
+  const C = iniCfg(); M.ini = { ordemV: 2, cadeados: !!C.cadeados, verAtalhos: !!C.verAtalhos, atalhos: [...(C.atalhos || [])], cards: [...(C.cards || [])], paineis: [...(C.paineis || [])], ordemManual: { ...(C.ordemManual || {}) }, desmarcados: JSON.parse(JSON.stringify(C.desmarcados || {})) };
   openModal('Personalizar a página inicial', `${meuAcessoHTML()}${fonteSecHTML()}<div class="rola-opt" id="rola-opt">${rolaOptHTML()}</div><div id="ini-ed">${iniEditorBody()}</div>`,
     `<button type="button" class="btn" data-act="ini-padrao" style="margin-right:auto">Voltar ao padrão</button><button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn" data-act="ini-prev" id="ini-prev-b">${ic('eye')}Pré-visualizar</button><button type="button" class="btn primary" data-act="ini-salvar">Salvar</button>`, { full: true });
   M.iniPrev = false;
@@ -9195,7 +9195,7 @@ Object.assign(ACT, {
   'ini-tog': el => { const gk = el.dataset.g, g = M.ini[gk], k = el.dataset.k, i = g.indexOf(k), des = M.ini.desmarcados = { ...(M.ini.desmarcados || {}) }; des[gk] = [...(des[gk] || [])]; if (i >= 0) { g.splice(i, 1); if (!des[gk].includes(k)) des[gk].push(k); } else { g.push(k); des[gk] = des[gk].filter(x => x !== k); if (!(M.ini.ordemManual || {})[gk]) M.ini[gk] = iniAlfa(gk, g); } iniRedraw(); },
   'ini-mov': el => { const g = M.ini[el.dataset.g], i = +el.dataset.i, j = i + +el.dataset.d; if (j < 0 || j >= g.length) return; [g[i], g[j]] = [g[j], g[i]]; M.ini.ordemManual = { ...(M.ini.ordemManual || {}), [el.dataset.g]: true }; iniRedraw(); },
   'ini-ord-pad': el => { const g = el.dataset.g; if (!M.ini || !Array.isArray(M.ini[g])) return; M.ini[g] = iniPad(g, M.ini[g]); M.ini.ordemManual = { ...(M.ini.ordemManual || {}), [g]: false }; iniRedraw(); toast('Ordem padrão restaurada (Agenda e OS primeiro, valores no fim). Toque em Salvar para gravar.'); },
-  'ini-padrao': () => { M.ini = { ...JSON.parse(JSON.stringify(INI_PADRAO)), atalhos: iniAlfa('atalhos', Object.keys(INI_ATALHOS)), cards: iniAlfa('cards', Object.keys(INI_CARDS)), paineis: iniAlfa('paineis', Object.keys(INI_PAINEIS)), ordemManual: {}, desmarcados: {} }; iniRedraw(); },
+  'ini-padrao': () => { M.ini = { ...JSON.parse(JSON.stringify(INI_PADRAO)), atalhos: iniAlfa('atalhos', Object.keys(INI_ATALHOS)), cards: iniAlfa('cards', Object.keys(INI_CARDS)), paineis: iniAlfa('paineis', Object.keys(INI_PAINEIS)), ordemManual: {}, desmarcados: {}, ordemV: 2 }; iniRedraw(); },
   'ini-salvar': async () => {
     const old = (S.ajustes || []).find(x => x.id === 'inicio') || {};
     if (await save('ajustes', 'inicio', { ...old, ...M.ini, atalhosVistos: Object.keys(INI_ATALHOS), alteradoEm: Date.now(), alteradoPor: OPID(), autorizadoPor: M.iniAut || null })) { M.iniAut = null; closeAll(); toast('Página inicial atualizada.'); render(); }
@@ -11287,6 +11287,13 @@ async function eqBusca(p, o, nivel) {
     eqAviso(p, `<span class="grow">✅ <b>Identificado:</b> ${esc(nomeR || '—')}${r.confianca === 'baixa' ? ' <b>(pouca certeza)</b>' : ''}. ${f.length ? 'Preenchido: ' + f.join(', ') + '.' : 'Os campos já estavam preenchidos.'} Confira. <small class="muted">(${Math.round((Date.now() - t0) / 1000)} s)</small></span>${nivel < 3 ? `<span class="actions">${nivelBtn('eq-busca-novo', nivel, ` data-p="${p}"`).replace('Tentar de novo', 'Não é este? Tentar').replace('btn sm primary', 'btn sm')}</span>` : ''}`, 'ok'); };
   try {
     let serie = '';
+    if (nivel === 1) { /* v17: base da empresa primeiro (código, nome/modelo ou etiqueta lida no aparelho) */
+      aviso('Procurando na base da empresa…');
+      const loc = o.codigo ? bkPorCodigo(o.codigo) : o.texto ? bkPorTexto(o.texto) : null;
+      const fl = !loc && o.file ? await bkPorFoto(o.file, aviso) : null;
+      const R = loc || (fl && fl.r);
+      if (R) { fim(); const sr = (fl && fl.serie) || R._serie || (o.codigo && !/^\d{8,14}$/.test(o.codigo) ? o.codigo : ''); preencher(R, { serie: sr }); const st = document.querySelector(`#eq-ler-${p} .eq-st .grow`); if (st) st.insertAdjacentHTML('beforeend', ` <small class="muted">· da base da empresa (${esc(R._base || 'catálogo')}), sem usar a internet</small>`); return; }
+    }
     if (o.file) {
       aviso('Procurando código de barras ou QR na foto…'); try { const c = await comPrazo(lerCodigo(o.file), 8000, 'ia_lenta'); if (c) { const cc = String(c).trim(); if (/^\d{8,14}$/.test(cc)) { const r = await comPrazo(buscarProdutoNet(cc), 15000, 'ia_lenta').catch(() => null); if (r && r.nome) { fim(); preencher(r); return; } } else serie = cc; } } catch (e) { if (e && e.code === 'ia_parado') throw e; }
       aviso('Lendo a etiqueta (modelo e nº de série)…');
@@ -11295,7 +11302,7 @@ async function eqBusca(p, o, nivel) {
         if (r0.marca && r0.modelo && nivel === 1) { fim(); preencher(r0, { serie }); return; }
       } catch (e) { if (e && /^ia_(parado|pausada)$/.test(e.code)) throw e; }
       aviso('Identificando pela pesquisa de produtos…');
-      const r = normIA(await comPrazo(prodBuscarIA({ file: o.file, aviso, nivel }), 100000, 'ia_lenta')); fim();
+      const r = normIA(await comPrazo(prodBuscarIA({ file: o.file, aviso, nivel, semBase: true }), 100000, 'ia_lenta')); fim();
       if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' }; preencher(r, { serie }); return;
     }
     if (o.codigo && /^\d{8,14}$/.test(o.codigo)) {
@@ -11303,7 +11310,7 @@ async function eqBusca(p, o, nivel) {
       if (r && r.nome) { fim(); preencher(r); return; }
     } else if (o.codigo) { eqSet(p, { serie: o.codigo }); }
     aviso(o.codigo ? 'Não está nas bases públicas: pesquisando pela IA…' : 'Pesquisando pelo nome…');
-    const r = normIA(await comPrazo(prodBuscarIA({ codigo: o.codigo, texto: o.texto, aviso, nivel }), 100000, 'ia_lenta')); fim();
+    const r = normIA(await comPrazo(prodBuscarIA({ codigo: o.codigo, texto: o.texto, aviso, nivel, semBase: true }), 100000, 'ia_lenta')); fim();
     if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' };
     preencher(r, { serie: o.codigo && !/^\d{8,14}$/.test(o.codigo) ? o.codigo : '' });
   } catch (e) { fim(); if (!document.getElementById(tela)) return;
@@ -13258,6 +13265,65 @@ setTimeout(() => { try { Object.assign(ACT_PERM, { 'item-prod-ed': '', 'ir-cad-a
 /* próximo nível da pesquisa (cadastro de produto e Testar a IA) */
 ACT['ia-nivel'] = el => { const p = IA_PAUSA; if (!p || !p.o) { toast('Não há pesquisa para repetir.'); return; } const o = { ...p.o, nivel: +el.dataset.nivel || 2 }; IA_PAUSA = null; if (p.op && p.op === IA_OP) iaParar(); if (p.tipo === 'cad') prodIAExecutar(o); else iaTesteProduto(o, { row: p.row }); };
 setTimeout(() => { try { ACT_PERM['ia-nivel'] = ''; AJUDA['ia-nivel'] = 'Pesquisa de novo com mais profundidade: 2 = a IA analisa com mais atenção; 3 = analisa e procura no site do fabricante e nas lojas. Demora mais.'; } catch { } }, 0);
+/* ======================= v17: base própria de produtos e equipamentos =======================
+   Tudo o que já foi identificado (pela IA, pelas bases públicas ou digitado nos cadastros e nas OS) fica guardado na nuvem da empresa.
+   Na próxima vez, o aplicativo procura PRIMEIRO aqui — pelo código de barras/QR, pelo nome ou modelo, e na foto (lê o código e o texto
+   da etiqueta no próprio aparelho) — e só usa a internet e a IA se não achar. Ex.: a 2ª impressora HP LaserJet M1132 é reconhecida na hora;
+   só o nº de série muda. */
+const BK_K = 'catalogo-ia';
+const bkDoc = () => (get('ajustes', BK_K) || {}).itens || {};
+const bkChaveM = (marca, modelo) => { const k = norm([marca, modelo].filter(Boolean).join(' ')).replace(/[^a-z0-9]+/g, ' ').trim(); return k.length >= 4 ? 'm:' + k : ''; };
+let BK_PEND = {}, BK_T = 0;
+function bkGuardar(o, r, extra) {
+  try { if (!r || !(r.nome || r.modelo)) return; const d = { nome: r.nome || '', marca: r.marca || '', modelo: r.modelo || '', tipo: r.tipo || '', categoria: r.categoria || '', subcategoria: r.subcategoria || '', at: Date.now() };
+    const ks = []; const cod = String((o && o.codigo) || (extra && extra.codigo) || '').trim(); if (cod && !(extra && extra.serie === cod)) ks.push('c:' + cod.toUpperCase());
+    const km = bkChaveM(d.marca, d.modelo); if (km) ks.push(km); const kn = norm(d.nome).replace(/[^a-z0-9]+/g, ' ').trim(); if (kn.length >= 6) ks.push('n:' + kn);
+    ks.forEach(k => { BK_PEND[k] = d; }); clearTimeout(BK_T); BK_T = setTimeout(bkSalvar, 2000); } catch { }
+}
+async function bkSalvar() { const P = BK_PEND; BK_PEND = {}; if (!Object.keys(P).length) return; const doc = get('ajustes', BK_K) || {}; let itens = { ...(doc.itens || {}), ...P };
+  const ks = Object.keys(itens); if (ks.length > 3500) { ks.sort((a, b) => (itens[a].at || 0) - (itens[b].at || 0)).slice(0, ks.length - 3500).forEach(k => delete itens[k]); }
+  try { await save('ajustes', BK_K, { ...doc, itens, alteradoEm: Date.now() }); } catch { } }
+/* procura na base: catálogo da IA, produtos cadastrados e OS antigas */
+function bkPorCodigo(code) {
+  const c = String(code || '').trim(); if (!c) return null; const C = bkDoc(), u = c.toUpperCase();
+  if (C['c:' + u]) return { ...C['c:' + u], _base: 'catálogo' };
+  const p = S.produtos.find(x => x.codigo && String(x.codigo).trim().toUpperCase() === u); if (p) return { nome: p.nome, marca: p.marca || '', modelo: p.modelo || '', categoria: p.categoria || '', _base: 'produtos', _prodId: p.id };
+  const os = [...S.os].reverse().find(x => x.serie && String(x.serie).trim().toUpperCase() === u); if (os) return { nome: [os.tipoEquip, os.marca, os.modelo].filter(Boolean).join(' '), tipo: os.tipoEquip, marca: os.marca, modelo: os.modelo, _base: 'OS anterior (mesmo nº de série)', _serie: os.serie };
+  return null;
+}
+function bkPorTexto(t) {
+  const q = norm(t || '').replace(/[^a-z0-9]+/g, ' ').trim(); if (q.length < 4) return null; const C = bkDoc();
+  if (C['n:' + q]) return { ...C['n:' + q], _base: 'catálogo' }; if (C['m:' + q]) return { ...C['m:' + q], _base: 'catálogo' };
+  /* o modelo guardado aparece no texto (ex.: “impressora hp laserjet m1132 não liga” contém “laserjet m1132”) */
+  let melhor = null, tam = 0; const qs = ' ' + q + ' ', qj = q.replace(/ /g, '');
+  for (const [k, d] of Object.entries(C)) { if (!k.startsWith('m:') || !d.modelo) continue; const mo = norm(d.modelo).replace(/[^a-z0-9]+/g, ' ').trim(), mj = mo.replace(/ /g, ''); if (mj.length < 4) continue; if ((qs.includes(' ' + mo + ' ') || (mj.length >= 5 && qj.includes(mj))) && mj.length > tam) { melhor = d; tam = mj.length; } }
+  if (melhor) return { ...melhor, _base: 'catálogo' };
+  const os = [...S.os].reverse().find(x => x.modelo && norm(x.modelo).replace(/[^a-z0-9]+/g, '').length >= 5 && qj.includes(norm(x.modelo).replace(/[^a-z0-9]+/g, ''))); if (os) return { nome: [os.tipoEquip, os.marca, os.modelo].filter(Boolean).join(' '), tipo: os.tipoEquip, marca: os.marca, modelo: os.modelo, _base: 'OS anterior' };
+  return null;
+}
+const bkSerie = t => { const m = String(t || '').match(/(?:S\/?N|SERIAL(?:\s*N[OoUuº°]\.?)?|N[º°o]?\s*DE\s*S[ÉE]RIE|SERVICE\s*TAG|S\.N\.)\s*[:#.]?\s*([A-Z0-9][A-Z0-9-]{5,24})/i); return m ? m[1].toUpperCase() : ''; };
+/* foto: lê o código e o texto da etiqueta no próprio aparelho e procura na base (sem internet nem IA) */
+async function bkPorFoto(file, aviso) {
+  try { const c = await comPrazo(lerCodigo(file), 8000, 'ia_lenta'); if (c) { const r = bkPorCodigo(String(c).trim()); if (r) return { r, codigo: String(c).trim() }; } } catch (e) { if (e && e.code === 'ia_parado') throw e; }
+  const C = bkDoc(); if (!Object.keys(C).some(k => k.startsWith('m:')) && !S.os.some(o => o.modelo)) return null;
+  aviso && aviso('Lendo a etiqueta no próprio aparelho e procurando na base da empresa…');
+  let txt = ''; try { txt = await comPrazo(ocrTexto(file, () => { }), 12000, 'ia_lenta'); } catch (e) { if (e && e.code === 'ia_parado') throw e; return null; }
+  const r = bkPorTexto(txt); return r ? { r, serie: bkSerie(txt) } : null;
+}
+/* produto (cadastro, PDV, testes): a base vem antes da internet e da IA; o que a internet e a IA acharem entra na base */
+const _prodBuscarIA0 = prodBuscarIA;
+prodBuscarIA = async function (o) {
+  const loc = o.semBase ? null : o.codigo ? bkPorCodigo(o.codigo) : o.texto ? bkPorTexto(o.texto) : null;
+  if (loc && (o.nivel || 1) === 1) { o.aviso && o.aviso('Encontrado na base da empresa (sem usar a internet).'); return loc; }
+  if (o.file && !o.semBase && (o.nivel || 1) === 1) { const f = await bkPorFoto(o.file, o.aviso); if (f) { o.aviso && o.aviso('Encontrado na base da empresa (sem usar a internet).'); return f.r; } }
+  const r = await _prodBuscarIA0(o); try { bkGuardar(o, normIA(r)); } catch { } return r;
+};
+const _buscarProdutoNet0 = buscarProdutoNet;
+buscarProdutoNet = async function (code) { const loc = bkPorCodigo(String(code || '').replace(/\D/g, '')); if (loc) return { ...loc, fonte: 'base da empresa' }; const r = await _buscarProdutoNet0(code); if (r && r.nome) bkGuardar({ codigo: String(code).replace(/\D/g, '') }, r); return r; };
+/* o que a pessoa salva nos cadastros e nas OS também ensina a base */
+const _save0 = save;
+save = async function (col, id, data) { const ok = await _save0(col, id, data); try { if (ok && col === 'os' && data && data.marca && data.modelo) bkGuardar(null, { nome: [data.tipoEquip, data.marca, data.modelo].filter(Boolean).join(' '), tipo: data.tipoEquip, marca: data.marca, modelo: data.modelo });
+  if (ok && col === 'produtos' && data && data.nome && data.tipo !== 'aluguel') bkGuardar({ codigo: data.codigo || '' }, { nome: data.nome, marca: data.marca || '', modelo: data.modelo || '', categoria: data.categoria || '' }); } catch { } return ok; };
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -19136,8 +19202,12 @@ const iaModeloAnotar = r => { try { const m = r.headers.get('X-Bancada-Modelo');
 /* v17: foto enviada à IA no máximo com 1600 px (foto da câmera em tamanho cheio demorava muito para subir pela internet do celular) */
 async function imgReduzIA(im) { try { if (!im || !/^image\//.test(im.type || 'image/') || im.size < 350000) return im; const bm = await createImageBitmap(im); const k = Math.min(1, 1280 / Math.max(bm.width, bm.height)); const cv = document.createElement('canvas'); cv.width = Math.round(bm.width * k); cv.height = Math.round(bm.height * k); cv.getContext('2d').drawImage(bm, 0, 0, cv.width, cv.height); try { bm.close(); } catch { } const b = await new Promise(ok => cv.toBlob(ok, 'image/jpeg', .85)); return b && b.size < im.size ? b : im; } catch { return im; } }
 /* v17: chamada à ponte com até 3 tentativas para falhas passageiras (rede, 500/502/503/504, 429): espera 1,5 s e 4 s entre elas */
+/* v17 b388: ponte antiga (antes da 7.4) não conhece bancadaNivel e o Google recusa (erro 400) — o app tira o campo e repete; lembra por 24 h */
+const SEM_NIVEL_K = 'bancada-ponte-sem-nivel';
+const semNivel = () => { try { return Date.now() - (+localStorage.getItem(SEM_NIVEL_K) || 0) < 864e5; } catch { return false; } };
+const tiraNivel = c => { try { const o = JSON.parse(c); if (!('bancadaNivel' in o)) return c; delete o.bancadaNivel; return JSON.stringify(o); } catch { return c; } };
 async function pontePost(url, corpo, sinal) {
-  let ult = null;
+  let ult = null; if (semNivel()) corpo = tiraNivel(corpo);
   for (let k = 0; k < 3; k++) {
     if (k) { await new Promise(ok => setTimeout(ok, k === 1 ? 1500 : 4000)); if (sinal && sinal.aborted) throw { code: 'ia_parado' }; }
     const t0r = Date.now(); let r;
@@ -19145,6 +19215,7 @@ async function pontePost(url, corpo, sinal) {
     catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; ult = (navigator.onLine !== false && Date.now() - t0r > 45000) ? { code: 'ia_lenta', message: 'A IA do Google demorou demais e a ligação foi encerrada.' } : { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; if (ult.code === 'ia_lenta' || navigator.onLine === false) throw ult; continue; }
     const t = await r.text(); iaModeloAnotar(r);
     if (r.ok) return t;
+    if (r.status === 400 && /bancadaNivel/.test(t) && corpo !== tiraNivel(corpo)) { try { localStorage.setItem(SEM_NIVEL_K, String(Date.now())); } catch { } corpo = tiraNivel(corpo); k--; continue; }
     ult = { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
     if (!(r.status === 429 || r.status >= 500)) throw ult;
   }
