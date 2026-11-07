@@ -869,6 +869,7 @@ body.sem-op #side nav,body.sem-op #bottom,body.sem-op .side-foot{display:none!im
 .msg-acts{flex-wrap:wrap;gap:6px;justify-content:flex-start}.msg-ta{min-height:260px;font-size:.92rem;line-height:1.45}
 .msg-vars{display:flex;flex-wrap:wrap;gap:6px}.msg-var{cursor:pointer;font-family:var(--f-mono);text-transform:none;letter-spacing:0}
 .lnk{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font:inherit}
+.ind{display:flex;flex-direction:column;gap:14px}.ind-al{display:flex;flex-direction:column;gap:8px}.ind-al-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);cursor:pointer;min-width:0}.ind-al-i .grow{flex:1;min-width:0;overflow-wrap:anywhere}.ind-al-n{font-size:1.5rem;min-width:1.6em;text-align:center}.ind-al-i .btn{flex:none;pointer-events:none}.ind .ind-stats{grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))}.ind-li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);min-width:0}.ind-li>span:first-child{min-width:0;overflow-wrap:anywhere}.ind-li>span:last-child{flex:none;text-align:right}.ind-h3{font-size:.95rem;margin:10px 0 2px}#ind-per{min-width:150px}
 .jun{display:flex;flex-direction:column;gap:6px}.jun-cs{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0}.jun-c{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 4px 3px 8px;border:1px solid var(--line,#2a3140);border-radius:999px;font-size:.85rem;background:rgba(128,128,128,.12);overflow-wrap:anywhere}.jun-c img{width:28px;height:28px;object-fit:cover;border-radius:6px}.jun-x{border:0;background:rgba(128,128,128,.25);color:var(--ink);width:24px;height:24px;border-radius:50%;font:700 15px/24px Arial;cursor:pointer;flex:none}.jun-dig{display:flex;gap:6px}.jun-dig[hidden]{display:none!important}
 .lnk svg{width:1.1em;height:1.1em;flex:none;vertical-align:-.2em;margin-right:3px}.ir-prod .lnk{display:inline-flex;align-items:center;gap:3px}
 /* v17 b389: ícone dentro de link (ex.: Editar o produto no cadastro) fica do tamanho da letra */
@@ -2081,7 +2082,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 391;
+const APP_VER = 17, APP_BUILD = 392;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -13428,6 +13429,135 @@ ACT['eq-dig'] = el => ACT['jun-dig']({ dataset: { k: 'eq:' + el.dataset.p } });
 document.addEventListener('keydown', e => { const t = e.target; if (e.key === 'Enter' && t && t.id && /^jun-.*-in$/.test(t.id)) { e.preventDefault(); const k = Object.keys(JUN).find(x => JUN_ID(x) + '-in' === t.id); if (k) ACT['jun-dig-ok']({ dataset: { k } }); } });
 document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.jun-foto') && t.files && t.files[0]) { const f = t.files[0], k = t.dataset.k; t.value = ''; fotoAntes(f, 'Ajustar a foto', g => junAdd(k, g)); } });
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'jun-dig': '', 'jun-dig-ok': '', 'jun-tira': '', 'jun-limpar': '', 'jun-ir': '' }); Object.assign(AJUDA, { 'jun-dig': 'Abre o campo para digitar o código ou o nome e juntar à pesquisa. Ex.: HP 664.', 'jun-dig-ok': 'Junta o que foi digitado às outras informações da pesquisa. Ex.: foto + “Notebook Dell Inspiron 15”.', 'jun-tira': 'Retira esta informação da pesquisa.', 'jun-limpar': 'Retira todas as informações juntadas.', 'jun-ir': 'Pesquisa usando todas as informações juntadas (código, foto, nome). Ex.: foto da etiqueta + código de barras.' }); } catch { } }, 0);
+/* v17 b392: INDICADORES (painel BI) — o que pede ação hoje primeiro; depois OS por status, números do período, faturamento por mês e mais vendidos/técnicos.
+   Valores em R$ escondidos até tocar no olho (60 s). Cada pessoa escolhe e ordena os blocos (Personalizar) e pode voltar ao padrão. */
+IC.indicadores = '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/><circle cx="19" cy="8" r="1.5"/>';
+(() => { const i = NAV.findIndex(n => n[0] === 'rels'); NAV.splice(i >= 0 ? i + 1 : NAV.length, 0, ['indicadores', 'Indicadores']); })();
+INI_ATALHOS['ir-indicadores'] = ['Indicadores', () => `<button class="btn" data-act="go" data-r="indicadores">${ic('indicadores')}Indicadores</button>`];
+setTimeout(() => { try { if (!PLANO_FIXAS.includes('indicadores')) PLANO_FIXAS.push('indicadores'); } catch { } }, 0);
+const IND_BLOCOS = { alertas: 'Precisa de atenção hoje', status: 'OS abertas agora', numeros: 'Números do período', fat: 'Faturamento por mês', top: 'Mais vendidos e técnicos' };
+const IND_PAD = ['alertas', 'status', 'numeros', 'fat', 'top'];
+const IND_PER = [['mes', 'Este mês'], ['ant', 'Mês anterior'], ['3m', 'Últimos 3 meses'], ['ano', 'Este ano']];
+const indK = () => 'bancada-ind:' + (OPID() || 'x');
+const indCfg = () => { let c = {}; try { c = JSON.parse(localStorage.getItem(indK()) || '{}') || {}; } catch { } const ord = (c.ordem || []).filter(k => IND_BLOCOS[k]); IND_PAD.forEach(k => { if (!ord.includes(k)) ord.push(k); }); return { ordem: ord, ocultos: (c.ocultos || []).filter(k => IND_BLOCOS[k]), per: IND_PER.some(p => p[0] === c.per) ? c.per : 'mes' }; };
+const indGuardar = c => { try { localStorage.setItem(indK(), JSON.stringify(c)); } catch { } };
+function indPeriodo(p) {
+  const h = today(), y = +h.slice(0, 4), m = +h.slice(5, 7), ini = (yy, mm) => isoOf(new Date(yy, mm - 1, 1)), fim = (yy, mm) => isoOf(new Date(yy, mm, 0));
+  if (p === 'ant') { const d = new Date(y, m - 2, 1); return { de: ini(d.getFullYear(), d.getMonth() + 1), ate: fim(d.getFullYear(), d.getMonth() + 1), nome: 'mês anterior' }; }
+  if (p === '3m') { const d = new Date(y, m - 3, 1); return { de: ini(d.getFullYear(), d.getMonth() + 1), ate: h, nome: 'últimos 3 meses' }; }
+  if (p === 'ano') return { de: y + '-01-01', ate: h, nome: 'este ano' };
+  return { de: ini(y, m), ate: h, nome: 'este mês' };
+}
+/* período anterior de mesmo tamanho (para comparar) */
+function indAnterior(P, p) {
+  if (p === 'mes') { const d = new Date(+P.de.slice(0, 4), +P.de.slice(5, 7) - 2, 1), dias = diffDays(P.de, P.ate); const de = isoOf(d); const fimMes = isoOf(new Date(d.getFullYear(), d.getMonth() + 1, 0)); const ate = addDays(de, dias) > fimMes ? fimMes : addDays(de, dias); return { de, ate, nome: 'mesmo período do mês anterior' }; }
+  if (p === 'ant') { const d = new Date(+P.de.slice(0, 4), +P.de.slice(5, 7) - 2, 1); return { de: isoOf(d), ate: isoOf(new Date(d.getFullYear(), d.getMonth() + 1, 0)), nome: 'mês antes' }; }
+  if (p === 'ano') { const y = +P.de.slice(0, 4) - 1; return { de: y + '-01-01', ate: y + P.ate.slice(4), nome: 'mesmo período do ano passado' }; }
+  const n = diffDays(P.de, P.ate) + 1; return { de: addDays(P.de, -n), ate: addDays(P.de, -1), nome: 'período anterior' };
+}
+const indProntoEm = o => { const h = (o.historico || []).filter(x => x.st === 'pronto').pop(); return h ? h.at : (o.prontoEm || o.entregueEm || 0); };
+const indDiasBancada = L => { const v = L.map(o => { const a = o.at, b = indProntoEm(o); return a && b && b >= a ? (b - a) / 864e5 : null; }).filter(x => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+const indDia1 = n => n == null ? '—' : n.toLocaleString('pt-BR', { maximumFractionDigits: 1, minimumFractionDigits: n < 10 ? 1 : 0 }) + (Math.abs(n - 1) < .05 ? ' dia' : ' dias');
+const indDelta = (a, b, fmt, menorMelhor) => { if (b == null || a == null || (!b && !a)) return '<span class="s">sem comparação</span>'; const d = a - b; if (Math.abs(d) < 1e-9) return '<span class="s">igual ao período anterior</span>'; const bom = menorMelhor ? d < 0 : d > 0; return `<span class="s" style="color:var(${bom ? '--accent' : '--red'})">${d > 0 ? '↑' : '↓'} ${fmt(Math.abs(d))} sobre o período anterior</span>`; };
+/* listas dos alertas */
+function indAlertas() {
+  const h = today(), agora = Date.now(), L = {};
+  if (pode('os')) {
+    L.atras = S.os.filter(osAtrasada).sort((a, b) => (a.previsao || '').localeCompare(b.previsao || ''));
+    L.pronto = S.os.filter(o => o.status === 'pronto' && agora - (indProntoEm(o) || o.at || agora) > 30 * 864e5);
+    const ult = {}; S.os.forEach(o => { if (o.clienteId && (!ult[o.clienteId] || (o.at || 0) > (ult[o.clienteId].at || 0))) ult[o.clienteId] = o; });
+    L.prev = Object.values(ult).filter(o => o.status === 'entregue' && o.entregueEm && agora - o.entregueEm >= 120 * 864e5 && agora - o.entregueEm <= 185 * 864e5 && !((S.ajustes || []).find(x => x.id === 'ind-preventiva') || {})[o.id]);
+  }
+  if (pode('orcamentos')) L.orc = S.orcamentos.filter(o => o.status === 'aberto' && o.at && agora - o.at > 3 * 864e5 && !(o.validadeAte && o.validadeAte < h));
+  return L;
+}
+const IND_AL = {
+  atras: ['OS atrasadas', 'passaram da previsão de entrega', 'red', 'Ver'],
+  pronto: ['OS prontas sem retirada', 'há mais de 30 dias', 'amber', 'Avisar'],
+  orc: ['orçamentos sem resposta', 'enviados há mais de 3 dias', 'amber', 'Cobrar'],
+  prev: ['manutenções preventivas vencendo', 'atendidos há 4 a 6 meses', 'blue', 'Chamar']
+};
+function indBlocoAlertas() {
+  const A = indAlertas(), ks = Object.keys(IND_AL).filter(k => A[k] && A[k].length);
+  if (!Object.keys(A).length) return '';
+  const cor = { red: '--red-soft', amber: '--amber-soft', blue: '--blue-soft' };
+  return `<section class="panel"><div class="panel-head"><h2>Precisa de atenção hoje</h2></div>${ks.length ? `<div class="ind-al">${ks.map(k => { const [t, s, c, b] = IND_AL[k], n = A[k].length; return `<div class="ind-al-i" style="background:var(${cor[c]})" data-act="ind-lista" data-k="${k}" role="button"><b class="ind-al-n">${n}</b><span class="grow"><b>${(x => x[0].toUpperCase() + x.slice(1))(n === 1 ? t.replace('atrasadas', 'atrasada').replace('prontas', 'pronta').replace('orçamentos', 'orçamento').replace('manutenções preventivas vencendo', 'manutenção preventiva vencendo') : t)}</b><br><small class="muted">${n === 1 ? s.replace('passaram', 'passou').replace('enviados', 'enviado').replace('atendidos', 'atendido') : s}</small></span><span class="btn sm">${b} ›</span></div>`; }).join('')}</div>` : `<p class="muted" style="margin:0">✅ Nada pendente agora: nenhuma OS atrasada, nenhuma pronta esquecida, nenhum orçamento parado.</p>`}</section>`;
+}
+function indBlocoStatus() {
+  if (!pode('os')) return '';
+  const ab = S.os.filter(osAberta), st = OS_ST.filter(s => !['entregue', 'cancelada'].includes(s[0])).map(s => ({ k: s[0], l: s[1], n: ab.filter(o => (o.status || 'recebido') === s[0]).length })), mx = Math.max(1, ...st.map(x => x.n));
+  return `<section class="panel"><div class="panel-head"><h2>OS abertas agora <span class="muted" style="font-weight:500">· ${ab.length}</span></h2><span class="muted" style="font-size:.82rem">Toque numa linha para ver as OS</span></div>${st.map(x => `<div class="hbar click" data-act="ind-lista" data-k="st:${x.k}" role="button" style="cursor:pointer"><span>${esc(x.l)}</span><span class="track"><span class="fill" style="display:block;width:${x.n ? Math.max(2, x.n / mx * 100) : 0}%"></span></span><b>${x.n}</b></div>`).join('')}</section>`;
+}
+function indBlocoNumeros(P, Pa, oc) {
+  const R = relCalc(P.de, P.ate), Ra = relCalc(Pa.de, Pa.ate), cards = [];
+  if (pode('custos')) cards.push(`<div class="stat"><span class="eyebrow">Faturamento</span><span class="v">${oc ? 'R$ ••••' : brl(R.fat)}</span>${oc ? '<button type="button" class="btn sm" data-act="ind-olho" style="align-self:flex-start">' + ic('eye') + 'Mostrar</button>' : indDelta(R.fat, Ra.fat, v => Ra.fat ? Math.round(v / Ra.fat * 100) + '%' : brl(v))}</div>`);
+  if (pode('os')) {
+    cards.push(`<div class="stat click" data-act="ind-lista" data-k="ent" role="button"><span class="eyebrow">OS entregues</span><span class="v">${R.osEnt.length}</span>${indDelta(R.osEnt.length, Ra.osEnt.length, v => String(v))}</div>`);
+    const t = indDiasBancada(R.osEnt), ta = indDiasBancada(Ra.osEnt);
+    cards.push(`<div class="stat"><span class="eyebrow">Tempo médio na bancada</span><span class="v">${indDia1(t)}</span>${t == null ? '<span class="s">da entrada até ficar pronta</span>' : indDelta(t, ta, v => indDia1(v), true)}</div>`);
+  }
+  if (pode('orcamentos')) { const p = R.orcs.length ? Math.round(R.orcOk.length / R.orcs.length * 100) : null, pa = Ra.orcs.length ? Math.round(Ra.orcOk.length / Ra.orcs.length * 100) : null;
+    cards.push(`<div class="stat"><span class="eyebrow">Orçamentos aprovados</span><span class="v">${p == null ? '—' : p + '%'}</span><span class="s">${R.orcs.length ? `${R.orcOk.length} de ${R.orcs.length}` : 'nenhum orçamento no período'}${p != null && pa != null ? ` · antes: ${pa}%` : ''}</span></div>`); }
+  if (!cards.length) return '';
+  return `<section class="panel"><div class="panel-head"><h2>Números: ${esc(P.nome)}</h2><span class="muted" style="font-size:.82rem">comparado com ${esc(Pa.nome)}</span></div><div class="stats ind-stats">${cards.join('')}</div></section>`;
+}
+function indBlocoFat(oc) {
+  if (!pode('custos')) return '';
+  const h = today(), meses = []; for (let i = 5; i >= 0; i--) { const d = new Date(+h.slice(0, 4), +h.slice(5, 7) - 1 - i, 1); meses.push({ k: isoOf(d).slice(0, 7), lab: MESES[d.getMonth()].slice(0, 3).toLowerCase(), os: 0, bal: 0, al: 0 }); }
+  const ix = Object.fromEntries(meses.map((m, i) => [m.k, i])), de = meses[0].k + '-01', R = relCalc(de, h);
+  R.vendas.forEach(v => { const k = dayISO(v.at).slice(0, 7); if (k in ix) meses[ix[k]][v.osId ? 'os' : 'bal'] += num(v.total); });
+  R.alugPg.forEach(p => { const k = dayISO(p.at).slice(0, 7); if (k in ix) meses[ix[k]].al += num(p.valor); });
+  const temAl = meses.some(m => m.al > 0);
+  if (oc) return `<section class="panel"><div class="panel-head"><h2>Faturamento por mês</h2></div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="muted grow">Valores escondidos.</span><button type="button" class="btn sm" data-act="ind-olho">${ic('eye')}Mostrar valores (1 min)</button></div></section>`;
+  const W = 420, H = 230, Lm = 44, Rm = 6, T = 12, B = 26, iw = W - Lm - Rm, ih = H - T - B, tot = m => m.os + m.bal + m.al, mx = Math.max(0, ...meses.map(tot)), step = niceStep(mx / 4), top = Math.max(step, step * Math.ceil(mx / step)), y = v => T + ih - v / top * ih, bw = iw / meses.length, w = Math.min(48, bw * .6);
+  let g = ''; for (let t = 0; t <= top + 1e-9; t += step) g += `<line class="grid" x1="${Lm}" x2="${W - Rm}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}"/><text class="ax" x="${Lm - 8}" y="${(y(t) + 4).toFixed(1)}" text-anchor="end">${fmtK(t)}</text>`;
+  meses.forEach((m, i) => { const x = Lm + i * bw + (bw - w) / 2; let base = 0; [['os', 'var(--accent)'], ['bal', '#eb6834'], ['al', '#6250d6']].forEach(([k, c]) => { const v = m[k]; if (v <= 0) return; const y1 = y(base + v), y0 = y(base); g += `<rect x="${x.toFixed(1)}" y="${y1.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(0, y0 - y1 - (base ? 0 : 0)).toFixed(1)}" fill="${c}" rx="2"><title>${MESES[+m.k.slice(5) - 1]}: ${k === 'os' ? 'OS' : k === 'bal' ? 'balcão' : 'aluguéis'} ${brl(v)}</title></rect>`; base += v; });
+    g += `<text class="ax" x="${(x + w / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle">${m.lab}</text>`; if (tot(m) > 0) g += `<text class="ax" x="${(x + w / 2).toFixed(1)}" y="${(y(tot(m)) - 4).toFixed(1)}" text-anchor="middle">${fmtK(tot(m))}</text>`; });
+  const leg = (c, t) => `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:${c}"></span>${t}</span>`;
+  return `<section class="panel"><div class="panel-head"><h2>Faturamento por mês</h2><span class="muted" style="font-size:.82rem;display:flex;gap:12px;flex-wrap:wrap">${leg('var(--accent)', 'OS (serviços e peças)')}${leg('#eb6834', 'Balcão')}${temAl ? leg('#6250d6', 'Aluguéis') : ''}</span></div><div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Faturamento dos últimos 6 meses">${g}<line x1="${Lm}" x2="${W - Rm}" y1="${T + ih}" y2="${T + ih}" stroke="var(--muted)" stroke-width="1"/></svg></div></section>`;
+}
+function indBlocoTop(P) {
+  if (!pode('custos')) return '';
+  const R = relCalc(P.de, P.ate), it = [...R.itens].sort((a, b) => b.qtd - a.qtd).slice(0, 5), tec = {};
+  R.osEnt.forEach(o => { const t = (o.laudo && o.laudo.tecnico) || o.tecnico || 'Sem técnico'; (tec[t] = tec[t] || []).push(o); });
+  const T = Object.entries(tec).map(([t, L]) => ({ t, n: L.length, d: indDiasBancada(L) })).sort((a, b) => b.n - a.n).slice(0, 6);
+  const li = (a, b) => `<div class="ind-li"><span>${a}</span><span class="muted">${b}</span></div>`;
+  return `<section class="panel"><div class="panel-head"><h2>Mais vendidos e técnicos</h2><span class="muted" style="font-size:.82rem">só com permissão · ${esc(P.nome)}</span></div>
+  <h3 class="ind-h3">Produtos e serviços mais vendidos</h3>${it.length ? it.map(x => li(esc(x.nome), `${Number(x.qtd).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} ${x.qtd === 1 ? 'vez' : 'vezes'}`)).join('') : '<p class="muted" style="margin:0">Nenhuma venda no período.</p>'}
+  <h3 class="ind-h3">Técnicos (OS entregues)</h3>${T.length ? T.map(x => li(esc(x.t), `${x.n} OS · ${indDia1(x.d)} em média`)).join('') : '<p class="muted" style="margin:0">Nenhuma OS entregue no período.</p>'}</section>`;
+}
+V.indicadores = () => {
+  const C = indCfg(), P = indPeriodo(C.per), Pa = indAnterior(P, C.per), oc = valOcultos();
+  const B = { alertas: () => indBlocoAlertas(), status: () => indBlocoStatus(), numeros: () => indBlocoNumeros(P, Pa, oc), fat: () => indBlocoFat(oc), top: () => indBlocoTop(P) };
+  const corpo = C.ordem.filter(k => !C.ocultos.includes(k)).map(k => { try { return B[k](); } catch (e) { return ''; } }).filter(Boolean).join('');
+  return `<div class="page-head"><div><p class="eyebrow">Painel</p><h1>Indicadores</h1></div><div class="actions"><select id="ind-per" aria-label="Período" title="Período dos números. Ex.: Este mês">${IND_PER.map(([k, l]) => `<option value="${k}"${k === C.per ? ' selected' : ''}>${l}</option>`).join('')}</select><button type="button" class="btn sm" data-act="ind-olho" title="Mostra ou esconde os valores em R$ (aparecem por 1 minuto)">${ic('eye')}${oc ? 'Mostrar valores' : 'Esconder valores'}</button><button type="button" class="btn sm" data-act="ind-pers" title="Escolha e ordene os blocos desta tela. Ex.: tirar “Mais vendidos”">${ic('config')}Personalizar</button></div></div>
+  <div class="ind">${corpo || emptyBox('Nada para mostrar', 'Os blocos foram escondidos ou o seu nível não tem acesso a eles. Toque em Personalizar.')}</div>`;
+};
+document.addEventListener('change', e => { if (e.target && e.target.id === 'ind-per') { const c = indCfg(); c.per = e.target.value; indGuardar(c); render(); } });
+let IND_T = 0;
+function indListaHTML(k) {
+  const A = indAlertas(), osRow = (o, msg) => { const c = cliente(o.clienteId), wa = msg && c ? waLink(c, msg) : ''; return `<div class="row"><div class="grow click" data-act="os-view" data-id="${o.id}" role="button" style="cursor:pointer"><b>OS ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">${esc(osEquip(o))} · ${esc(osSt(o).t)}${o.previsao ? ' · previsão ' + dBR(o.previsao) : ''}</div></div>${wa ? `<button type="button" class="btn sm" data-act="wa-abrir" data-url="${esc(wa)}">WhatsApp</button>` : ''}</div>`; };
+  const emp = empresaNome();
+  if (k === 'atras') return ['OS atrasadas', A.atras.map(o => osRow(o, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. O seu ${osEquip(o)} (OS ${pad(o.numero)}) está levando um pouco mais de tempo do que o previsto. Assim que ficar pronto, avisamos.`))];
+  if (k === 'pronto') return ['OS prontas sem retirada (mais de 30 dias)', A.pronto.map(o => osRow(o, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. O seu ${osEquip(o)} (OS ${pad(o.numero)}) está pronto para retirada desde ${dBR(dayISO(indProntoEm(o) || o.at))}. Podemos aguardar você?`))];
+  if (k === 'prev') return ['Manutenção preventiva vencendo', A.prev.map(o => osRow(o, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. Já faz alguns meses que cuidamos do seu ${osEquip(o)}. Recomendamos uma limpeza e manutenção preventiva para evitar defeitos. Quer agendar?`).replace(/<\/div>$/, `<button type="button" class="btn sm ghost" data-act="ind-prev-ok" data-id="${o.id}" title="Tira este cliente da lista (já foi chamado)">Já chamei</button></div>`))];
+  if (k === 'orc') return ['Orçamentos sem resposta (mais de 3 dias)', A.orc.map(o => { const c = cliente(o.clienteId), wa = c ? waLink(c, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. Conseguiu ver o orçamento nº ${pad(o.numero)}${num(o.total) ? ' de ' + brl(o.total) : ''}? Qualquer dúvida, estamos à disposição.`) : ''; return `<div class="row"><div class="grow click" data-act="orc-open" data-id="${o.id}" role="button" style="cursor:pointer"><b>Orçamento ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">enviado em ${dBR(dayISO(o.at))}${o.validadeAte ? ' · válido até ' + dBR(o.validadeAte) : ''}</div></div>${wa ? `<button type="button" class="btn sm" data-act="wa-abrir" data-url="${esc(wa)}">WhatsApp</button>` : ''}</div>`; })];
+  if (k === 'ent') { const C = indCfg(), P = indPeriodo(C.per); return ['OS entregues: ' + P.nome, relCalc(P.de, P.ate).osEnt.map(o => osRow(o, ''))]; }
+  if (k.startsWith('st:')) { const s = k.slice(3), t = (OS_ST.find(x => x[0] === s) || [])[1] || s; return ['OS: ' + t, S.os.filter(o => osAberta(o) && (o.status || 'recebido') === s).map(o => osRow(o, s === 'pronto' ? `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. O seu ${osEquip(o)} (OS ${pad(o.numero)}) está pronto para retirada.` : ''))]; }
+  return ['', []];
+}
+Object.assign(ACT, {
+  'ind-olho': () => { clearTimeout(IND_T); if (valOcultos()) { VAL_MOSTRA_ATE = Date.now() + 60000; IND_T = setTimeout(() => { VAL_MOSTRA_ATE = 0; if (S.route === 'indicadores') render(); }, 60000); } else VAL_MOSTRA_ATE = 0; render(); toast(valOcultos() ? 'Valores escondidos.' : 'Valores à mostra por 1 minuto.'); },
+  'ind-lista': el => { const [t, L] = indListaHTML(el.dataset.k); openModal(t || 'Lista', L.length ? `<div class="list">${L.join('')}</div>` : emptyBox('Nada aqui', 'Não há itens nesta lista agora.'), `<button type="button" class="btn primary" data-act="close">Fechar</button>`); },
+  'ind-prev-ok': async el => { const id = el.dataset.id, d = { ...((S.ajustes || []).find(x => x.id === 'ind-preventiva') || {}) }; delete d.id; d[id] = Date.now(); await save('ajustes', 'ind-preventiva', d); const r = el.closest('.row'); if (r) r.remove(); toast('Tirado da lista de preventivas.'); },
+  'ind-pers': () => { const C = indCfg(); openModal('Personalizar os indicadores', `<p class="muted" style="margin-top:0">Marque os blocos que quer ver e use as setas para mudar a ordem. Vale só para você.</p><div class="list" id="ind-pers-l"></div>`, `<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn" data-act="ind-pers-pad">↺ Restaurar o padrão</button><button type="button" class="btn primary" data-act="ind-pers-ok">Salvar</button>`); M.ind = { ordem: [...C.ordem], ocultos: [...C.ocultos] }; indPersPinta(); },
+  'ind-pers-mov': el => { const o = M.ind.ordem, i = +el.dataset.i, j = i + +el.dataset.d; if (j < 0 || j >= o.length) return; [o[i], o[j]] = [o[j], o[i]]; indPersPinta(); },
+  'ind-pers-pad': () => { M.ind = { ordem: [...IND_PAD], ocultos: [] }; indPersPinta(); toast('Ordem padrão. Toque em Salvar para gravar.'); },
+  'ind-pers-ok': () => { const c = indCfg(); c.ordem = M.ind.ordem; c.ocultos = M.ind.ocultos; indGuardar(c); closeModal(); render(); toastOk('Indicadores personalizados.'); }
+});
+function indPersPinta() { const L = $('#ind-pers-l'); if (!L || !M.ind) return; const o = M.ind.ordem; L.innerHTML = o.map((k, i) => `<div class="row"><label class="grow" style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" data-ind-k="${k}"${M.ind.ocultos.includes(k) ? '' : ' checked'}> ${esc(IND_BLOCOS[k])}</label><button type="button" class="btn sm" data-act="ind-pers-mov" data-i="${i}" data-d="-1" aria-label="Subir"${i ? '' : ' disabled'}>▲</button><button type="button" class="btn sm" data-act="ind-pers-mov" data-i="${i}" data-d="1" aria-label="Descer"${i < o.length - 1 ? '' : ' disabled'}>▼</button></div>`).join(''); }
+document.addEventListener('change', e => { const t = e.target; if (t && t.dataset && t.dataset.indK && M.ind) { const k = t.dataset.indK; M.ind.ocultos = M.ind.ocultos.filter(x => x !== k); if (!t.checked) M.ind.ocultos.push(k); } });
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'ind-olho': '', 'ind-lista': '', 'ind-prev-ok': '', 'ind-pers': '', 'ind-pers-mov': '', 'ind-pers-pad': '', 'ind-pers-ok': '' }); Object.assign(AJUDA, { 'ind-olho': 'Mostra os valores em R$ por 1 minuto; toque de novo para esconder.', 'ind-lista': 'Abre a lista deste indicador. Ex.: as OS atrasadas, com botão para avisar o cliente pelo WhatsApp.', 'ind-prev-ok': 'Tira este cliente da lista de preventivas (ele já foi chamado).', 'ind-pers': 'Escolhe e ordena os blocos desta tela. Ex.: esconder “Mais vendidos”.', 'ind-pers-mov': 'Muda a posição do bloco.', 'ind-pers-pad': 'Volta a ordem e os blocos ao padrão: alertas, OS abertas, números, faturamento, mais vendidos.', 'ind-pers-ok': 'Grava a sua escolha.' }); } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
