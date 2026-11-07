@@ -2082,7 +2082,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 392;
+const APP_VER = 17, APP_BUILD = 393;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -13535,18 +13535,55 @@ V.indicadores = () => {
 };
 document.addEventListener('change', e => { if (e.target && e.target.id === 'ind-per') { const c = indCfg(); c.per = e.target.value; indGuardar(c); render(); } });
 let IND_T = 0;
+const indTipoOS = (o, atras) => o.status === 'orcamento' ? 'os-aprov' : o.status === 'peca' ? 'os-peca' : o.status === 'pronto' ? 'os-retirada' : (atras || osAtrasada(o)) ? 'os-atraso' : 'os-andamento';
+const IND_PEDE_PRAZO = ['os-peca', 'os-atraso'];
+function indVarsOS(o, extra) { const v = msgVars('laudo', o); return { ...v, situacao_os: osSt(o).t, previsao: o.previsao ? dBR(o.previsao) : '', pronto_desde: dBR(dayISO(indProntoEm(o) || o.at || Date.now())), ultimo_servico: o.entregueEm ? dBR(dayISO(o.entregueEm)) : '', ...(extra || {}) }; }
 function indListaHTML(k) {
-  const A = indAlertas(), osRow = (o, msg) => { const c = cliente(o.clienteId), wa = msg && c ? waLink(c, msg) : ''; return `<div class="row"><div class="grow click" data-act="os-view" data-id="${o.id}" role="button" style="cursor:pointer"><b>OS ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">${esc(osEquip(o))} · ${esc(osSt(o).t)}${o.previsao ? ' · previsão ' + dBR(o.previsao) : ''}</div></div>${wa ? `<button type="button" class="btn sm" data-act="wa-abrir" data-url="${esc(wa)}">WhatsApp</button>` : ''}</div>`; };
-  const emp = empresaNome();
-  if (k === 'atras') return ['OS atrasadas', A.atras.map(o => osRow(o, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. O seu ${osEquip(o)} (OS ${pad(o.numero)}) está levando um pouco mais de tempo do que o previsto. Assim que ficar pronto, avisamos.`))];
-  if (k === 'pronto') return ['OS prontas sem retirada (mais de 30 dias)', A.pronto.map(o => osRow(o, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. O seu ${osEquip(o)} (OS ${pad(o.numero)}) está pronto para retirada desde ${dBR(dayISO(indProntoEm(o) || o.at))}. Podemos aguardar você?`))];
-  if (k === 'prev') return ['Manutenção preventiva vencendo', A.prev.map(o => osRow(o, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. Já faz alguns meses que cuidamos do seu ${osEquip(o)}. Recomendamos uma limpeza e manutenção preventiva para evitar defeitos. Quer agendar?`).replace(/<\/div>$/, `<button type="button" class="btn sm ghost" data-act="ind-prev-ok" data-id="${o.id}" title="Tira este cliente da lista (já foi chamado)">Já chamei</button></div>`))];
-  if (k === 'orc') return ['Orçamentos sem resposta (mais de 3 dias)', A.orc.map(o => { const c = cliente(o.clienteId), wa = c ? waLink(c, `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. Conseguiu ver o orçamento nº ${pad(o.numero)}${num(o.total) ? ' de ' + brl(o.total) : ''}? Qualquer dúvida, estamos à disposição.`) : ''; return `<div class="row"><div class="grow click" data-act="orc-open" data-id="${o.id}" role="button" style="cursor:pointer"><b>Orçamento ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">enviado em ${dBR(dayISO(o.at))}${o.validadeAte ? ' · válido até ' + dBR(o.validadeAte) : ''}</div></div>${wa ? `<button type="button" class="btn sm" data-act="wa-abrir" data-url="${esc(wa)}">WhatsApp</button>` : ''}</div>`; })];
+  const A = indAlertas(), wa = (tipo, id, extra) => `<button type="button" class="btn sm" data-act="ind-wa" data-tipo="${tipo}" data-id="${id}"${extra || ''}>WhatsApp</button>`;
+  const osRow = (o, tipo, mais) => `<div class="row"><div class="grow click" data-act="os-view" data-id="${o.id}" role="button" style="cursor:pointer"><b>OS ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">${esc(osEquip(o))} · ${esc(osSt(o).t)}${o.previsao ? ' · previsão ' + dBR(o.previsao) : ''}</div></div>${tipo ? wa(tipo, o.id) : ''}${mais || ''}</div>`;
+  if (k === 'atras') return ['OS atrasadas', A.atras.map(o => osRow(o, indTipoOS(o, true)))];
+  if (k === 'pronto') return ['OS prontas sem retirada (mais de 30 dias)', A.pronto.map(o => osRow(o, 'os-retirada'))];
+  if (k === 'prev') return ['Manutenção preventiva vencendo', A.prev.map(o => osRow(o, 'os-preventiva', `<button type="button" class="btn sm ghost" data-act="ind-prev-ok" data-id="${o.id}" title="Tira este cliente da lista (já foi chamado)">Já chamei</button>`))];
+  if (k === 'orc') return ['Orçamentos sem resposta (mais de 3 dias)', A.orc.map(o => `<div class="row"><div class="grow click" data-act="orc-open" data-id="${o.id}" role="button" style="cursor:pointer"><b>Orçamento ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">enviado em ${dBR(dayISO(o.at))}${o.validadeAte ? ' · válido até ' + dBR(o.validadeAte) : ''}</div></div>${wa('orc-cobranca', o.id)}</div>`)];
   if (k === 'ent') { const C = indCfg(), P = indPeriodo(C.per); return ['OS entregues: ' + P.nome, relCalc(P.de, P.ate).osEnt.map(o => osRow(o, ''))]; }
-  if (k.startsWith('st:')) { const s = k.slice(3), t = (OS_ST.find(x => x[0] === s) || [])[1] || s; return ['OS: ' + t, S.os.filter(o => osAberta(o) && (o.status || 'recebido') === s).map(o => osRow(o, s === 'pronto' ? `Olá, ${cliNome(o.clienteId).split(' ')[0]}! Aqui é da ${emp}. O seu ${osEquip(o)} (OS ${pad(o.numero)}) está pronto para retirada.` : ''))]; }
+  if (k.startsWith('st:')) { const s = k.slice(3), t = (OS_ST.find(x => x[0] === s) || [])[1] || s; return ['OS: ' + t, S.os.filter(o => osAberta(o) && (o.status || 'recebido') === s).map(o => osRow(o, indTipoOS(o)))]; }
   return ['', []];
 }
+/* janela da mensagem: escolhe o texto (se houver mais de um), pergunta o novo prazo quando é atraso/peça, mostra o texto pronto (dá para mexer) e envia */
+let IND_WA = null;
+function indWaAbrir(tipo, id, linha) {
+  const orc = tipo === 'orc-cobranca', x = orc ? get('orcamentos', id) : get('os', id); if (!x) { toast('Não encontrei este registro.'); return; }
+  const L = msgDoTipo(tipo); if (!L.length) { toast('Não há texto para esta situação. Crie em Configurações → Mensagens do WhatsApp.'); return; }
+  const pr = msgPrincipal(tipo), prazo = IND_PEDE_PRAZO.includes(tipo), sug = prazo ? (x.previsao && x.previsao > today() ? x.previsao : previsaoPara(x.tipoEquip)) : '';
+  IND_WA = { tipo, id, orc, linha, prazo };
+  const tel = cliTelWa(cliente(x.clienteId));
+  openModal('Mensagem para o cliente', `<p class="muted" style="margin-top:0">${esc(cliNome(x.clienteId))} · ${orc ? 'Orçamento ' + pad(x.numero) : 'OS ' + pad(x.numero) + ' · ' + esc(osSt(x).t)}${tel ? '' : ' · <b style="color:var(--red)">cliente sem WhatsApp cadastrado</b>'}</p>
+    ${L.length > 1 ? field('Texto', `<select id="iw-m">${L.map(m => `<option value="${esc(m.id)}"${pr && pr.id === m.id ? ' selected' : ''}>${esc(m.nome || 'Sem nome')}</option>`).join('')}</select>`) : ''}
+    ${prazo ? `<div class="fg">${field('Nova previsão de entrega *', `<input type="date" id="iw-data" value="${sug}" min="${today()}">`)}${field('ou daqui a quantos dias', `<input type="number" id="iw-dias" inputmode="numeric" min="0" step="1" value="${Math.max(0, diffDays(today(), sug))}">`)}</div><p class="muted" style="font-size:.82rem;margin:2px 0 8px">A nova data fica gravada como previsão de entrega da OS e vai na mensagem.</p>` : ''}
+    ${field('Mensagem (pode mexer antes de enviar)', '<textarea id="iw-txt" class="msg-ta" style="min-height:190px"></textarea>', 'full')}
+    <p class="muted" style="font-size:.8rem;margin:4px 0 0">Os textos de cada situação ficam em Configurações → Mensagens do WhatsApp, onde dá para editar ou criar outros.</p>`,
+    `<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="ind-wa-env">${prazo ? 'Gravar prazo e enviar' : 'Enviar no WhatsApp'}</button>`, { wide: true });
+  indWaTexto();
+}
+function indWaTexto() {
+  const w = IND_WA; if (!w) return; const x = w.orc ? get('orcamentos', w.id) : get('os', w.id), sel = $('#iw-m'), L = msgDoTipo(w.tipo), m = (sel && L.find(z => z.id === sel.value)) || msgPrincipal(w.tipo), d = ($('#iw-data') || {}).value || '';
+  const v = w.orc ? { ...msgVars('orc', x), equipamento: x.equipamento || '' } : indVarsOS(x, { nova_previsao: d ? dBR(d) : '' });
+  const t = $('#iw-txt'); if (t && m) t.value = msgRender(m.texto, v);
+}
+document.addEventListener('change', e => { const t = e.target; if (!t || !IND_WA) return; if (t.id === 'iw-m') indWaTexto(); if (t.id === 'iw-data') { const n = $('#iw-dias'); if (n && t.value) n.value = Math.max(0, diffDays(today(), t.value)); indWaTexto(); } });
+document.addEventListener('input', e => { const t = e.target; if (t && t.id === 'iw-dias' && IND_WA) { const n = Math.max(0, Math.round(+t.value || 0)), d = $('#iw-data'); if (d) d.value = addDays(today(), n); indWaTexto(); } });
+
 Object.assign(ACT, {
+  'ind-wa': el => indWaAbrir(el.dataset.tipo, el.dataset.id, el.closest('.row')),
+  'ind-wa-env': async () => {
+    const w = IND_WA; if (!w) return; const x = w.orc ? get('orcamentos', w.id) : get('os', w.id), txt = (($('#iw-txt') || {}).value || '').trim(); if (!x) return; if (!txt) { toast('A mensagem está vazia.'); return; }
+    if (w.prazo) { const d = ($('#iw-data') || {}).value || ''; if (!d || d < today()) { toast('Escolha a nova previsão (hoje ou depois).'); $('#iw-data') && $('#iw-data').focus(); return; }
+      const ok = await save('os', x.id, { ...x, previsao: d, previsoes: [...(x.previsoes || []), { de: x.previsao || '', para: d, at: Date.now(), por: OPID(), motivo: w.tipo === 'os-peca' ? 'Aguardando peça' : 'Atraso' }] }); if (!ok) return;
+      if (w.linha && d >= today()) { try { w.linha.remove(); } catch { } } }
+    const tel = cliTelWa(cliente(x.clienteId)); closeModal(); IND_WA = null;
+    if (!tel) { try { await navigator.clipboard.writeText(txt); } catch { } toast((w.prazo ? 'Nova previsão gravada. ' : '') + 'O cliente não tem WhatsApp cadastrado: a mensagem foi copiada.', 6000); return; }
+    abrirExterno(waUrl(tel, txt)); if (w.prazo) toastOk('Nova previsão gravada na OS.');
+  },
   'ind-olho': () => { clearTimeout(IND_T); if (valOcultos()) { VAL_MOSTRA_ATE = Date.now() + 60000; IND_T = setTimeout(() => { VAL_MOSTRA_ATE = 0; if (S.route === 'indicadores') render(); }, 60000); } else VAL_MOSTRA_ATE = 0; render(); toast(valOcultos() ? 'Valores escondidos.' : 'Valores à mostra por 1 minuto.'); },
   'ind-lista': el => { const [t, L] = indListaHTML(el.dataset.k); openModal(t || 'Lista', L.length ? `<div class="list">${L.join('')}</div>` : emptyBox('Nada aqui', 'Não há itens nesta lista agora.'), `<button type="button" class="btn primary" data-act="close">Fechar</button>`); },
   'ind-prev-ok': async el => { const id = el.dataset.id, d = { ...((S.ajustes || []).find(x => x.id === 'ind-preventiva') || {}) }; delete d.id; d[id] = Date.now(); await save('ajustes', 'ind-preventiva', d); const r = el.closest('.row'); if (r) r.remove(); toast('Tirado da lista de preventivas.'); },
@@ -13557,7 +13594,7 @@ Object.assign(ACT, {
 });
 function indPersPinta() { const L = $('#ind-pers-l'); if (!L || !M.ind) return; const o = M.ind.ordem; L.innerHTML = o.map((k, i) => `<div class="row"><label class="grow" style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" data-ind-k="${k}"${M.ind.ocultos.includes(k) ? '' : ' checked'}> ${esc(IND_BLOCOS[k])}</label><button type="button" class="btn sm" data-act="ind-pers-mov" data-i="${i}" data-d="-1" aria-label="Subir"${i ? '' : ' disabled'}>▲</button><button type="button" class="btn sm" data-act="ind-pers-mov" data-i="${i}" data-d="1" aria-label="Descer"${i < o.length - 1 ? '' : ' disabled'}>▼</button></div>`).join(''); }
 document.addEventListener('change', e => { const t = e.target; if (t && t.dataset && t.dataset.indK && M.ind) { const k = t.dataset.indK; M.ind.ocultos = M.ind.ocultos.filter(x => x !== k); if (!t.checked) M.ind.ocultos.push(k); } });
-setTimeout(() => { try { Object.assign(ACT_PERM, { 'ind-olho': '', 'ind-lista': '', 'ind-prev-ok': '', 'ind-pers': '', 'ind-pers-mov': '', 'ind-pers-pad': '', 'ind-pers-ok': '' }); Object.assign(AJUDA, { 'ind-olho': 'Mostra os valores em R$ por 1 minuto; toque de novo para esconder.', 'ind-lista': 'Abre a lista deste indicador. Ex.: as OS atrasadas, com botão para avisar o cliente pelo WhatsApp.', 'ind-prev-ok': 'Tira este cliente da lista de preventivas (ele já foi chamado).', 'ind-pers': 'Escolhe e ordena os blocos desta tela. Ex.: esconder “Mais vendidos”.', 'ind-pers-mov': 'Muda a posição do bloco.', 'ind-pers-pad': 'Volta a ordem e os blocos ao padrão: alertas, OS abertas, números, faturamento, mais vendidos.', 'ind-pers-ok': 'Grava a sua escolha.' }); } catch { } }, 0);
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'ind-wa': '', 'ind-wa-env': '', 'ind-olho': '', 'ind-lista': '', 'ind-prev-ok': '', 'ind-pers': '', 'ind-pers-mov': '', 'ind-pers-pad': '', 'ind-pers-ok': '' }); Object.assign(AJUDA, { 'ind-wa': 'Abre a mensagem certa para a situação (ex.: lembrete de aprovação, atraso com novo prazo) para enviar pelo WhatsApp.', 'ind-wa-env': 'Grava o novo prazo na OS (quando pedido) e abre o WhatsApp com a mensagem.', 'ind-olho': 'Mostra os valores em R$ por 1 minuto; toque de novo para esconder.', 'ind-lista': 'Abre a lista deste indicador. Ex.: as OS atrasadas, com botão para avisar o cliente pelo WhatsApp.', 'ind-prev-ok': 'Tira este cliente da lista de preventivas (ele já foi chamado).', 'ind-pers': 'Escolhe e ordena os blocos desta tela. Ex.: esconder “Mais vendidos”.', 'ind-pers-mov': 'Muda a posição do bloco.', 'ind-pers-pad': 'Volta a ordem e os blocos ao padrão: alertas, OS abertas, números, faturamento, mais vendidos.', 'ind-pers-ok': 'Grava a sua escolha.' }); } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -15155,18 +15192,19 @@ function fuFichaDoc(F) {
 document.addEventListener('change', e => { if (e.target && e.target.id === 'fu-desl') { S.fuDesl = e.target.checked; const l = $('#list'); if (l) l.innerHTML = funcList(); } });
 
 /* ======================= mensagens do WhatsApp: modelos editáveis (Configurações → Mensagens do WhatsApp) ======================= */
-const MSG_TIPOS = { aniv: 'Aniversário (parabéns)', entrada: 'Entrada da OS (comprovante)', laudo: 'Laudo técnico', assinatura: 'Pedido de assinatura', orc: 'Orçamento', venda: 'Comprovante de venda', contrato: 'Contrato de aluguel', devolucao: 'Devolução de aluguel', prorrog: 'Prorrogação de aluguel', recibo: 'Recibo de aluguel', geral: 'Geral (qualquer documento)' };
+const MSG_TIPOS = { aniv: 'Aniversário (parabéns)', entrada: 'Entrada da OS (comprovante)', laudo: 'Laudo técnico', assinatura: 'Pedido de assinatura', orc: 'Orçamento', venda: 'Comprovante de venda', contrato: 'Contrato de aluguel', devolucao: 'Devolução de aluguel', prorrog: 'Prorrogação de aluguel', recibo: 'Recibo de aluguel', 'os-aprov': 'OS aguardando aprovação (lembrete)', 'os-peca': 'OS aguardando peça (novo prazo)', 'os-atraso': 'OS atrasada (novo prazo)', 'os-andamento': 'OS em andamento (aviso)', 'os-retirada': 'OS pronta sem retirada (lembrete)', 'os-preventiva': 'Manutenção preventiva', 'orc-cobranca': 'Orçamento sem resposta (lembrete)', geral: 'Geral (qualquer documento)' };
 const MSG_VARS = { nome: 'Primeiro nome do aniversariante', nome_completo: 'Nome completo do aniversariante', idade: 'Idade que está fazendo',
   cliente: 'Primeiro nome do cliente', cliente_completo: 'Nome completo do cliente', empresa: 'Nome da empresa', telefone_empresa: 'Telefone da empresa', numero: 'Número do documento', documento: 'Ex.: “a ordem de serviço nº 0007”',
   equipamento: 'Equipamento', serie: 'Número de série', defeito: 'Defeito relatado', acessorios: 'Acessórios deixados', previsao: 'Previsão de entrega', data_entrada: 'Data e hora da entrada',
   diagnostico: 'Diagnóstico do laudo', solucao: 'Solução do laudo', conclusao: 'Conclusão do laudo', valor: 'Valor total', garantia: 'Garantia', situacao: 'Frase final conforme a situação da OS',
   servico: 'Serviço do orçamento', itens: 'Lista de itens', desconto: 'Desconto', frete: 'Frete', total: 'Total', validade: 'Validade do orçamento', prazo: 'Prazo', condicoes: 'Condições de pagamento', pix: 'Chave PIX da empresa', pagamento: 'Formas de pagamento',
-  inicio: 'Início do aluguel', fim: 'Devolução prevista', data_devolucao: 'Data da devolução', adicional: 'Valor adicional', nova_devolucao: 'Nova data de devolução', novo_total: 'Novo total', valor_pago: 'Valor recebido', valor_extenso: 'Valor recebido por extenso'
+  inicio: 'Início do aluguel', fim: 'Devolução prevista', data_devolucao: 'Data da devolução', adicional: 'Valor adicional', nova_devolucao: 'Nova data de devolução', novo_total: 'Novo total', valor_pago: 'Valor recebido', valor_extenso: 'Valor recebido por extenso',
+  nova_previsao: 'Nova previsão de entrega (perguntada antes de enviar)', situacao_os: 'Situação atual da OS (ex.: Em execução)', pronto_desde: 'Data em que ficou pronta', ultimo_servico: 'Data do último serviço'
 };
 const MSG_VAR_TIPO = { aniv: ['nome', 'nome_completo', 'idade'],
   entrada: ['equipamento', 'serie', 'defeito', 'acessorios', 'previsao', 'data_entrada'], laudo: ['equipamento', 'diagnostico', 'solucao', 'conclusao', 'valor', 'garantia', 'situacao'],
   assinatura: ['documento'], orc: ['equipamento', 'servico', 'itens', 'desconto', 'frete', 'total', 'validade', 'prazo', 'garantia', 'condicoes', 'pix'], venda: ['itens', 'total', 'pagamento'],
-  contrato: ['itens', 'inicio', 'fim', 'total'], devolucao: ['data_devolucao', 'adicional'], prorrog: ['nova_devolucao', 'novo_total'], recibo: ['valor_pago', 'valor_extenso'], geral: ['documento', 'equipamento', 'valor', 'total']
+  contrato: ['itens', 'inicio', 'fim', 'total'], 'os-aprov': ['equipamento', 'valor', 'situacao_os', 'previsao'], 'os-peca': ['equipamento', 'nova_previsao', 'previsao', 'situacao_os'], 'os-atraso': ['equipamento', 'nova_previsao', 'previsao', 'situacao_os'], 'os-andamento': ['equipamento', 'situacao_os', 'previsao'], 'os-retirada': ['equipamento', 'pronto_desde', 'valor'], 'os-preventiva': ['equipamento', 'ultimo_servico'], 'orc-cobranca': ['equipamento', 'total', 'validade'], devolucao: ['data_devolucao', 'adicional'], prorrog: ['nova_devolucao', 'novo_total'], recibo: ['valor_pago', 'valor_extenso'], geral: ['documento', 'equipamento', 'valor', 'total']
 };
 const MSG_BASE = ['cliente', 'cliente_completo', 'empresa', 'telefone_empresa', 'numero', 'documento'];
 const MSG_PADRAO = [
@@ -15180,10 +15218,18 @@ const MSG_PADRAO = [
   { id: 'p-contrato', tipo: 'contrato', nome: 'Contrato de aluguel', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nSegue o *contrato de locação nº {numero}* (PDF).\n\n{itens}\n• Início: {inicio}\n• Devolução prevista: {fim}\n• Total: {total}\n\nDúvidas: {telefone_empresa}' },
   { id: 'p-devolucao', tipo: 'devolucao', nome: 'Devolução registrada', texto: '*Devolução registrada — aluguel nº {numero}*\nEquipamentos devolvidos em {data_devolucao}.\nAdicional: {adicional}\n\nObrigado, {cliente}!' },
   { id: 'p-prorrog', tipo: 'prorrog', nome: 'Prorrogação', texto: '*Prorrogação — aluguel nº {numero}*\nNova devolução: {nova_devolucao}\nNovo total: {novo_total}' },
-  { id: 'p-recibo', tipo: 'recibo', nome: 'Recibo de aluguel', texto: '*Recibo — aluguel nº {numero}*\nRecebemos {valor_pago} ({valor_extenso}). Obrigado!' }
+  { id: 'p-recibo', tipo: 'recibo', nome: 'Recibo de aluguel', texto: '*Recibo — aluguel nº {numero}*\nRecebemos {valor_pago} ({valor_extenso}). Obrigado!' },
+  { id: 'p-os-aprov', tipo: 'os-aprov', nome: 'Lembrete de aprovação', texto: 'Olá, {cliente}! Tudo bem? Aqui é da *{empresa}*.\nPassando para lembrar que o orçamento do seu equipamento *{equipamento}* (OS nº {numero}) está aguardando a sua resposta.\n• Valor: {valor}\n\nPodemos seguir com o serviço? Se tiver qualquer dúvida, é só responder esta mensagem.' },
+  { id: 'p-os-peca', tipo: 'os-peca', nome: 'Aguardando peça — novo prazo', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está aguardando a chegada de uma peça e, por isso, vai levar um pouco mais de tempo.\n• Nova previsão de entrega: *{nova_previsao}*\n\nPedimos desculpas pelo transtorno. Avisaremos assim que ficar pronto.' },
+  { id: 'p-os-atraso', tipo: 'os-atraso', nome: 'Atraso — novo prazo', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nO serviço no seu equipamento *{equipamento}* (OS nº {numero}) precisou de um pouco mais de tempo do que o previsto, mas já estamos cuidando disso.\n• Nova previsão de entrega: *{nova_previsao}*\n\nPedimos desculpas pelo atraso e agradecemos a compreensão.' },
+  { id: 'p-os-andamento', tipo: 'os-andamento', nome: 'Andamento do serviço', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está na etapa: *{situacao_os}*.\n• Previsão de entrega: {previsao}\n\nAvisaremos assim que ficar pronto.' },
+  { id: 'p-os-retirada', tipo: 'os-retirada', nome: 'Lembrete de retirada', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está pronto para retirada desde {pronto_desde}.\n• Valor: {valor}\n\nPodemos aguardar você? Qualquer dúvida: {telefone_empresa}.' },
+  { id: 'p-os-preventiva', tipo: 'os-preventiva', nome: 'Manutenção preventiva', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nJá faz alguns meses que cuidamos do seu equipamento *{equipamento}* (último serviço em {ultimo_servico}).\nRecomendamos uma limpeza e manutenção preventiva para evitar defeitos e prolongar a vida do equipamento.\n\nQuer agendar? É só responder esta mensagem.' },
+  { id: 'p-orc-cobranca', tipo: 'orc-cobranca', nome: 'Lembrete de orçamento', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nConseguiu ver o *orçamento nº {numero}*?\n• Equipamento: {equipamento}\n• Total: {total}\n• Válido até: {validade}\n\nSe quiser aprovar ou tiver alguma dúvida, é só responder esta mensagem.' }
 ];
 const msgDoc = () => get('ajustes', 'mensagens') || {};
-const msgLista = () => { const d = msgDoc(); return Array.isArray(d.lista) ? d.lista : MSG_PADRAO.map(x => ({ ...x })); };
+const MSG_TIPOS_B393 = ['os-aprov', 'os-peca', 'os-atraso', 'os-andamento', 'os-retirada', 'os-preventiva', 'orc-cobranca'];
+const msgLista = () => { const d = msgDoc(); if (!Array.isArray(d.lista)) return MSG_PADRAO.map(x => ({ ...x })); const tem = new Set(d.lista.map(m => m.tipo)); return [...d.lista, ...MSG_PADRAO.filter(p => MSG_TIPOS_B393.includes(p.tipo) && !tem.has(p.tipo)).map(x => ({ ...x }))]; };
 const msgDoTipo = t => msgLista().filter(m => m.tipo === t);
 const msgPrincipal = t => { const L = msgDoTipo(t); return L.find(m => m.principal) || L[0] || null; };
 async function msgSalvar(lista) { const d = msgDoc(); const { id, ...rest } = d; const ok = await save('ajustes', 'mensagens', { ...rest, lista, alteradoEm: Date.now(), alteradoPor: OPID() }); if (ok) scheduleRender(true); return ok; }
