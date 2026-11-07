@@ -2081,7 +2081,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 390;
+const APP_VER = 17, APP_BUILD = 391;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -11144,7 +11144,7 @@ async function prodPreencherPorCodigo(forcar) {
       : `<span class="grow">O código <b>${esc(code)}</b> não está em nenhuma base pública de produtos${china ? ' (é um código registrado na China: esses quase nunca estão nas bases)' : ''}. Preencha pela foto ou digitando o que está escrito na caixa:</span><span class="actions">${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button></span>`;
     return;
   }
-  const set = (id, v, sempre) => { const el = $('#' + id); if (!el || !v) return false; if (el.value.trim() && !sempre) return false; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); return true; };
+  const set = (id, v, sempre) => { const el = $('#' + id); if (!el || !v) return false; if (el.value.trim() && !sempre && el.value !== el.dataset.auto) return false; el.value = v; el.dataset.auto = v; el.dispatchEvent(new Event('input', { bubbles: true })); return true; };
   const feitos = [];
   if (set('p-nome', r.nome, forcar)) feitos.push('nome');
   if (set('p-marca', [r.marca, r.modelo].filter(Boolean).join(' '), forcar)) feitos.push('marca/modelo');
@@ -11203,13 +11203,13 @@ const normIA = r => { const n = normJ(r); for (const k of ['subcategoria', 'cor'
 /* preenche o cadastro com tudo o que veio (só os campos vazios, a não ser que "forcar") */
 function prodAplicarIA(r, forcar) {
   const feitos = [];
-  const set = (id, v, rot) => { const el = $('#' + id); v = String(v == null ? '' : v).trim(); if (!el || !v || /^(n\/?a|nao (informado|encontrado)|desconhecid[oa]|-)$/i.test(norm(v))) return; if (el.value.trim() && !forcar) return; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); feitos.push(rot); };
+  const set = (id, v, rot) => { const el = $('#' + id); v = String(v == null ? '' : v).trim(); if (!el || !v || /^(n\/?a|nao (informado|encontrado)|desconhecid[oa]|-)$/i.test(norm(v))) return; if (el.value.trim() && !forcar && el.value !== el.dataset.auto) return; el.value = v; el.dataset.auto = el.value; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); feitos.push(rot); };
   const cat = r.categoria ? ((catDe(r.categoria, r.subcategoria, r.nome) || [r.categoria])[0]) : '';
   set('p-nome', r.nome, 'nome'); set('p-cat', cat, 'categoria'); set('p-subcat', r.subcategoria, 'subcategoria'); set('p-marca', r.marca, 'marca'); set('p-modelo', r.modelo, 'modelo');
   set('p-cor', r.cor, 'cor'); set('p-volt', r.voltagem, 'voltagem'); set('p-tam', r.tamanho, 'tamanho'); set('p-peso', r.peso, 'peso'); set('p-mat', r.material, 'material'); set('p-gar', r.garantia, 'garantia'); set('p-compat', r.compativel, 'compatível com');
   const car = Array.isArray(r.caracteristicas) ? r.caracteristicas.join('\n') : r.caracteristicas && typeof r.caracteristicas === 'object' ? Object.entries(r.caracteristicas).map(([k, v]) => k + ': ' + v).join('\n') : r.caracteristicas;
   set('p-det', car, 'características');
-  const cb = String(r.codigo_barras || '').replace(/\D/g, ''); if (cb.length >= 8 && cb.length <= 14) { const c = $('#p-cod'); if (c && !c.value.trim()) { c.value = cb; feitos.push('código de barras'); } }
+  const cb = String(r.codigo_barras || '').replace(/\D/g, ''); if (cb.length >= 8 && cb.length <= 14) { const c = $('#p-cod'); if (c && (!c.value.trim() || c.value === c.dataset.auto)) { c.value = cb; c.dataset.auto = cb; feitos.push('código de barras'); } }
   return feitos;
 }
 function prodIAResumo(r, feitos) {
@@ -11265,7 +11265,7 @@ function tipoDoTexto(t) {
 }
 function eqSet(p, dados) {
   const I = EQ_IDS[p], feitos = [];
-  const put = (id, v, rot) => { const el = $('#' + id); v = String(v || '').trim(); if (!el || !v) return; if (el.tagName === 'SELECT') { let o = [...el.options].find(o => norm(o.text) === norm(v)); if (!o) { o = document.createElement('option'); o.textContent = v; el.appendChild(o); } if (el.value && el.value !== '' && el.value === o.value) return; el.value = o.value; el.dispatchEvent(new Event('change', { bubbles: true })); feitos.push(rot); return; } if (el.value.trim()) return; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); feitos.push(rot); };
+  const put = (id, v, rot) => { const el = $('#' + id); v = String(v || '').trim(); if (!el || !v) return; if (el.tagName === 'SELECT') { let o = [...el.options].find(o => norm(o.text) === norm(v)); if (!o) { o = document.createElement('option'); o.textContent = v; el.appendChild(o); } if (el.value && el.value !== '' && el.value === o.value) return; if (el.dataset.auto == null) el.dataset.antes = el.value; el.value = o.value; el.dataset.auto = el.value; el.dispatchEvent(new Event('change', { bubbles: true })); feitos.push(rot); return; } if (el.value.trim() && el.value !== el.dataset.auto) return; el.value = v; el.dataset.auto = v; el.dispatchEvent(new Event('input', { bubbles: true })); feitos.push(rot); };
   put(I.t, dados.tipo, 'tipo'); put(I.m, dados.marca, 'marca'); put(I.mo, dados.modelo, 'modelo'); put(I.s, dados.serie, 'nº de série');
   return feitos;
 }
@@ -11413,7 +11413,7 @@ function normJ(r) {
 /* preenche o cadastro do produto; devolve o que entrou e o que já estava lá */
 function prodAplicar(r, textoDigitado) {
   const feitos = [], ja = [];
-  const set = (id, v, rot) => { const el = $('#' + id); v = String(v || '').trim(); if (!el || !v) return; if (el.value.trim()) { ja.push(rot); return; } el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); feitos.push(rot); };
+  const set = (id, v, rot) => { const el = $('#' + id); v = String(v || '').trim(); if (!el || !v) return; if (el.value.trim() && el.value !== el.dataset.auto) { ja.push(rot); return; } el.value = v; el.dataset.auto = v; el.dispatchEvent(new Event('input', { bubbles: true })); feitos.push(rot); };
   set('p-nome', r.nome || textoDigitado, 'nome'); set('p-marca', [r.marca, r.modelo].filter(Boolean).join(' '), 'marca/modelo'); set('p-cat', r.categoria, 'categoria'); set('p-det', r.caracteristicas, 'características');
   return feitos.length ? `Preenchido: ${feitos.join(', ')}.${ja.length ? ' Já estava preenchido: ' + ja.join(', ') + '.' : ''} Confira antes de salvar.` : ja.length ? 'Esses campos já estavam preenchidos (' + ja.join(', ') + '): apague o que quiser trocar e tente de novo.' : 'Não deu para identificar o produto. Escreva mais detalhes (marca, sabor, tamanho, modelo) e tente de novo.';
 }
@@ -13078,12 +13078,12 @@ let CMP_T = 0; new MutationObserver(() => { clearTimeout(CMP_T); CMP_T = setTime
    Falar as perguntas em voz alta é opcional (padrão: só na tela). */
 const VZ_ETAPAS = [
   { k: 'cliente', q: 'Qual é o cliente?', dica: 'Diga o nome ou o telefone. Ex.: “Maria Souza” ou “81 99999 1234”.' },
-  { k: 'equip', q: 'Como quer informar o equipamento?', dica: 'Tire a foto da etiqueta, leia o código ou diga “narrar”.' },
+  { k: 'equip', q: 'Como quer informar o equipamento?', dica: 'Tire a foto da etiqueta, leia o código, digite o código ou diga “narrar”. Tudo abre por cima desta janela e volta para ela.' },
   { k: 'tipo', q: 'Qual é o tipo do equipamento?', dica: 'Ex.: “impressora”, “notebook”, “celular”.' },
   { k: 'marca', q: 'Qual é a marca?', dica: 'Ex.: “HP”, “Dell”, “Samsung”.' },
   { k: 'modelo', q: 'Qual é o modelo?', dica: 'Diga o nome ou toque numa opção da lista. Ex.: “LaserJet M1132”.' },
-  { k: 'serie', q: 'Qual é o número de série?', dica: 'Diga letra por letra, ou “pular”.' },
-  { k: 'senha', q: 'Tem senha ou PIN?', dica: 'Diga a senha, ou “não tem”.' },
+  { k: 'serie', q: 'Qual é o número de série?', dica: 'Diga letra por letra e os números. Ex.: “C N B um dois três traço quatro” vira CNB123-4. Ou “pular”.' },
+  { k: 'senha', q: 'Tem senha ou PIN?', dica: 'Diga a senha. Números ditados viram algarismos: “um dois três quatro” vira 1234. Ou “não tem”.' },
   { k: 'acess', q: 'Quais acessórios ficaram?', dica: 'Ex.: “fonte e cabo de energia”, ou “nenhum”.' },
   { k: 'estado', q: 'Como está o equipamento?', dica: 'Ex.: “carcaça riscada, tela trincada no canto”.' },
   { k: 'defeito', q: 'Qual é o defeito relatado pelo cliente?', dica: 'Ex.: “não liga”, “mancha na impressão”.' },
@@ -13091,6 +13091,44 @@ const VZ_ETAPAS = [
   { k: 'fim', q: 'Confira e conclua', dica: 'Toque num item para voltar a ele. Diga “concluir” para terminar.' }
 ];
 const VZ = { i: 0, txt: '', ouvindo: false, rec: null, ops: [] };
+/* b391: OS por voz — número ditado vira algarismo. Ex.: “quinze três mil quinhentos e vinte” → “15 3520”; série “a b c um dois traço três” → “ABC12-3”; senha “um dois três quatro” → “1234”; telefone do cliente “oitenta e um nove nove…” → “8199…”. */
+const VZ_N = { zero: 0, um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, meia: 6, sete: 7, oito: 8, nove: 9, dez: 10, onze: 11, doze: 12, treze: 13, quatorze: 14, catorze: 14, quinze: 15, dezesseis: 16, dezasseis: 16, dezessete: 17, dezoito: 18, dezenove: 19, vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50, sessenta: 60, setenta: 70, oitenta: 80, noventa: 90, cem: 100, cento: 100, duzentos: 200, duzentas: 200, trezentos: 300, trezentas: 300, quatrocentos: 400, quinhentos: 500, seiscentos: 600, setecentos: 700, oitocentos: 800, novecentos: 900, mil: 1000 };
+const VZ_LETRA = { be: 'B', ce: 'C', de: 'D', efe: 'F', ge: 'G', aga: 'H', jota: 'J', ca: 'K', ka: 'K', ele: 'L', eme: 'M', ene: 'N', pe: 'P', que: 'Q', erre: 'R', esse: 'S', te: 'T', ve: 'V', dablio: 'W', xis: 'X', ipsilon: 'Y', ze: 'Z', traco: '-', hifen: '-', barra: '/', ponto: '.' };
+function vzNumeros(t, modo) {
+  const tok = String(t || '').trim().split(/\s+/).filter(Boolean), out = []; let seg = null;
+  const nw = x => norm(x || '').replace(/[.,;:!?]+$/, '');
+  const fecha = () => { if (seg) { out.push({ n: String(seg.tot + seg.cur), s: seg.simples }); seg = null; } };
+  for (let i = 0; i < tok.length; i++) {
+    const w = nw(tok[i]);
+    if (w === 'e' && seg && i + 1 < tok.length && VZ_N[nw(tok[i + 1])] != null) { seg.e = true; continue; }
+    if (/^\d+$/.test(w)) { fecha(); out.push({ n: w, s: w.length === 1 }); continue; }
+    const v = VZ_N[w];
+    if (v == null) { fecha(); out.push({ w: tok[i] }); continue; }
+    if (seg && !seg.e && v !== 1000 && seg.ult !== 1000 && !(seg.ult >= 100 && seg.ult % 100 === 0 && v < 100) && !(seg.ult >= 20 && seg.ult < 100 && seg.ult % 10 === 0 && v < 10)) fecha();
+    if (!seg) seg = { tot: 0, cur: 0, ult: 0, simples: true };
+    if (v === 1000) { seg.tot += (seg.cur || 1) * 1000; seg.cur = 0; } else seg.cur += v;
+    if (v > 9) seg.simples = false; seg.ult = v; seg.e = false;
+  }
+  fecha();
+  if (modo === 'serie') return out.map(x => x.n != null ? x.n : (VZ_LETRA[nw(x.w)] || x.w)).join('').toUpperCase();
+  let r = '', prev = null;
+  for (const x of out) {
+    let sep = prev ? ' ' : '';
+    if (prev && x.n != null && prev.n != null && (modo !== 'modelo' || (x.s && prev.s))) sep = '';
+    if (prev && modo === 'modelo' && x.n != null && prev.w != null && /^[a-z]$/i.test(prev.w)) sep = '';
+    r += sep + (x.n != null ? x.n : x.w); prev = x;
+  }
+  if (modo === 'senha' && /^[\d\s]+$/.test(r)) r = r.replace(/\s+/g, '');
+  return r;
+}
+/* b391: na OS por voz, ler código / foto / digitar abrem por cima da própria janela de voz; a pesquisa aparece nela e, ao terminar, segue para o tipo (já preenchido) */
+function vzEqEspera() { JUN_AUTO['eq:os'] = Date.now(); VZ.esperaEq = true; clearInterval(VZ.eqIv); const o = vzEl('vz-ouvido'); if (o) o.innerHTML = '<span class="muted">Aguardando o código, a foto ou o texto…</span>';
+  VZ.eqIv = setInterval(() => { if (!vzEl('vz-q')) { clearInterval(VZ.eqIv); return; } const st = document.querySelector('#eq-ler-os .eq-st'), ov = vzEl('vz-ouvido'); if (st && !st.hidden && ov && st.innerText.trim()) ov.innerHTML = `<div class="banner info" style="text-align:left">${esc(st.innerText.split('\n')[0])}</div>${IA_OP ? '<button type="button" class="btn sm" data-act="ia-parar">Parar a pesquisa</button>' : ''}`; }, 700); }
+function vzEqFim() { VZ.esperaEq = false; clearInterval(VZ.eqIv); if (!vzEl('vz-q')) return; const st = document.querySelector('#eq-ler-os .eq-st'), ok = st && /Identificado/.test(st.innerText), ov = vzEl('vz-ouvido');
+  if (ov && st) ov.innerHTML = `<div class="banner${ok ? ' info' : ''}" style="text-align:left">${esc(st.innerText.split('\n')[0])}</div>`;
+  if (ok) setTimeout(() => { if (!vzEl('vz-q') || VZ_ETAPAS[VZ.i].k !== 'equip') return; VZ.i = VZ_ETAPAS.findIndex(e => e.k === 'tipo'); vzMostrar(); }, 2200); }
+const vzConv = t => { const E = VZ_ETAPAS[VZ.i], m = E && { cliente: 'tel', modelo: 'modelo', serie: 'serie', senha: 'senha' }[E.k]; return m ? vzNumeros(t, m) : t; };
+
 const vzFalarOn = () => { try { return lsGet('bancada-voz-falar') === '1'; } catch { return false; } };
 const vzSR = () => window.SpeechRecognition || window.webkitSpeechRecognition;
 function vzFalar(t) { if (!vzFalarOn() || !window.speechSynthesis) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'pt-BR'; speechSynthesis.speak(u); } catch { } }
@@ -13099,7 +13137,10 @@ function vzVal(id) { const e = vzEl(id); if (!e) return ''; return e.tagName ===
 function vzPor(id, v) { const e = vzEl(id); if (!e) return; if (e.tagName === 'SELECT') { let o = [...e.options].find(o => norm(o.text) === norm(v) || o.value === v); if (!o) { o = document.createElement('option'); o.textContent = v; e.appendChild(o); } e.value = o.value; e.dispatchEvent(new Event('change', { bubbles: true })); return; } e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }
 ACT['os-voz'] = () => {
   if (!vzEl('os-cli')) { toast('Abra a Nova OS primeiro.'); return; }
-  VZ.i = VZ.retomar ? VZ_ETAPAS.findIndex(e => e.k === 'tipo') : 0; VZ.retomar = false; VZ.txt = ''; VZ.ops = [];
+  /* b391: a OS por voz continua de onde parou enquanto a mesma Nova OS estiver aberta (sair para ler código, foto ou digitar não perde nada) */
+  const cli = vzEl('os-cli'), mesma = VZ.cli === cli && cli.isConnected;
+  const ant = VZ.i; VZ.i = VZ.retomar ? VZ_ETAPAS.findIndex(e => e.k === 'tipo') : mesma ? VZ.i : 0; VZ.retomar = false; VZ.cli = cli; VZ.txt = ''; VZ.ops = [];
+  if (mesma && VZ.i > 0) setTimeout(() => toast('Continuando de onde parou (etapa ' + (VZ.i + 1) + ' de ' + VZ_ETAPAS.length + '). Use ← Voltar para rever.'), 300);
   openModal('OS por voz', `<div class="vz"><div class="vz-passo" id="vz-passo"></div><h2 class="vz-q" id="vz-q"></h2><p class="muted vz-dica" id="vz-dica"></p>
     <div class="vz-ouvido" id="vz-ouvido" aria-live="polite"></div><div class="vz-ops" id="vz-ops"></div>
     <div class="vz-mic"><button type="button" class="btn vz-mic-b" id="vz-mic" data-act="vz-ouvir">🎤 Falar</button><input id="vz-txt" placeholder="Ou digite aqui e toque em Próximo" autocomplete="off"></div>
@@ -13124,7 +13165,7 @@ function vzOpcoes(t) {
       ops = S.clientes.filter(c => !c.excluido).map(c => { const n = norm(c.nome || ''), tel = agTelsCli(c).join(' ').replace(/\D/g, ''); let p = 0; if (dq.length >= 4 && tel.includes(dq)) p += 10; pal.forEach(w => { if (n.includes(w)) p += 2; }); if (n.startsWith(pal[0] || '\u0000')) p += 1; return [c, p]; }).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]).slice(0, 6)
         .map(([c]) => ({ v: c.id, t: c.nome, s: agTelsCli(c)[0] || '' }));
       ops.push({ v: '__novo', t: `＋ Cadastrar novo cliente${t ? ': “' + t + '”' : ''}`, s: 'nome e telefone que você disse' }); }
-  } else if (E.k === 'equip') ops = [{ v: 'foto', t: '📷 Tirar foto da etiqueta' }, { v: 'codigo', t: '▦ Ler código de barras / QR' }, { v: 'narrar', t: '🎤 Narrar (tipo, marca e modelo)' }];
+  } else if (E.k === 'equip') ops = [{ v: 'foto', t: '📷 Tirar foto da etiqueta' }, { v: 'codigo', t: '▦ Ler código de barras / QR' }, { v: 'digitar', t: '⌨ Digitar o código ou o nome' }, { v: 'narrar', t: '🎤 Narrar (tipo, marca e modelo)' }];
   else if (E.k === 'tipo') ops = TIPOS_EQ.filter(x => !q || norm(x).includes(q) || q.includes(norm(x).split(' ')[0])).map(x => ({ v: x, t: x }));
   else if (E.k === 'marca') { const M0 = [...new Set([...S.os.map(o => o.marca).filter(Boolean), ...((S.marcas || []).map(m => m.nome || m))])].sort(); ops = M0.filter(x => !q || norm(x).includes(q)).slice(0, 12).map(x => ({ v: x, t: x })); }
   else if (E.k === 'modelo') ops = vzModelos().filter(x => !q || q.split(/\s+/).every(w => norm(x).includes(w))).slice(0, 15).map(x => ({ v: x, t: x }));
@@ -13158,7 +13199,7 @@ function vzOuvir() {
   const r = new SR(); r.lang = 'pt-BR'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1; VZ.rec = r; VZ.ouvindo = true;
   const b = vzEl('vz-mic'); if (b) { b.classList.add('on'); b.textContent = '● Ouvindo… (toque para parar)'; }
   let final = '';
-  r.onresult = ev => { let t = ''; for (let i = 0; i < ev.results.length; i++) { t += ev.results[i][0].transcript; if (ev.results[i].isFinal) final = t; } VZ.txt = t.trim(); const o = vzEl('vz-ouvido'); if (o) o.innerHTML = `“${esc(VZ.txt)}”`; vzOpcoes(VZ.txt); };
+  r.onresult = ev => { let t = ''; for (let i = 0; i < ev.results.length; i++) { t += ev.results[i][0].transcript; if (ev.results[i].isFinal) final = vzConv(t.trim()); } VZ.txt = vzConv(t.trim()); const o = vzEl('vz-ouvido'); if (o) o.innerHTML = `“${esc(VZ.txt)}”`; vzOpcoes(VZ.txt); };
   r.onerror = e => { if (e && e.error === 'not-allowed') toast('Permita o uso do microfone para o aplicativo.'); };
   r.onend = () => { VZ.ouvindo = false; const b2 = vzEl('vz-mic'); if (b2) { b2.classList.remove('on'); b2.textContent = '🎤 Falar'; } if (final) vzComando(final.trim()); };
   try { r.start(); } catch { vzParar(); }
@@ -13190,8 +13231,9 @@ async function vzEscolher(o) {
   }
   if (E.k === 'equip') {
     if (o.v === 'narrar') return vzAvancar();
-    if (o.v === 'codigo') { VZ.retomar = true; closeModal(); setTimeout(() => ACT['cam-scan']({ dataset: { target: 'eq:os' } }), 50); toast('Depois de ler, toque de novo em “OS por voz”: ele continua do tipo do equipamento, já preenchido.', 7000); return; }
-    if (o.v === 'foto') { VZ.retomar = true; const i = document.querySelector('input.eq-idfoto[data-p="os"]'); closeModal(); if (i) setTimeout(() => i.closest('label') ? i.closest('label').click() : i.click(), 50); toast('Depois da foto, toque de novo em “OS por voz”: ele continua do tipo do equipamento, já preenchido.', 7000); return; }
+    if (o.v === 'codigo') { vzEqEspera(); setTimeout(() => ACT['cam-scan']({ dataset: { target: 'jun:eq:os' } }), 50); return; }
+    if (o.v === 'foto') { const i = document.querySelector('input.jun-foto[data-k="eq:os"]'); if (!i) { toast('Abra a Nova OS primeiro.'); return; } vzEqEspera(); setTimeout(() => i.click(), 50); return; }
+    if (o.v === 'digitar') { const x = vzEl('vz-txt'); if (x) { x.hidden = false; x.placeholder = 'Código, nº de série ou nome (ex.: Notebook Dell Inspiron 15) e toque em Próximo'; x.focus(); } return; }
   }
   if (E.k === 'tipo') vzPor('os-tipo', o.v); else if (E.k === 'marca') vzPor('os-marca', o.v); else if (E.k === 'modelo') vzPor('os-modelo', o.v);
   else if (E.k === 'acess') { const a = vzVal('os-acc'); vzPor('os-acc', [a, o.v].filter(Boolean).join(', ')); vzOpcoes(''); return; }
@@ -13234,7 +13276,7 @@ Object.assign(ACT, {
   'vz-pular': () => { if (VZ.i < VZ_ETAPAS.length - 1) { VZ.i++; vzMostrar(); } },
   'vz-ir': el => { const i = VZ_ETAPAS.findIndex(e => e.k === el.dataset.k); if (i >= 0) { VZ.i = i; vzMostrar(); } },
   'vz-prox': () => { const E = VZ_ETAPAS[VZ.i]; if (E.k === 'fim') { vzParar(); closeModal(); toastOk('OS preenchida. Confira os campos e toque em “Registrar entrada”.'); return; }
-    const t = (vzEl('vz-txt') || {}).value || VZ.txt; if (vzAplicarTexto(t) === false) return; vzAvancar(); }
+    const t = (vzEl('vz-txt') || {}).value || VZ.txt; if (E.k === 'equip' && String(t).trim()) { vzEqEspera(); junAdd('eq:os', String(t).trim()); return; } if (vzAplicarTexto(t) === false) return; vzAvancar(); }
 });
 document.addEventListener('change', e => { if (e.target && e.target.id === 'vz-falar') { try { lsSet('bancada-voz-falar', e.target.checked ? '1' : '0'); } catch { } if (e.target.checked) vzFalar(VZ_ETAPAS[VZ.i].q); else try { speechSynthesis.cancel(); } catch { } } });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'vz-txt') { e.preventDefault(); ACT['vz-prox'](); } });
@@ -13330,7 +13372,7 @@ save = async function (col, id, data) { const ok = await _save0(col, id, data); 
   if (ok && col === 'produtos' && data && data.nome && data.tipo !== 'aluguel') bkGuardar({ codigo: data.codigo || '' }, { nome: data.nome, marca: data.marca || '', modelo: data.modelo || '', categoria: data.categoria || '' }); } catch { } return ok; };
 /* v17 b390: JUNTAR INFORMAÇÕES — a pessoa escolhe, desde a 1ª pesquisa, usar uma ou mais informações (código, foto, nome digitado).
    Ler código, Foto e Digitar só JUNTAM; o botão Pesquisar usa tudo o que estiver junto. Vale no cadastro de produto, no equipamento da OS/orçamento e no Testar a IA. */
-const JUN = {}, JUN_ID = k => 'jun-' + String(k).replace(/[^a-z0-9]/gi, '-');
+const JUN = {}, JUN_AUTO = {}, JUN_ID = k => 'jun-' + String(k).replace(/[^a-z0-9]/gi, '-');
 function junBlocoHTML(k, rotFoto, galeria) {
   JUN[k] = {}; const id = JUN_ID(k);
   return `<div class="jun" id="${id}"><div class="actions" style="justify-content:flex-start"><button type="button" class="btn sm" data-act="cam-scan" data-target="jun:${k}" title="Lê o código de barras, QR ou nº de série e junta à pesquisa">${ic('camera')}Ler código</button><label class="btn sm" style="cursor:pointer" title="Tira a foto e junta à pesquisa">${ic('tag')}${rotFoto || 'Foto'}<input type="file" accept="image/*" capture="environment" class="vh jun-foto" data-k="${k}"></label>${galeria ? `<label class="btn sm" style="cursor:pointer">${ic('down')}Galeria<input type="file" accept="image/*" class="vh jun-foto" data-k="${k}"></label>` : ''}<button type="button" class="btn sm" data-act="jun-dig" data-k="${k}" title="Digite o código ou o nome e junte à pesquisa">${ic('edit')}Digitar</button></div>
@@ -13350,16 +13392,17 @@ const junDesc = (o, html) => [o.file && 'a foto', o.codigo && (html ? `o código
 function junAdd(k, v) {
   const J = JUN[k] || (JUN[k] = {});
   if (v instanceof Blob) { try { if (J.url) URL.revokeObjectURL(J.url); } catch { } J.file = v; J.url = URL.createObjectURL(v);
-    if (k === 'prod') { (async () => { try { if ($('#fo-val') && !$('#fo-val').value) { const d = await reduzFoto(v, 480); $('#fo-val').value = d; $('#fo-prev').innerHTML = `<img src="${d}" alt="">`; const rm = $('#fo-rm'); if (rm) rm.hidden = false; const ed = $('#fo-ed'); if (ed) ed.hidden = false; } } catch { } })(); } }
+    if (k === 'prod') { (async () => { try { if ($('#fo-val') && !$('#fo-val').value) { const d = await reduzFoto(v, 480); $('#fo-val').value = d; $('#fo-val').dataset.auto = d; $('#fo-prev').innerHTML = `<img src="${d}" alt="">`; const rm = $('#fo-rm'); if (rm) rm.hidden = false; const ed = $('#fo-ed'); if (ed) ed.hidden = false; } } catch { } })(); } }
   else { const s = String(v || '').trim(); if (!s) return; if (!/\s/.test(s) && /\d/.test(s) && s.length >= 4) J.codigo = s; else J.texto = s; }
   junPinta(k); const b = document.getElementById(JUN_ID(k)); if (b) { try { b.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch { } }
+  if (JUN_AUTO[k] && Date.now() - JUN_AUTO[k] < 180000) { delete JUN_AUTO[k]; Promise.resolve(ACT['jun-ir']({ dataset: { k } })).catch(() => { }).finally(() => { if (k === 'eq:os' && VZ.esperaEq) vzEqFim(); }); return; } delete JUN_AUTO[k]; /* OS por voz: foto/código pesquisam na hora */
   toast('Juntado. Toque em Pesquisar ou junte mais uma informação.');
 }
 const JUN_FN = {
   eq: (k, o) => eqBusca(k.slice(3), o),
   teste: (k, o) => iaTesteProduto(o),
   prod: async (k, o) => {
-    const ean = o.codigo && /^\d{8,14}$/.test(o.codigo); const pc = $('#p-cod'); if (ean && pc && !pc.value.trim()) pc.value = o.codigo;
+    const ean = o.codigo && /^\d{8,14}$/.test(o.codigo); const pc = $('#p-cod'); if (ean && pc && (!pc.value.trim() || pc.value === pc.dataset.auto)) { pc.value = o.codigo; pc.dataset.auto = o.codigo; }
     if (ean && !o.file && !o.texto && pc && pc.value.replace(/\D/g, '') === o.codigo) return prodPreencherPorCodigo(false);
     if ((await iaSample()) === IA_PONTE || !o.file) return prodIAExecutar(o);
     return prodIdentificarFoto(o.file);
@@ -13369,9 +13412,18 @@ Object.assign(ACT, {
   'jun-dig': el => { const k = el.dataset.k, b = document.getElementById(JUN_ID(k) + '-dig'); if (!b) return; b.hidden = !b.hidden; if (!b.hidden) setTimeout(() => { const i = document.getElementById(JUN_ID(k) + '-in'); if (i) i.focus(); }, 30); },
   'jun-dig-ok': el => { const k = el.dataset.k, i = document.getElementById(JUN_ID(k) + '-in'), v = i ? i.value.trim() : ''; if (v.length < 3) { toast('Digite o código ou o nome.'); if (i) i.focus(); return; } junAdd(k, v); i.value = ''; const b = document.getElementById(JUN_ID(k) + '-dig'); if (b) b.hidden = true; },
   'jun-tira': el => { const J = JUN[el.dataset.k] || {}, c = el.dataset.c; if (c === 'file') { try { URL.revokeObjectURL(J.url); } catch { } delete J.url; } delete J[c]; junPinta(el.dataset.k); },
-  'jun-limpar': el => { const k = el.dataset.k, J = JUN[k] || {}; try { if (J.url) URL.revokeObjectURL(J.url); } catch { } JUN[k] = {}; junPinta(k); },
-  'jun-ir': el => { const k = el.dataset.k, o = junObj(k); if (!Object.keys(o).length) { toast('Junte pelo menos uma informação.'); return; } const f = JUN_FN[String(k).split(':')[0]]; if (f) f(k, o); }
+  'jun-limpar': el => { const k = el.dataset.k, J = JUN[k] || {}; try { if (J.url) URL.revokeObjectURL(J.url); } catch { } JUN[k] = {}; junPinta(k); const n = junLimparCampos(k); toast(n ? 'Limpo. Os campos preenchidos pela pesquisa foram apagados.' : 'Limpo.'); },
+  'jun-ir': el => { const k = el.dataset.k, o = junObj(k); if (!Object.keys(o).length) { toast('Junte pelo menos uma informação.'); return; } const f = JUN_FN[String(k).split(':')[0]]; try { junLimparCampos(k, true); } catch { } /* regra: pesquisa nova não mistura com a anterior — apaga o que a anterior preencheu (o que a pessoa digitou fica) */ if (f) return f(k, o); }
 });
+/* b391: Limpar apaga também o que a pesquisa anterior preencheu (marcado com data-auto), para a pesquisa nova não misturar dois produtos. O que a pessoa digitou ou mudou fica. */
+function junLimparCampos(k, nova) {
+  let n = 0; const tira = el => { if (!el || el.dataset.auto == null) return; if (el.value === el.dataset.auto) { if (el.tagName === 'SELECT') { const o0 = [...el.options].find(o => !o.value); el.value = el.dataset.antes != null ? el.dataset.antes : o0 ? o0.value : ''; } else el.value = ''; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); n++; } delete el.dataset.auto; delete el.dataset.antes; };
+  if (String(k).startsWith('eq:')) { const p = k.slice(3), I = EQ_IDS[p] || {}; Object.values(I).forEach(id => tira(document.getElementById(id))); const st = document.querySelector(`#eq-ler-${p} .eq-st`); if (st) { st.hidden = true; st.innerHTML = ''; } if (window.EQ_ULT && EQ_ULT.p === p) window.EQ_ULT = null; }
+  else if (k === 'prod') { const f = $('#fo-val'); if (!nova && f && f.dataset.auto != null && f.value === f.dataset.auto) { f.value = ''; const pv = $('#fo-prev'); if (pv) pv.innerHTML = ''; ['fo-rm', 'fo-ed'].forEach(i => { const b = document.getElementById(i); if (b) b.hidden = true; }); n++; } if (f && !nova) delete f.dataset.auto;
+    const box = document.getElementById(JUN_ID('prod')), fm = box && box.closest('form, .sheet, .modal'); (fm ? [...fm.querySelectorAll('[data-auto]')] : []).forEach(tira); const b = $('#p-busca'); if (b) { b.hidden = true; b.innerHTML = ''; } PROD_IA_ULT = null; }
+  else if (k === 'teste') { const l = $('#iat-p'); if (l) l.innerHTML = ''; }
+  return n;
+}
 ACT['eq-dig'] = el => ACT['jun-dig']({ dataset: { k: 'eq:' + el.dataset.p } });
 document.addEventListener('keydown', e => { const t = e.target; if (e.key === 'Enter' && t && t.id && /^jun-.*-in$/.test(t.id)) { e.preventDefault(); const k = Object.keys(JUN).find(x => JUN_ID(x) + '-in' === t.id); if (k) ACT['jun-dig-ok']({ dataset: { k } }); } });
 document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.jun-foto') && t.files && t.files[0]) { const f = t.files[0], k = t.dataset.k; t.value = ''; fotoAntes(f, 'Ajustar a foto', g => junAdd(k, g)); } });
