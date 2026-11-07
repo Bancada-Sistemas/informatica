@@ -869,6 +869,7 @@ body.sem-op #side nav,body.sem-op #bottom,body.sem-op .side-foot{display:none!im
 .msg-acts{flex-wrap:wrap;gap:6px;justify-content:flex-start}.msg-ta{min-height:260px;font-size:.92rem;line-height:1.45}
 .msg-vars{display:flex;flex-wrap:wrap;gap:6px}.msg-var{cursor:pointer;font-family:var(--f-mono);text-transform:none;letter-spacing:0}
 .lnk{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font:inherit}
+.jun{display:flex;flex-direction:column;gap:6px}.jun-cs{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0}.jun-c{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 4px 3px 8px;border:1px solid var(--line,#2a3140);border-radius:999px;font-size:.85rem;background:rgba(128,128,128,.12);overflow-wrap:anywhere}.jun-c img{width:28px;height:28px;object-fit:cover;border-radius:6px}.jun-x{border:0;background:rgba(128,128,128,.25);color:var(--ink);width:24px;height:24px;border-radius:50%;font:700 15px/24px Arial;cursor:pointer;flex:none}.jun-dig{display:flex;gap:6px}.jun-dig[hidden]{display:none!important}
 .lnk svg{width:1.1em;height:1.1em;flex:none;vertical-align:-.2em;margin-right:3px}.ir-prod .lnk{display:inline-flex;align-items:center;gap:3px}
 /* v17 b389: ícone dentro de link (ex.: Editar o produto no cadastro) fica do tamanho da letra */
 .lnk svg{width:1.1em;height:1.1em;flex:none;vertical-align:-.2em;margin-right:3px}.lnk{display:inline-flex;align-items:center;gap:2px}
@@ -2080,7 +2081,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 389;
+const APP_VER = 17, APP_BUILD = 390;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -3474,7 +3475,7 @@ function prodForm(id, preset = {}) {
       <input type="hidden" name="foto" id="fo-val" value="${esc(p.foto || '')}"><div id="fo-prev" hidden></div><button type="button" id="fo-rm" hidden></button><button type="button" id="fo-ed" hidden></button></fieldset></div>
     <div class="it-main">
     <div class="fg">
-      <div id="p-busca" class="banner info"${id ? ' hidden' : ''} style="grid-column:1/-1">${id ? '' : `<span class="grow">Preencha o cadastro sozinho: fotografe a caixa ou o produto, ou digite o que está escrito nele.</span><span class="actions">${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button></span>`}</div>${field('Código de barras / QR code', `<div class="withbtn">${inp('p-cod', 'codigo', p.codigo, 'placeholder="Leia, digite ou gere"')}${scanBtn('p-cod', 'Ler')}<button type="button" class="btn" data-act="gen-cod" title="Gerar um código interno para produtos sem código de fábrica">Gerar</button></div>`, 'w2')}
+      ${id ? '' : `<div class="banner info" id="p-jun" style="grid-column:1/-1;display:block"><div style="margin-bottom:6px"><b>Preencha o cadastro sozinho</b></div>${junBlocoHTML('prod', 'Foto')}</div>`}<div id="p-busca" class="banner info" hidden style="grid-column:1/-1"></div>${field('Código de barras / QR code', `<div class="withbtn">${inp('p-cod', 'codigo', p.codigo, 'placeholder="Leia, digite ou gere"')}${scanBtn('p-cod', 'Ler')}<button type="button" class="btn" data-act="gen-cod" title="Gerar um código interno para produtos sem código de fábrica">Gerar</button></div>`, 'w2')}
       ${field('Categoria', inp('p-cat', 'categoria', p.categoria))}
       ${field('Subcategoria', inp('p-subcat', 'subcategoria', p.subcategoria))}
       ${field('Marca', inp('p-marca', 'marca', p.marca))}
@@ -6748,6 +6749,7 @@ async function lerCodigoFoto(file, aviso) {
 }
 function codigoLido(target, code) {
   code = String(code).trim();
+  if (String(target).startsWith('jun:')) { junAdd(target.slice(4), code); return; }
   if (String(target).startsWith('eq:')) { eqPorCodigo(target.slice(3), code); return; }
   if (target === 'ia-teste') { iaTesteProduto({ codigo: code }); return; }
   if (target === 'os-ler') { const o = osPorCodigo(code); if (o) { osView(o.id); toast(`OS ${pad(o.numero)} encontrada pelo QR code.`); } else toast('Este código não é de uma OS deste sistema. Leia o QR code da OS (documento ou etiqueta).', 6000); return; }
@@ -11233,7 +11235,7 @@ async function prodIAExecutar(o, ret) {
     b.className = 'banner'; b.innerHTML = `<span class="grow">${e && e.code === 'ia_parado' ? 'Pesquisa cancelada.' : e && e.code === 'nada' ? 'Não encontrei este produto na internet.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : esc(fotoErroMsg(e))} Tente de novo, pela foto da caixa ou digite o que está escrito (marca, modelo, nome):</span><span class="actions">${nivel < 3 ? nivelBtn('ia-nivel', nivel) : '<button type="button" class="btn sm" data-act="ia-recomecar">↻ Pesquisar de novo</button>'}${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button>${(e && e.code !== 'nada' && e.code !== 'ia_parado') ? `<button type="button" class="btn sm" data-act="ia-testar">${ic('search')}Testar a IA</button>` : ''}</span>`; return false; }
 }
 /* identificar o produto pela foto da embalagem (o próprio Claude lê a foto; pede permissão no 1º uso) */
-const fotoIdBtn = () => `<label class="btn sm primary" style="cursor:pointer">${ic('camera')}Identificar pela foto<input type="file" accept="image/*" capture="environment" class="vh p-idfoto"></label>`;
+const fotoIdBtn = () => `<label class="btn sm primary" style="cursor:pointer">${ic('camera')}${document.getElementById(JUN_ID('prod')) ? 'Juntar foto' : 'Identificar pela foto'}<input type="file" accept="image/*" capture="environment" class="vh p-idfoto"></label>`;
 async function prodIdentificarFoto(file) {
   const box = $('#p-busca'); if (!box) return;
   try { if (!$('#fo-val').value) { const d = await reduzFoto(file, 480); $('#fo-val').value = d; $('#fo-prev').innerHTML = `<img src="${d}" alt="">`; const rm = $('#fo-rm'); if (rm) rm.hidden = false; const ed = $('#fo-ed'); if (ed) ed.hidden = false; } } catch { }
@@ -11251,11 +11253,11 @@ async function prodIdentificarFoto(file) {
     box.innerHTML = `<span class="grow">${esc(fotoErroMsg(e))} <b>Digite o que está escrito na caixa ou no produto</b> (marca, modelo, nome) e o cadastro é preenchido sozinho:</span>${pDescHTML()}`;
   }
 }
-document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.p-idfoto') && t.files && t.files[0]) { const f = t.files[0]; t.value = ''; fotoAntes(f, 'Ajustar a foto do produto', g => prodIdentificarFoto(g)); } });
+document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.p-idfoto') && t.files && t.files[0]) { const f = t.files[0]; t.value = ''; fotoAntes(f, 'Ajustar a foto do produto', g => document.getElementById(JUN_ID('prod')) ? junAdd('prod', g) : prodIdentificarFoto(g)); } });
 
 /* ======================= equipamento (OS e orçamento): ler código ou foto da etiqueta e preencher tipo/marca/modelo/série ======================= */
 const EQ_IDS = { os: { t: 'os-tipo', m: 'os-marca', mo: 'os-modelo', s: 'os-serie' }, o: { t: 'o-tipo', m: 'o-marca', mo: 'o-modelo', s: 'o-serie' } };
-const eqLerHTML = p => `<div class="eq-ler" id="eq-ler-${p}" style="grid-column:1/-1"><div class="actions" style="justify-content:flex-start"><button type="button" class="btn sm" data-act="cam-scan" data-target="eq:${p}">${ic('camera')}Ler código</button><label class="btn sm" style="cursor:pointer">${ic('tag')}Foto da etiqueta<input type="file" accept="image/*" capture="environment" class="vh eq-idfoto" data-p="${p}"></label><button type="button" class="btn sm" data-act="eq-dig" data-p="${p}">${ic('edit')}Digitar código</button></div><div class="eq-dig" id="eq-dig-${p}" hidden><span class="in-x"><input id="eq-dig-in-${p}" inputmode="text" autocomplete="off" data-sem-x="1" placeholder="Código de barras, QR, nº de série ou nome (ex.: Notebook Dell Inspiron 15)" aria-label="Digitar código ou nome"><button type="button" class="in-x-b" data-act="in-limpar" data-alvo="eq-dig-in-${p}" title="Apagar o código" aria-label="Apagar o código">×</button></span><button type="button" class="btn sm primary" data-act="eq-dig-ok" data-p="${p}">Usar código</button></div><div class="eq-st muted" style="font-size:.82rem" hidden></div></div>`;
+const eqLerHTML = p => `<div class="eq-ler" id="eq-ler-${p}" style="grid-column:1/-1">${junBlocoHTML('eq:' + p, 'Foto da etiqueta')}<div class="eq-st muted" style="font-size:.82rem" hidden></div></div>`;
 function tipoDoTexto(t) {
   const x = norm(t || ''); if (!x) return '';
   const R = [[/all.?in.?one|aio\b/, 'All-in-one'], [/notebook|laptop|ultrabook|chromebook|macbook/, 'Notebook'], [/tablet|ipad/, 'Tablet'], [/celular|smartphone|iphone|galaxy|telefone movel|mobile phone|cell phone|moto g|redmi|xiaomi/, 'Celular'], [/impressora|printer|multifuncional|laserjet|deskjet|ecotank/, 'Impressora'], [/monitor|display|tela/, 'Monitor'], [/playstation|xbox|nintendo|console|videogame/, 'Console de videogame'], [/nobreak|no-break|\bups\b|estabilizador|fonte de alimentacao|power supply/, 'Nobreak / fonte'], [/roteador|router|switch|modem|access point|repetidor|wi-?fi/, 'Roteador / rede'], [/desktop|computador|gabinete|\bpc\b|torre|mini pc/, 'Computador (desktop)']];
@@ -11278,12 +11280,12 @@ function eqAviso(p, html, tipo) { const st = document.querySelector(`#eq-ler-${p
 async function eqBusca(p, o, nivel) {
   nivel = Math.max(1, Math.min(3, +nivel || 1));
   const tela = 'eq-ler-' + p, op = iaOpIni(tela), t0 = Date.now(); let etapa = 'Começando…';
-  const nome = o.file ? 'a foto' : o.codigo ? `o código <b>${esc(o.codigo)}</b>` : `“${esc(o.texto)}”`;
+  const nome = junDesc(o, true);
   const pinta = () => { if (IA_OP !== op) return; eqAviso(p, `<span class="grow"><span class="spin" aria-hidden="true"></span> <b>Pesquisando o equipamento</b> (${NIVEL_NOME[nivel]}, ${nivel} de 3) por ${nome} · <b>${Math.round((Date.now() - t0) / 1000)} s</b><br><small>${esc(etapa)}</small></span>${pararBtn()}`, 'info'); };
   const aviso = t => { etapa = t; pinta(); }; pinta(); const iv = setInterval(() => { if (IA_OP !== op || !document.getElementById(tela)) { clearInterval(iv); return; } pinta(); }, 1000);
   const fim = () => { clearInterval(iv); iaOpFim(op); };
   const deNovo = nivel < 3 ? nivelBtn('eq-busca-novo', nivel, ` data-p="${p}"`) : `<button type="button" class="btn sm" data-act="eq-busca-novo" data-nivel="3" data-p="${p}">↻ Pesquisar de novo</button>`; window.EQ_ULT = { p, o, nivel }; /* global: o M da janela muda quando abre outra (ex.: ajuste da foto) e o “Pesquisar de novo” ficava sem saber o que repetir */
-  const preencher = (r, extra) => { const nomeR = r.nome || [r.marca, r.modelo].filter(Boolean).join(' ');
+  const preencher = (r, extra) => { try { bkGuardar(o, normIA(r), { serie: extra && extra.serie }); } catch { } const nomeR = r.nome || [r.marca, r.modelo].filter(Boolean).join(' ');
     const modelo = r.modelo || (nomeR || '').replace(new RegExp('^' + (r.marca || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '');
     const tipo = TIPOS_EQ.includes(r.tipo) ? r.tipo : tipoDoTexto([r.tipo, r.categoria, r.subcategoria, nomeR].filter(Boolean).join(' '));
     const f = eqSet(p, { tipo, marca: r.marca, modelo, serie: extra && extra.serie });
@@ -11292,11 +11294,15 @@ async function eqBusca(p, o, nivel) {
     let serie = '';
     if (nivel === 1) { /* v17: base da empresa primeiro (código, nome/modelo ou etiqueta lida no aparelho) */
       aviso('Procurando na base da empresa…');
-      const loc = o.codigo ? bkPorCodigo(o.codigo) : o.texto ? bkPorTexto(o.texto) : null;
+      const loc = (o.codigo && bkPorCodigo(o.codigo)) || (o.texto && bkPorTexto(o.texto)) || null;
       const fl = !loc && o.file ? await bkPorFoto(o.file, aviso) : null;
       const R = loc || (fl && fl.r);
       if (R) { fim(); const sr = (fl && fl.serie) || R._serie || (o.codigo && !/^\d{8,14}$/.test(o.codigo) ? o.codigo : ''); preencher(R, { serie: sr }); const st = document.querySelector(`#eq-ler-${p} .eq-st .grow`); if (st) st.insertAdjacentHTML('beforeend', ` <small class="muted">· da base da empresa (${esc(R._base || 'catálogo')}), sem usar a internet</small>`); return; }
     }
+    if (o.codigo && /^\d{8,14}$/.test(o.codigo)) {
+      aviso('Procurando nas bases públicas de códigos de barras…'); const r = await comPrazo(buscarProdutoNet(o.codigo), 20000, 'ia_lenta').catch(e => { if (e && e.code === 'ia_parado') throw e; return null; });
+      if (r && r.nome) { fim(); preencher(r); return; }
+    } else if (o.codigo) { eqSet(p, { serie: o.codigo }); }
     if (o.file) {
       aviso('Procurando código de barras ou QR na foto…'); try { const c = await comPrazo(lerCodigo(o.file), 8000, 'ia_lenta'); if (c) { const cc = String(c).trim(); if (/^\d{8,14}$/.test(cc)) { const r = await comPrazo(buscarProdutoNet(cc), 15000, 'ia_lenta').catch(() => null); if (r && r.nome) { fim(); preencher(r); return; } } else serie = cc; } } catch (e) { if (e && e.code === 'ia_parado') throw e; }
       aviso('Lendo a etiqueta (modelo e nº de série)…');
@@ -11305,13 +11311,9 @@ async function eqBusca(p, o, nivel) {
         if (r0.marca && r0.modelo && nivel === 1) { fim(); preencher(r0, { serie }); return; }
       } catch (e) { if (e && /^ia_(parado|pausada)$/.test(e.code)) throw e; }
       aviso('Identificando pela pesquisa de produtos…');
-      const r = normIA(await comPrazo(prodBuscarIA({ file: o.file, aviso, nivel, semBase: true }), 100000, 'ia_lenta')); fim();
+      const r = normIA(await comPrazo(prodBuscarIA({ file: o.file, codigo: o.codigo, texto: o.texto, aviso, nivel, semBase: true }), 100000, 'ia_lenta')); fim();
       if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' }; preencher(r, { serie }); return;
     }
-    if (o.codigo && /^\d{8,14}$/.test(o.codigo)) {
-      aviso('Procurando nas bases públicas de códigos de barras…'); const r = await comPrazo(buscarProdutoNet(o.codigo), 20000, 'ia_lenta').catch(e => { if (e && e.code === 'ia_parado') throw e; return null; });
-      if (r && r.nome) { fim(); preencher(r); return; }
-    } else if (o.codigo) { eqSet(p, { serie: o.codigo }); }
     aviso(o.codigo ? 'Não está nas bases públicas: pesquisando pela IA…' : 'Pesquisando pelo nome…');
     const r = normIA(await comPrazo(prodBuscarIA({ codigo: o.codigo, texto: o.texto, aviso, nivel, semBase: true }), 100000, 'ia_lenta')); fim();
     if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' };
@@ -11390,7 +11392,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target &&
 const dataUrlBlob = d => { const [h, b64] = String(d).split(','), tipo = (h.match(/data:([^;]+)/) || [])[1] || 'image/jpeg', bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: tipo }); };
 ACT['p-idfoto-atual'] = () => { const d = ($('#fo-val') || {}).value; if (!d) return; try { const b = dataUrlBlob(d); prodIdentificarFoto(new File([b], 'foto.jpg', { type: b.type })); } catch { toast('Não consegui usar esta foto. Tire outra.'); } };
 
-ACT['p-desc-abrir'] = () => { const box = $('#p-busca'); if (!box) return; box.className = 'banner info'; box.innerHTML = `<span class="grow">Digite o que está escrito na caixa ou no produto (marca, modelo, nome):</span>${pDescHTML()}`; setTimeout(() => $('#p-desc-in')?.focus(), 30); };
+ACT['p-desc-abrir'] = () => { if (document.getElementById(JUN_ID('prod'))) { const b = document.getElementById(JUN_ID('prod') + '-dig'); if (b) { b.hidden = false; setTimeout(() => { const i = document.getElementById(JUN_ID('prod') + '-in'); if (i) { i.focus(); i.scrollIntoView({ block: 'center' }); } }, 30); } return; } const box = $('#p-busca'); if (!box) return; box.className = 'banner info'; box.innerHTML = `<span class="grow">Digite o que está escrito na caixa ou no produto (marca, modelo, nome):</span>${pDescHTML()}`; setTimeout(() => $('#p-desc-in')?.focus(), 30); };
 
 function pOferecerFoto() { const box = $('#p-busca'), f = box && box.closest('form'); if (!box || (f && f.dataset.id) || ($('#p-nome') || {}).value) return; box.hidden = false; box.className = 'banner info'; box.innerHTML = `<span class="grow">Preencher o cadastro a partir desta foto?</span><span class="actions"><button type="button" class="btn sm primary" data-act="p-idfoto-atual">${ic('camera')}Identificar por esta foto</button><button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button></span>`; }
 
@@ -12957,9 +12959,8 @@ setTimeout(() => { try { Object.assign(ACT_PERM, { 'diag-ver': '', 'diag-limpar'
 ACT['ia-testar'] = async () => {
   const s = await iaSample();
   openModal('Testar a IA', `<p class="muted" style="margin-top:0">Confere a ligação com a IA usada para identificar produtos pelo código de barras e pela foto. Ex.: se a chave venceu, aparece aqui o motivo.</p><div class="list" id="iat-l"></div>
-    <h3 style="margin:14px 0 6px">Testar com um produto</h3><p class="muted" style="margin:0 0 8px;font-size:.85rem">Leia o código de barras, tire a foto da embalagem ou digite o código. Ex.: cartucho HP, caixa de remédio. Nada é cadastrado: só mostra o que foi encontrado.</p>
-    <div class="actions" style="justify-content:flex-start;flex-wrap:wrap"><button type="button" class="btn sm" data-act="cam-scan" data-target="ia-teste">${ic('camera')}Ler código de barras</button><label class="btn sm" style="cursor:pointer">${ic('camera')}Foto do produto<input type="file" accept="image/*" capture="environment" class="vh iat-foto"></label><label class="btn sm" style="cursor:pointer">${ic('down')}Foto da galeria<input type="file" accept="image/*" class="vh iat-foto"></label></div>
-    <div class="p-desc" style="margin-top:8px"><input id="iat-cod" inputmode="text" autocomplete="off" placeholder="Ex.: 7891234567895"><button type="button" class="btn sm primary" data-act="iat-cod-ok">Testar código</button></div>
+    <h3 style="margin:14px 0 6px">Testar com um produto</h3><p class="muted" style="margin:0 0 8px;font-size:.85rem">Junte uma ou mais informações (código de barras, foto da embalagem, código ou nome digitado) e toque em Pesquisar. Ex.: cartucho HP, caixa de remédio. Nada é cadastrado: só mostra o que foi encontrado.</p>
+    ${junBlocoHTML('teste', 'Foto do produto', true)}
     <div class="list" id="iat-p"></div>`, `<button type="button" class="btn" data-act="ia-parar" title="Para na hora o teste ou a pesquisa em andamento. Ex.: a IA está demorando e você não quer esperar.">${ic('x')}Parar</button><button type="button" class="btn primary" data-act="close">Fechar</button>`);
   const op = iaOpIni('iat-l'), L = $('#iat-l'), linha = (ok, t, d) => { if (L) L.insertAdjacentHTML('beforeend', `<div class="row"><div class="grow"><b>${ok === null ? '⏳' : ok ? '✅' : '❌'} ${esc(t)}</b>${d ? `<div class="muted" style="font-size:.82rem;word-break:break-word">${esc(d)}</div>` : ''}</div></div>`); };
   if (!s) { linha(false, 'IA não disponível neste aparelho', 'O aplicativo não está ligado à conta da empresa (nuvem).'); return; }
@@ -12979,9 +12980,9 @@ async function iaTesteProduto(o, ret) {
   if (ret && ret.row && ret.row.isConnected) { row = ret.row; row.querySelector('.iat-acoes')?.remove(); }
   else { const id = 'iat-' + Date.now(); L.insertAdjacentHTML('afterbegin', `<div class="row" id="${id}"><div class="grow"><b>⏳</b><div class="muted iat-m" style="font-size:.82rem">Procurando…</div></div></div>`); row = document.getElementById(id); }
   const m = t => { const x = row && row.querySelector('.iat-m'); if (x) x.textContent = t; }, fim = (ok, tit, det) => { if (!row) return; row.querySelector('b').textContent = (ok ? '✅ ' : '❌ ') + tit; m(det || ''); };
-  const nome = o.file ? 'Foto' : 'Código ' + o.codigo;
+  const nome = junDesc(o).replace(/^a foto/, 'Foto') || 'Pesquisa';
   const botoes = cont => row.querySelector('.grow').insertAdjacentHTML('beforeend', `<div class="actions iat-acoes" style="justify-content:flex-start;margin-top:6px">${cont ? '<button type="button" class="btn sm primary" data-act="ia-continuar">Continuar</button>' : ''}${!cont && nivel < 3 ? nivelBtn('ia-nivel', nivel) : `<button type="button" class="btn sm" data-act="ia-recomecar">↻ ${cont ? 'Recomeçar' : 'Pesquisar de novo'}</button>`}</div>`);
-  row.querySelector('b').textContent = '⏳ ' + (o.file ? 'Foto do produto' : 'Código ' + o.codigo);
+  row.querySelector('b').textContent = '⏳ ' + nome;
   if (ret && ret.op && ret.op === IA_OP) { op = ret.op; tarefa = ret.tarefa; m(op.ult || 'Procurando…'); }
   else {
     op = iaOpIni('iat-p');
@@ -13280,7 +13281,7 @@ let BK_PEND = {}, BK_T = 0;
 function bkGuardar(o, r, extra) {
   try { if (!r || !(r.nome || r.modelo)) return; const d = { nome: r.nome || '', marca: r.marca || '', modelo: r.modelo || '', tipo: r.tipo || '', categoria: r.categoria || '', subcategoria: r.subcategoria || '', at: Date.now() };
     const ks = []; const cod = String((o && o.codigo) || (extra && extra.codigo) || '').trim(); if (cod && !(extra && extra.serie === cod)) ks.push('c:' + cod.toUpperCase());
-    const km = bkChaveM(d.marca, d.modelo); if (km) ks.push(km); const kn = norm(d.nome).replace(/[^a-z0-9]+/g, ' ').trim(); if (kn.length >= 6) ks.push('n:' + kn);
+    const km = bkChaveM(d.marca, d.modelo); if (km) ks.push(km); const kn = norm(d.nome).replace(/[^a-z0-9]+/g, ' ').trim(); if (kn.length >= 6) ks.push('n:' + kn); const kt = norm((o && o.texto) || '').replace(/[^a-z0-9]+/g, ' ').trim(); if (kt.length >= 6 && kt !== kn) ks.push('n:' + kt);
     ks.forEach(k => { BK_PEND[k] = d; }); clearTimeout(BK_T); BK_T = setTimeout(bkSalvar, 2000); } catch { }
 }
 async function bkSalvar() { const P = BK_PEND; BK_PEND = {}; if (!Object.keys(P).length) return; const doc = get('ajustes', BK_K) || {}; let itens = { ...(doc.itens || {}), ...P };
@@ -13316,7 +13317,7 @@ async function bkPorFoto(file, aviso) {
 /* produto (cadastro, PDV, testes): a base vem antes da internet e da IA; o que a internet e a IA acharem entra na base */
 const _prodBuscarIA0 = prodBuscarIA;
 prodBuscarIA = async function (o) {
-  const loc = o.semBase ? null : o.codigo ? bkPorCodigo(o.codigo) : o.texto ? bkPorTexto(o.texto) : null;
+  const loc = o.semBase ? null : (o.codigo && bkPorCodigo(o.codigo)) || (o.texto && bkPorTexto(o.texto)) || null;
   if (loc && (o.nivel || 1) === 1) { o.aviso && o.aviso('Encontrado na base da empresa (sem usar a internet).'); return loc; }
   if (o.file && !o.semBase && (o.nivel || 1) === 1) { const f = await bkPorFoto(o.file, o.aviso); if (f) { o.aviso && o.aviso('Encontrado na base da empresa (sem usar a internet).'); return f.r; } }
   const r = await _prodBuscarIA0(o); try { bkGuardar(o, normIA(r)); } catch { } return r;
@@ -13327,6 +13328,54 @@ buscarProdutoNet = async function (code) { const loc = bkPorCodigo(String(code |
 const _save0 = save;
 save = async function (col, id, data) { const ok = await _save0(col, id, data); try { if (ok && col === 'os' && data && data.marca && data.modelo) bkGuardar(null, { nome: [data.tipoEquip, data.marca, data.modelo].filter(Boolean).join(' '), tipo: data.tipoEquip, marca: data.marca, modelo: data.modelo });
   if (ok && col === 'produtos' && data && data.nome && data.tipo !== 'aluguel') bkGuardar({ codigo: data.codigo || '' }, { nome: data.nome, marca: data.marca || '', modelo: data.modelo || '', categoria: data.categoria || '' }); } catch { } return ok; };
+/* v17 b390: JUNTAR INFORMAÇÕES — a pessoa escolhe, desde a 1ª pesquisa, usar uma ou mais informações (código, foto, nome digitado).
+   Ler código, Foto e Digitar só JUNTAM; o botão Pesquisar usa tudo o que estiver junto. Vale no cadastro de produto, no equipamento da OS/orçamento e no Testar a IA. */
+const JUN = {}, JUN_ID = k => 'jun-' + String(k).replace(/[^a-z0-9]/gi, '-');
+function junBlocoHTML(k, rotFoto, galeria) {
+  JUN[k] = {}; const id = JUN_ID(k);
+  return `<div class="jun" id="${id}"><div class="actions" style="justify-content:flex-start"><button type="button" class="btn sm" data-act="cam-scan" data-target="jun:${k}" title="Lê o código de barras, QR ou nº de série e junta à pesquisa">${ic('camera')}Ler código</button><label class="btn sm" style="cursor:pointer" title="Tira a foto e junta à pesquisa">${ic('tag')}${rotFoto || 'Foto'}<input type="file" accept="image/*" capture="environment" class="vh jun-foto" data-k="${k}"></label>${galeria ? `<label class="btn sm" style="cursor:pointer">${ic('down')}Galeria<input type="file" accept="image/*" class="vh jun-foto" data-k="${k}"></label>` : ''}<button type="button" class="btn sm" data-act="jun-dig" data-k="${k}" title="Digite o código ou o nome e junte à pesquisa">${ic('edit')}Digitar</button></div>
+  <div class="jun-dig p-desc" id="${id}-dig" hidden><span class="in-x"><input id="${id}-in" inputmode="text" autocomplete="off" data-sem-x="1" placeholder="Código, nº de série ou nome (ex.: Notebook Dell Inspiron 15)" aria-label="Digitar código ou nome"><button type="button" class="in-x-b" data-act="in-limpar" data-alvo="${id}-in" title="Apagar" aria-label="Apagar">×</button></span><button type="button" class="btn sm primary" data-act="jun-dig-ok" data-k="${k}">Juntar</button></div>
+  <div class="jun-l">${junListaHTML(k)}</div></div>`;
+}
+function junListaHTML(k) {
+  const J = JUN[k] || {}, n = ['file', 'codigo', 'texto'].filter(x => J[x]).length;
+  if (!n) return '<small class="muted">Junte uma ou mais informações (código, foto, nome) e toque em <b>Pesquisar</b>. Quanto mais informações, mais fácil acertar.</small>';
+  const chip = (c, html) => `<span class="jun-c">${html}<button type="button" class="jun-x" data-act="jun-tira" data-k="${k}" data-c="${c}" title="Retirar" aria-label="Retirar">×</button></span>`;
+  return `<div class="jun-cs">${J.file ? chip('file', `<img src="${J.url}" alt="">foto`) : ''}${J.codigo ? chip('codigo', '🔢 ' + esc(J.codigo)) : ''}${J.texto ? chip('texto', '✏️ “' + esc(J.texto) + '”') : ''}</div>
+  <div class="actions" style="justify-content:flex-start"><button type="button" class="btn sm primary" data-act="jun-ir" data-k="${k}">${ic('search')}Pesquisar com ${n === 1 ? '1 informação' : n + ' informações'}</button><button type="button" class="btn sm ghost" data-act="jun-limpar" data-k="${k}">Limpar</button></div>`;
+}
+function junPinta(k) { const b = document.querySelector('#' + JUN_ID(k) + ' .jun-l'); if (b) b.innerHTML = junListaHTML(k); }
+const junObj = k => { const J = JUN[k] || {}, o = {}; if (J.file) o.file = J.file; if (J.codigo) o.codigo = J.codigo; if (J.texto) o.texto = J.texto; return o; };
+const junDesc = (o, html) => [o.file && 'a foto', o.codigo && (html ? `o código <b>${esc(o.codigo)}</b>` : 'código ' + o.codigo), o.texto && `“${html ? esc(o.texto) : o.texto}”`].filter(Boolean).join(' + ');
+function junAdd(k, v) {
+  const J = JUN[k] || (JUN[k] = {});
+  if (v instanceof Blob) { try { if (J.url) URL.revokeObjectURL(J.url); } catch { } J.file = v; J.url = URL.createObjectURL(v);
+    if (k === 'prod') { (async () => { try { if ($('#fo-val') && !$('#fo-val').value) { const d = await reduzFoto(v, 480); $('#fo-val').value = d; $('#fo-prev').innerHTML = `<img src="${d}" alt="">`; const rm = $('#fo-rm'); if (rm) rm.hidden = false; const ed = $('#fo-ed'); if (ed) ed.hidden = false; } } catch { } })(); } }
+  else { const s = String(v || '').trim(); if (!s) return; if (!/\s/.test(s) && /\d/.test(s) && s.length >= 4) J.codigo = s; else J.texto = s; }
+  junPinta(k); const b = document.getElementById(JUN_ID(k)); if (b) { try { b.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch { } }
+  toast('Juntado. Toque em Pesquisar ou junte mais uma informação.');
+}
+const JUN_FN = {
+  eq: (k, o) => eqBusca(k.slice(3), o),
+  teste: (k, o) => iaTesteProduto(o),
+  prod: async (k, o) => {
+    const ean = o.codigo && /^\d{8,14}$/.test(o.codigo); const pc = $('#p-cod'); if (ean && pc && !pc.value.trim()) pc.value = o.codigo;
+    if (ean && !o.file && !o.texto && pc && pc.value.replace(/\D/g, '') === o.codigo) return prodPreencherPorCodigo(false);
+    if ((await iaSample()) === IA_PONTE || !o.file) return prodIAExecutar(o);
+    return prodIdentificarFoto(o.file);
+  }
+};
+Object.assign(ACT, {
+  'jun-dig': el => { const k = el.dataset.k, b = document.getElementById(JUN_ID(k) + '-dig'); if (!b) return; b.hidden = !b.hidden; if (!b.hidden) setTimeout(() => { const i = document.getElementById(JUN_ID(k) + '-in'); if (i) i.focus(); }, 30); },
+  'jun-dig-ok': el => { const k = el.dataset.k, i = document.getElementById(JUN_ID(k) + '-in'), v = i ? i.value.trim() : ''; if (v.length < 3) { toast('Digite o código ou o nome.'); if (i) i.focus(); return; } junAdd(k, v); i.value = ''; const b = document.getElementById(JUN_ID(k) + '-dig'); if (b) b.hidden = true; },
+  'jun-tira': el => { const J = JUN[el.dataset.k] || {}, c = el.dataset.c; if (c === 'file') { try { URL.revokeObjectURL(J.url); } catch { } delete J.url; } delete J[c]; junPinta(el.dataset.k); },
+  'jun-limpar': el => { const k = el.dataset.k, J = JUN[k] || {}; try { if (J.url) URL.revokeObjectURL(J.url); } catch { } JUN[k] = {}; junPinta(k); },
+  'jun-ir': el => { const k = el.dataset.k, o = junObj(k); if (!Object.keys(o).length) { toast('Junte pelo menos uma informação.'); return; } const f = JUN_FN[String(k).split(':')[0]]; if (f) f(k, o); }
+});
+ACT['eq-dig'] = el => ACT['jun-dig']({ dataset: { k: 'eq:' + el.dataset.p } });
+document.addEventListener('keydown', e => { const t = e.target; if (e.key === 'Enter' && t && t.id && /^jun-.*-in$/.test(t.id)) { e.preventDefault(); const k = Object.keys(JUN).find(x => JUN_ID(x) + '-in' === t.id); if (k) ACT['jun-dig-ok']({ dataset: { k } }); } });
+document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.jun-foto') && t.files && t.files[0]) { const f = t.files[0], k = t.dataset.k; t.value = ''; fotoAntes(f, 'Ajustar a foto', g => junAdd(k, g)); } });
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'jun-dig': '', 'jun-dig-ok': '', 'jun-tira': '', 'jun-limpar': '', 'jun-ir': '' }); Object.assign(AJUDA, { 'jun-dig': 'Abre o campo para digitar o código ou o nome e juntar à pesquisa. Ex.: HP 664.', 'jun-dig-ok': 'Junta o que foi digitado às outras informações da pesquisa. Ex.: foto + “Notebook Dell Inspiron 15”.', 'jun-tira': 'Retira esta informação da pesquisa.', 'jun-limpar': 'Retira todas as informações juntadas.', 'jun-ir': 'Pesquisa usando todas as informações juntadas (código, foto, nome). Ex.: foto da etiqueta + código de barras.' }); } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
