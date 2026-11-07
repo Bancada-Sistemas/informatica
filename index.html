@@ -869,6 +869,9 @@ body.sem-op #side nav,body.sem-op #bottom,body.sem-op .side-foot{display:none!im
 .msg-acts{flex-wrap:wrap;gap:6px;justify-content:flex-start}.msg-ta{min-height:260px;font-size:.92rem;line-height:1.45}
 .msg-vars{display:flex;flex-wrap:wrap;gap:6px}.msg-var{cursor:pointer;font-family:var(--f-mono);text-transform:none;letter-spacing:0}
 .lnk{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font:inherit}
+.lnk svg{width:1.1em;height:1.1em;flex:none;vertical-align:-.2em;margin-right:3px}.ir-prod .lnk{display:inline-flex;align-items:center;gap:3px}
+/* v17 b389: ícone dentro de link (ex.: Editar o produto no cadastro) fica do tamanho da letra */
+.lnk svg{width:1.1em;height:1.1em;flex:none;vertical-align:-.2em;margin-right:3px}.lnk{display:inline-flex;align-items:center;gap:2px}
 .rem-g{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;align-items:end}.rem-g .full{grid-column:1/-1}
 .rem-g .f>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rem-dica{font-size:.8rem;margin:8px 0 0}
@@ -2077,7 +2080,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 388;
+const APP_VER = 17, APP_BUILD = 389;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -18354,6 +18357,7 @@ function nuvemTela(tipo, msg) {
   if (!t) { t = document.createElement('div'); t.id = 'nuvem-tela'; document.body.appendChild(t); }
   const nome = esc((EMP_CFG && EMP_CFG.nome) || 'Bancada');
   if (tipo === 'carregando') t.innerHTML = `<div class="nv-box"><h2>${nome}</h2><div class="nv-spin"></div><p>${esc(msg || 'Conectando ao banco de dados da empresa…')}</p></div>`;
+  else if (tipo === 'semrede') t.innerHTML = `<div class="nv-box"><h2>Sem conexão</h2><p>Não consegui falar com o servidor para abrir a empresa <b>${esc(EMP_COD)}</b>. A internet do aparelho pode estar fraca ou desligada.</p><p><button class="btn primary" onclick="location.reload()">Tentar de novo</button></p></div>`;
   else if (tipo === 'naoachou') t.innerHTML = `<div class="nv-box"><h2>Empresa não encontrada</h2><p>O endereço tem o código <b>${esc(EMP_COD)}</b>, mas não há empresa cadastrada com esse código neste sistema. Confira o endereço ou fale com o suporte da Bancada Sistemas.</p></div>`;
   else if (tipo === 'suspensa') t.innerHTML = `<div class="nv-box"><h2>${nome}</h2><p>O acesso a este sistema está suspenso no momento. Os dados continuam guardados. Fale com a Bancada Sistemas para regularizar.</p></div>`;
   else if (tipo === 'semrede') t.innerHTML = `<div class="nv-box"><h2>${nome}</h2><p>Não foi possível conectar. Verifique a internet deste aparelho e toque em Tentar de novo.</p><div class="nv-row"><button type="button" class="btn primary" onclick="location.reload()">Tentar de novo</button></div></div>`;
@@ -18481,8 +18485,15 @@ setTimeout(() => { try { ACT_PERM['sync-tudo'] = ''; AJUDA['sync-tudo'] = 'Lê d
 try { if ('serviceWorker' in navigator && /github\.io$/.test(location.hostname)) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { })); } catch { }
 async function nuvemEmpresa() {
   nuvemTela('carregando', 'Procurando a empresa…');
-  try { const r = await fetch('empresas/' + EMP_COD + '.json?v=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw 0; EMP_CFG = await r.json(); }
-  catch { nuvemTela('naoachou'); return; }
+  /* v17 b389: internet fraca não é "empresa não encontrada" — tenta 3 vezes; sem resposta, usa a cópia guardada da última abertura; só diz "não encontrada" quando o site responde 404 */
+  const CK = 'bancada-emp-cfg:' + EMP_COD; let nao404 = false;
+  for (let k = 0; k < 3 && !EMP_CFG; k++) {
+    if (k) { nuvemTela('carregando', 'Internet lenta. Tentando de novo (' + (k + 1) + ' de 3)…'); await new Promise(ok => setTimeout(ok, k * 2000)); }
+    try { const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 12000); const r = await fetch('empresas/' + EMP_COD + '.json?v=' + Date.now(), { cache: 'no-store', signal: ac.signal }); clearTimeout(tm);
+      if (r.status === 404) { nao404 = true; break; } if (!r.ok) continue; EMP_CFG = await r.json(); try { localStorage.setItem(CK, JSON.stringify(EMP_CFG)); } catch { } } catch { }
+  }
+  if (!EMP_CFG && !nao404) { try { const g = localStorage.getItem(CK); if (g) EMP_CFG = JSON.parse(g); } catch { } }
+  if (!EMP_CFG) { try { diagReg('empresa: ' + (nao404 ? '404' : 'sem resposta')); } catch { } nuvemTela(nao404 ? 'naoachou' : 'semrede'); if (!nao404) { addEventListener('online', () => location.reload(), { once: true }); setTimeout(() => { if (!EMP_CFG && navigator.onLine !== false) location.reload(); }, 30000); } return; } /* b389: a internet voltou → entra sozinho */
   if (EMP_CFG.suspensa) { nuvemTela('suspensa'); return; }
   try { document.title = (EMP_CFG.nome || 'Bancada') + ' · Bancada'; } catch { }
   nuvemTela('carregando');
