@@ -2077,7 +2077,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 386;
+const APP_VER = 17, APP_BUILD = 387;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -11115,7 +11115,9 @@ async function buscarProdutoNet(code) {
       return { fonte: host.split('.')[1].replace('open', 'Open ').replace('facts', ' Facts'), nome: nome + (p.quantity ? ' ' + p.quantity : ''), marca: String(p.brands || '').split(',')[0].trim(), modelo: '', categoria: cat[cat.length - 1] || '', detalhes: [p.generic_name && p.generic_name !== nome ? p.generic_name : '', p.quantity && 'Quantidade: ' + p.quantity, p.labels && 'Selos: ' + p.labels].filter(Boolean).join('\n'), foto: p.image_front_url || '' };
     })
   ];
-  for (const f of fontes) { try { const r = await f(); if (r) return BUSCA_CACHE[code] = r; } catch { } }
+  const achou = await new Promise(res => { let pend = fontes.length, feito = false; const fim = x => { if (!feito) { feito = true; res(x); } };
+    fontes.forEach(f => Promise.resolve().then(f).catch(() => null).then(x => { pend--; if (x) fim(x); else if (!pend) fim(null); })); setTimeout(() => fim(null), 9000); });
+  if (achou) return BUSCA_CACHE[code] = achou;
   if (!NET_OK) return { bloqueado: true };
   return BUSCA_CACHE[code] = { nada: true };
 }
@@ -11164,27 +11166,33 @@ document.addEventListener('input', e => {
 /* v357: identifica o produto (foto, código de barras, QR Code ou texto) e busca as características na internet:
    primeiro no site do fabricante; se não achar, nas lojas que vendem o produto */
 const PROD_IA_JSON = '{"nome": "nome comercial curto em português, com modelo/capacidade", "marca": "", "modelo": "", "categoria": "categoria geral (ex.: Impressoras, Monitores, Notebooks, Memória RAM, Cabos e adaptadores, Periféricos)", "subcategoria": "", "cor": "", "voltagem": "", "tamanho": "tamanho, polegadas ou capacidade", "peso": "", "material": "", "garantia": "garantia do fabricante", "compativel": "modelos compatíveis, se for peça ou suprimento", "caracteristicas": "principais especificações técnicas, uma por linha (Item: valor)", "codigo_barras": "EAN/GTIN se encontrar", "tipo": "produto ou servico", "fonte": "nome do site de onde vieram os dados", "fonte_url": "endereço da página", "confianca": "alta, media ou baixa"}';
-async function prodBuscarIA({ file, codigo, texto, aviso }) {
+/* v17: três níveis de pesquisa — 1 rápida (a IA pensa pouco, sem pesquisar na internet), 2 aprofundada (pensa mais),
+   3 a mais aprofundada (pensa mais e pesquisa no Google, quando a chave permite). A pessoa escolhe passar ao próximo nível ou parar. */
+let IA_NIVEL = 1;
+const NIVEL_NOME = { 1: 'pesquisa rápida', 2: 'pesquisa aprofundada', 3: 'pesquisa mais aprofundada' };
+const nivelBtn = (act, n, extra = '') => n < 3 ? `<button type="button" class="btn sm primary" data-act="${act}" data-nivel="${n + 1}"${extra}>↻ Tentar de novo: ${NIVEL_NOME[n + 1]} (${n + 1} de 3)</button>` : '';
+async function prodBuscarIA({ file, codigo, texto, aviso, nivel }) {
+  nivel = Math.max(1, Math.min(3, +nivel || 1)); IA_NIVEL = nivel;
   const sample = await iaSample(); if (!sample) throw { code: 'sem_claude' };
   const alvo = [file ? 'Identifique o produto da FOTO (embalagem, etiqueta ou o próprio produto).' : '', codigo ? `Código lido do produto (pode ser código de barras EAN/GTIN, conteúdo de QR Code, part number ou número de série): "${String(codigo).slice(0, 300)}".` : '', texto ? `Texto informado: "${String(texto).slice(0, 300)}".` : ''].filter(Boolean).join(' ');
   const pedido = `Você é assistente de cadastro de produtos de uma loja de informática no Brasil (que também vende outros itens). ${alvo}
 Descubra exatamente qual é o produto e PESQUISE NA INTERNET as características dele: primeiro no site oficial do FABRICANTE; se não encontrar lá, em lojas e marketplaces que vendem o produto (ex.: Mercado Livre, Amazon, Magazine Luiza, KaBuM!, Kalunga, Americanas) e em bases de códigos de barras (ex.: Cosmos/Bluesoft).
 Responda SOMENTE com um JSON neste formato (valores em português; deixe "" o que não encontrar — não invente):
 ${PROD_IA_JSON}`;
-  aviso && aviso(file ? 'Identificando o produto pela foto e procurando no site do fabricante e nas lojas… (até 1 minuto)' : 'Procurando este código no site do fabricante e nas lojas… (até 1 minuto)');
+  aviso && aviso(`${NIVEL_NOME[nivel][0].toUpperCase() + NIVEL_NOME[nivel].slice(1)} (${nivel} de 3): ` + (nivel === 1 ? (file ? 'identificando pela foto…' : 'identificando pelo código…') : nivel === 2 ? 'a IA está analisando com mais atenção…' : 'procurando no site do fabricante e nas lojas…'));
   let img = null; if (file) { try { img = await toBlob(drawScaled(await loadImg(file), 1600), .88); } catch { img = file; } }
   const semBusca = () => { try { return Date.now() - +(lsGet('bancada-ia-sem-busca') || 0) < 864e5; } catch { return false; } };
-  if (sample.buscar && semBusca()) aviso && aviso('Identificando pela IA (a pesquisa na internet não está disponível na chave atual)…');
-  if (sample.buscar && !semBusca()) { try { return await comPrazo(sample.buscar(pedido, img ? { images: [img] } : {}), 45000, 'ia_lenta'); }
+  if (nivel === 3 && sample.buscar && semBusca()) aviso && aviso('Pesquisa mais aprofundada (3 de 3): a IA analisa com o máximo de atenção (a pesquisa no Google não está liberada na chave atual)…');
+  if (nivel === 3 && sample.buscar && !semBusca()) { try { return await comPrazo(sample.buscar(pedido, img ? { images: [img] } : {}), 70000, 'ia_lenta'); }
     catch (e) { if (!e || /^ia_(rede|negado|parado|pausada)$/.test(e.code || '') || /API_KEY|API key|not.found|no longer available|not supported/i.test(e.message || '') || e.status === 404) throw e;
       /* v17: a pesquisa no Google (busca na internet) tem limite próprio, menor; sem limite ou sobrecarregada (429/503), identifica só pela IA, que tem outro limite */
       if (e.code === 'ia_cota' || e.status === 429 || e.code === 'ia_lenta') { try { lsSet('bancada-ia-sem-busca', String(Date.now())); } catch { } }
       aviso && aviso(e.code === 'ia_cota' || e.status === 429 || e.status === 503 || e.code === 'ia_lenta' ? 'A pesquisa na internet está sem limite ou sobrecarregada agora. Identificando só pela IA…' : 'A pesquisa na internet não respondeu no formato certo. Tentando identificar só pela IA…');
-      return await comPrazo(sample.json(pedido.replace('PESQUISE NA INTERNET', 'informe, pelo que você conhece,'), img ? { images: [img] } : {}), 60000, 'ia_lenta'); } }
+      return await comPrazo(sample.json(pedido.replace('PESQUISE NA INTERNET', 'informe, pelo que você conhece,'), img ? { images: [img] } : {}), 70000, 'ia_lenta'); } }
   /* dentro do Claude não há pesquisa na internet: identifica pelo que se vê/lê */
   const sem = pedido.replace('PESQUISE NA INTERNET', 'informe, pelo que você conhece,');
-  if (img) return await claudeLerFoto(file, sem, aviso);
-  return await comPrazo(sample.json(sem), 60000, 'ia_lenta');
+  if (img) return await comPrazo(claudeLerFoto(file, sem, aviso), nivel === 1 ? 35000 : 70000, 'ia_lenta');
+  return await comPrazo(sample.json(sem), nivel === 1 ? 35000 : 70000, 'ia_lenta');
 }
 const normIA = r => { const n = normJ(r); for (const k of ['subcategoria', 'cor', 'voltagem', 'tamanho', 'peso', 'material', 'garantia', 'compativel', 'codigo_barras', 'fonte', 'fonte_url']) if (r && r[k] != null && n[k] == null) n[k] = String(r[k]); if (r && r._fontes) n._fontes = r._fontes; if (r && typeof r.caracteristicas === 'string') n.caracteristicas = r.caracteristicas; return n; };
 /* preenche o cadastro com tudo o que veio (só os campos vazios, a não ser que "forcar") */
@@ -11209,16 +11217,17 @@ ACT['p-ia-forcar'] = () => { if (!PROD_IA_ULT) return; const f = prodAplicarIA(P
 function iaEsperar(op, tarefa) { let rp; const pausa = new Promise((_, r) => { rp = r; }); pausa.catch(() => { }); op.pausar = () => { op.pausada = true; rp({ code: 'ia_pausada' }); }; op.pausada = false; return Promise.race([tarefa, pausa]); }
 let IA_PAUSA = null;
 async function prodIAExecutar(o, ret) {
+  const nivel = Math.max(1, Math.min(3, +(o && o.nivel) || 1));
   const box = $('#p-busca'); if (!box) return false; box.hidden = false; box.className = 'banner info';
   let op, tarefa;
   const aviso = t => { if (op) op.ult = t; const b = $('#p-busca'); if (op && IA_OP === op && !op.pausada && b) b.innerHTML = `<span class="grow">${esc(t)}</span>${pararBtn()}`; };
   if (ret && ret.op && ret.op === IA_OP) { op = ret.op; tarefa = ret.tarefa; op.pausada = false; aviso(op.ult || 'Procurando o produto…'); }
-  else { op = iaOpIni('p-busca'); aviso('Procurando o produto…'); tarefa = prodBuscarIA({ ...o, aviso }); tarefa.catch(() => { }); }
-  try { const r = normIA(await iaEsperar(op, tarefa)); iaOpFim(op); IA_PAUSA = null; if (!r.nome && !r.modelo) throw { code: 'nada' }; PROD_IA_ULT = r; const f = prodAplicarIA(r, false); const b = $('#p-busca'); if (!b) return true; b.className = 'banner info'; b.innerHTML = prodIAResumo(r, f); return true; }
+  else { op = iaOpIni('p-busca'); aviso('Procurando o produto…'); tarefa = prodBuscarIA({ ...o, aviso, nivel }); tarefa.catch(() => { }); }
+  try { const r = normIA(await iaEsperar(op, tarefa)); iaOpFim(op); IA_PAUSA = { tipo: 'cad', o }; if (!r.nome && !r.modelo) throw { code: 'nada' }; PROD_IA_ULT = r; const f = prodAplicarIA(r, false); const b = $('#p-busca'); if (!b) return true; b.className = 'banner info'; b.innerHTML = prodIAResumo(r, f) + (nivel < 3 ? `<div class="actions" style="margin-top:6px">${nivelBtn('ia-nivel', nivel).replace('Tentar de novo', 'Não é este? Tentar').replace('btn sm primary', 'btn sm')}</div>` : ''); return true; }
   catch (e) { const b = $('#p-busca'); if (!b) return false;
     if (e && e.code === 'ia_pausada') { IA_PAUSA = { tipo: 'cad', op, tarefa, o }; b.className = 'banner'; b.innerHTML = `<span class="grow"><b>Pesquisa parada.</b> Ela continua por trás por alguns instantes: toque em <b>Continuar</b> para voltar a esperar o resultado, ou em <b>Recomeçar</b> para pesquisar de novo. Também dá para seguir pela foto ou digitando.</span><span class="actions"><button type="button" class="btn sm primary" data-act="ia-continuar">${ic('search')}Continuar</button><button type="button" class="btn sm" data-act="ia-recomecar">↻ Recomeçar</button>${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button></span>`; return false; }
     iaOpFim(op); IA_PAUSA = { tipo: 'cad', o };
-    b.className = 'banner'; b.innerHTML = `<span class="grow">${e && e.code === 'ia_parado' ? 'Pesquisa cancelada.' : e && e.code === 'nada' ? 'Não encontrei este produto na internet.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : esc(fotoErroMsg(e))} Tente de novo, pela foto da caixa ou digite o que está escrito (marca, modelo, nome):</span><span class="actions"><button type="button" class="btn sm" data-act="ia-recomecar">↻ Pesquisar de novo</button>${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button>${(e && e.code !== 'nada' && e.code !== 'ia_parado') ? `<button type="button" class="btn sm" data-act="ia-testar">${ic('search')}Testar a IA</button>` : ''}</span>`; return false; }
+    b.className = 'banner'; b.innerHTML = `<span class="grow">${e && e.code === 'ia_parado' ? 'Pesquisa cancelada.' : e && e.code === 'nada' ? 'Não encontrei este produto na internet.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : esc(fotoErroMsg(e))} Tente de novo, pela foto da caixa ou digite o que está escrito (marca, modelo, nome):</span><span class="actions">${nivel < 3 ? nivelBtn('ia-nivel', nivel) : '<button type="button" class="btn sm" data-act="ia-recomecar">↻ Pesquisar de novo</button>'}${fotoIdBtn()}<button type="button" class="btn sm" data-act="p-desc-abrir">${ic('edit')}Digitar</button>${(e && e.code !== 'nada' && e.code !== 'ia_parado') ? `<button type="button" class="btn sm" data-act="ia-testar">${ic('search')}Testar a IA</button>` : ''}</span>`; return false; }
 }
 /* identificar o produto pela foto da embalagem (o próprio Claude lê a foto; pede permissão no 1º uso) */
 const fotoIdBtn = () => `<label class="btn sm primary" style="cursor:pointer">${ic('camera')}Identificar pela foto<input type="file" accept="image/*" capture="environment" class="vh p-idfoto"></label>`;
@@ -11263,18 +11272,19 @@ async function eqPorFoto(p, file) { return eqBusca(p, { file }); }
    depois a IA (pesquisa na internet; sem ela, só a IA), pela foto, pelo código ou pelo nome digitado. Mostra com destaque o que está fazendo,
    os segundos passando e o botão Parar; tem prazo (não fica minutos parado). */
 function eqAviso(p, html, tipo) { const st = document.querySelector(`#eq-ler-${p} .eq-st`); if (!st) return; st.hidden = false; st.className = 'eq-st banner' + (tipo === 'ok' || tipo === 'info' ? ' info' : ''); st.style.cssText = 'font-size:.9rem;margin-top:8px'; st.innerHTML = html; }
-async function eqBusca(p, o) {
+async function eqBusca(p, o, nivel) {
+  nivel = Math.max(1, Math.min(3, +nivel || 1));
   const tela = 'eq-ler-' + p, op = iaOpIni(tela), t0 = Date.now(); let etapa = 'Começando…';
   const nome = o.file ? 'a foto' : o.codigo ? `o código <b>${esc(o.codigo)}</b>` : `“${esc(o.texto)}”`;
-  const pinta = () => { if (IA_OP !== op) return; eqAviso(p, `<span class="grow"><span class="spin" aria-hidden="true"></span> <b>Pesquisando o equipamento</b> por ${nome} · <b>${Math.round((Date.now() - t0) / 1000)} s</b><br><small>${esc(etapa)}</small></span>${pararBtn()}`, 'info'); };
+  const pinta = () => { if (IA_OP !== op) return; eqAviso(p, `<span class="grow"><span class="spin" aria-hidden="true"></span> <b>Pesquisando o equipamento</b> (${NIVEL_NOME[nivel]}, ${nivel} de 3) por ${nome} · <b>${Math.round((Date.now() - t0) / 1000)} s</b><br><small>${esc(etapa)}</small></span>${pararBtn()}`, 'info'); };
   const aviso = t => { etapa = t; pinta(); }; pinta(); const iv = setInterval(() => { if (IA_OP !== op || !document.getElementById(tela)) { clearInterval(iv); return; } pinta(); }, 1000);
   const fim = () => { clearInterval(iv); iaOpFim(op); };
-  const deNovo = `<button type="button" class="btn sm" data-act="eq-busca-novo" data-p="${p}">↻ Pesquisar de novo</button>`; window.EQ_ULT = { p, o }; /* global: o M da janela muda quando abre outra (ex.: ajuste da foto) e o “Pesquisar de novo” ficava sem saber o que repetir */
+  const deNovo = nivel < 3 ? nivelBtn('eq-busca-novo', nivel, ` data-p="${p}"`) : `<button type="button" class="btn sm" data-act="eq-busca-novo" data-nivel="3" data-p="${p}">↻ Pesquisar de novo</button>`; window.EQ_ULT = { p, o, nivel }; /* global: o M da janela muda quando abre outra (ex.: ajuste da foto) e o “Pesquisar de novo” ficava sem saber o que repetir */
   const preencher = (r, extra) => { const nomeR = r.nome || [r.marca, r.modelo].filter(Boolean).join(' ');
     const modelo = r.modelo || (nomeR || '').replace(new RegExp('^' + (r.marca || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '');
     const tipo = TIPOS_EQ.includes(r.tipo) ? r.tipo : tipoDoTexto([r.tipo, r.categoria, r.subcategoria, nomeR].filter(Boolean).join(' '));
     const f = eqSet(p, { tipo, marca: r.marca, modelo, serie: extra && extra.serie });
-    eqAviso(p, `<span class="grow">✅ <b>Identificado:</b> ${esc(nomeR || '—')}${r.confianca === 'baixa' ? ' <b>(pouca certeza)</b>' : ''}. ${f.length ? 'Preenchido: ' + f.join(', ') + '.' : 'Os campos já estavam preenchidos.'} Confira. <small class="muted">(${Math.round((Date.now() - t0) / 1000)} s)</small></span>`, 'ok'); };
+    eqAviso(p, `<span class="grow">✅ <b>Identificado:</b> ${esc(nomeR || '—')}${r.confianca === 'baixa' ? ' <b>(pouca certeza)</b>' : ''}. ${f.length ? 'Preenchido: ' + f.join(', ') + '.' : 'Os campos já estavam preenchidos.'} Confira. <small class="muted">(${Math.round((Date.now() - t0) / 1000)} s)</small></span>${nivel < 3 ? `<span class="actions">${nivelBtn('eq-busca-novo', nivel, ` data-p="${p}"`).replace('Tentar de novo', 'Não é este? Tentar').replace('btn sm primary', 'btn sm')}</span>` : ''}`, 'ok'); };
   try {
     let serie = '';
     if (o.file) {
@@ -11282,10 +11292,10 @@ async function eqBusca(p, o) {
       aviso('Lendo a etiqueta (modelo e nº de série)…');
       try { const r0 = normJ(await comPrazo(claudeLerFoto(o.file, `Foto de um equipamento de informática/eletrônico (ou da etiqueta dele) para uma ordem de serviço no Brasil. Responda SOMENTE um JSON com: "tipo" (um destes: ${TIPOS_EQ.join(', ')}), "marca", "modelo" (modelo comercial ou código de modelo da etiqueta), "serie" (S/N, Serial ou Service Tag, só se legível), "confianca" ("alta", "media" ou "baixa"). Deixe vazio o que não der para ler. Não invente.`, aviso), 45000, 'ia_lenta'));
         serie = String(r0.serie || '').replace(/\s+/g, '') || serie;
-        if (r0.marca && r0.modelo) { fim(); preencher(r0, { serie }); return; }
+        if (r0.marca && r0.modelo && nivel === 1) { fim(); preencher(r0, { serie }); return; }
       } catch (e) { if (e && /^ia_(parado|pausada)$/.test(e.code)) throw e; }
       aviso('Identificando pela pesquisa de produtos…');
-      const r = normIA(await comPrazo(prodBuscarIA({ file: o.file, aviso }), 100000, 'ia_lenta')); fim();
+      const r = normIA(await comPrazo(prodBuscarIA({ file: o.file, aviso, nivel }), 100000, 'ia_lenta')); fim();
       if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' }; preencher(r, { serie }); return;
     }
     if (o.codigo && /^\d{8,14}$/.test(o.codigo)) {
@@ -11293,14 +11303,14 @@ async function eqBusca(p, o) {
       if (r && r.nome) { fim(); preencher(r); return; }
     } else if (o.codigo) { eqSet(p, { serie: o.codigo }); }
     aviso(o.codigo ? 'Não está nas bases públicas: pesquisando pela IA…' : 'Pesquisando pelo nome…');
-    const r = normIA(await comPrazo(prodBuscarIA({ codigo: o.codigo, texto: o.texto, aviso }), 100000, 'ia_lenta')); fim();
+    const r = normIA(await comPrazo(prodBuscarIA({ codigo: o.codigo, texto: o.texto, aviso, nivel }), 100000, 'ia_lenta')); fim();
     if (!r.nome && !r.modelo && !r.marca) throw { code: 'nada' };
     preencher(r, { serie: o.codigo && !/^\d{8,14}$/.test(o.codigo) ? o.codigo : '' });
   } catch (e) { fim(); if (!document.getElementById(tela)) return;
     const msg = e && e.code === 'ia_parado' ? 'Pesquisa parada.' : e && e.code === 'nada' ? 'Não encontrei este equipamento.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : fotoErroMsg(e);
     eqAviso(p, `<span class="grow">❌ ${esc(msg)} ${o.codigo && !/^\d{8,14}$/.test(o.codigo) ? 'O código ficou no Nº de série. ' : ''}Tente outra foto, digite o nome (ex.: Notebook Dell Inspiron 15) ou preencha os campos.</span><span class="actions">${deNovo}<button type="button" class="btn sm" data-act="eq-dig" data-p="${p}">${ic('edit')}Digitar</button></span>`); }
 }
-ACT['eq-busca-novo'] = el => { const u = window.EQ_ULT || { p: el && el.dataset.p }; if (!u || !u.o) { toast('Não há pesquisa para repetir: leia o código, tire a foto ou digite de novo.'); return; } eqBusca(u.p, u.o); };
+ACT['eq-busca-novo'] = el => { const u = window.EQ_ULT || { p: el && el.dataset.p }; if (!u || !u.o) { toast('Não há pesquisa para repetir: leia o código, tire a foto ou digite de novo.'); return; } eqBusca(u.p, u.o, +(el && el.dataset.nivel) || u.nivel || 1); };
 setTimeout(() => { try { ACT_PERM['eq-busca-novo'] = ''; AJUDA['eq-busca-novo'] = 'Faz a pesquisa do equipamento de novo.'; } catch { } }, 0);
 document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.eq-idfoto') && t.files && t.files[0]) { const f = t.files[0], pp = t.dataset.p; t.value = ''; fotoAntes(f, 'Ajustar a foto do equipamento', g => eqPorFoto(pp, g)); } });
 
@@ -12953,19 +12963,20 @@ ACT['ia-testar'] = async () => {
 setTimeout(() => { try { ACT_PERM['ia-testar'] = ''; AJUDA['ia-testar'] = 'Confere se a IA que identifica produtos está respondendo e mostra o motivo quando não está. Ex.: chave vencida ou limite do Google esgotado.'; } catch { } }, 0);
 /* Testar a IA com um produto real: código lido, digitado ou foto (não cadastra nada) */
 async function iaTesteProduto(o, ret) {
+  const nivel = Math.max(1, Math.min(3, +(o && o.nivel) || 1));
   const L = $('#iat-p'); if (!L) return;
   let row, op, tarefa;
   if (ret && ret.row && ret.row.isConnected) { row = ret.row; row.querySelector('.iat-acoes')?.remove(); }
   else { const id = 'iat-' + Date.now(); L.insertAdjacentHTML('afterbegin', `<div class="row" id="${id}"><div class="grow"><b>⏳</b><div class="muted iat-m" style="font-size:.82rem">Procurando…</div></div></div>`); row = document.getElementById(id); }
   const m = t => { const x = row && row.querySelector('.iat-m'); if (x) x.textContent = t; }, fim = (ok, tit, det) => { if (!row) return; row.querySelector('b').textContent = (ok ? '✅ ' : '❌ ') + tit; m(det || ''); };
   const nome = o.file ? 'Foto' : 'Código ' + o.codigo;
-  const botoes = cont => row.querySelector('.grow').insertAdjacentHTML('beforeend', `<div class="actions iat-acoes" style="justify-content:flex-start;margin-top:6px">${cont ? '<button type="button" class="btn sm primary" data-act="ia-continuar">Continuar</button>' : ''}<button type="button" class="btn sm" data-act="ia-recomecar">↻ ${cont ? 'Recomeçar' : 'Pesquisar de novo'}</button></div>`);
+  const botoes = cont => row.querySelector('.grow').insertAdjacentHTML('beforeend', `<div class="actions iat-acoes" style="justify-content:flex-start;margin-top:6px">${cont ? '<button type="button" class="btn sm primary" data-act="ia-continuar">Continuar</button>' : ''}${!cont && nivel < 3 ? nivelBtn('ia-nivel', nivel) : `<button type="button" class="btn sm" data-act="ia-recomecar">↻ ${cont ? 'Recomeçar' : 'Pesquisar de novo'}</button>`}</div>`);
   row.querySelector('b').textContent = '⏳ ' + (o.file ? 'Foto do produto' : 'Código ' + o.codigo);
   if (ret && ret.op && ret.op === IA_OP) { op = ret.op; tarefa = ret.tarefa; m(op.ult || 'Procurando…'); }
   else {
     op = iaOpIni('iat-p');
     if (o.codigo && /^\d{8,14}$/.test(o.codigo)) { m('Procurando nas bases públicas de códigos…'); try { const r = await buscarProdutoNet(o.codigo); if (IA_OP !== op) { fim(false, nome + ': pesquisa cancelada', ''); IA_PAUSA = { tipo: 'teste', o, row }; botoes(false); return; } if (r && r.nome) { iaOpFim(op); fim(true, nome + ': ' + r.nome, 'Encontrado na base pública ' + r.fonte + (r.marca ? ' · marca ' + r.marca : '') + '.'); return; } } catch { } }
-    tarefa = prodBuscarIA({ ...o, aviso: t => { op.ult = t; if (!op.pausada) m(t); } }); tarefa.catch(() => { });
+    tarefa = prodBuscarIA({ ...o, nivel, aviso: t => { op.ult = t; if (!op.pausada) m(t); } }); tarefa.catch(() => { });
   }
   try { const r = normIA(await iaEsperar(op, tarefa)); iaOpFim(op); if (!r.nome && !r.modelo) throw { code: 'nada' };
     const f = (r._fontes || [])[0]; fim(true, nome + ': ' + (r.nome || r.modelo), [r.marca && 'Marca: ' + r.marca, r.modelo && 'Modelo: ' + r.modelo, r.categoria && 'Categoria: ' + r.categoria, (r.fonte || (f && f.titulo)) && 'Fonte: ' + (r.fonte || f.titulo)].filter(Boolean).join(' · ')); }
@@ -13244,6 +13255,9 @@ ACT['item-prod-ed'] = el => { const p = get('produtos', el.dataset.pid); if (!p)
 ACT['ir-cad-aut'] = el => { const it = M.itens && M.itens[+el.dataset.i]; pedirSenha('produtos', 'Cadastrar o produto ' + ((it && it.nome) || ''), () => ACT['ir-cad'](el)); };
 ACT['ci-cad-aut'] = el => { const it = S.cart && S.cart.itens[+el.dataset.i]; pedirSenha('produtos', 'Cadastrar o produto ' + ((it && it.nome) || ''), () => ACT['ci-cad'](el)); };
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'item-prod-ed': '', 'ir-cad-aut': '', 'ci-cad-aut': '' }); Object.assign(AJUDA, { 'item-prod-ed': 'Abre o cadastro deste produto para editar. Ex.: corrigir o preço ou o nome. Quem não tem permissão pede autorização.', 'ir-cad-aut': 'Cadastra este item avulso como produto. Quem não tem permissão pede autorização.', 'ci-cad-aut': 'Cadastra este item avulso como produto. Quem não tem permissão pede autorização.' }); } catch { } }, 0);
+/* próximo nível da pesquisa (cadastro de produto e Testar a IA) */
+ACT['ia-nivel'] = el => { const p = IA_PAUSA; if (!p || !p.o) { toast('Não há pesquisa para repetir.'); return; } const o = { ...p.o, nivel: +el.dataset.nivel || 2 }; IA_PAUSA = null; if (p.op && p.op === IA_OP) iaParar(); if (p.tipo === 'cad') prodIAExecutar(o); else iaTesteProduto(o, { row: p.row }); };
+setTimeout(() => { try { ACT_PERM['ia-nivel'] = ''; AJUDA['ia-nivel'] = 'Pesquisa de novo com mais profundidade: 2 = a IA analisa com mais atenção; 3 = analisa e procura no site do fabricante e nas lojas. Demora mais.'; } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -14316,7 +14330,9 @@ function loginHTML() {
   }
   /* último usuário que entrou neste aparelho já vem selecionado */
   let ult = ''; try { ult = lsGet('bancada-ult-user') || ''; } catch { }
-  const sel = M.lgSel && L.some(c => c.id === M.lgSel) ? M.lgSel : L.some(c => c.id === ult) ? ult : (L.length === 1 ? L[0].id : '');
+  /* v17: se o aparelho não lembrar quem entrou por último, já vem selecionado o dono da digital deste aparelho (uma pessoa por aparelho) */
+  let dono = ''; try { dono = bioDono(); } catch { }
+  const sel = M.lgSel && L.some(c => c.id === M.lgSel) ? M.lgSel : L.some(c => c.id === ult) ? ult : dono && L.some(c => c.id === dono) ? dono : (L.length === 1 ? L[0].id : '');
   const focoPin = !!sel;
   return `<div class="lg-wrap"><form class="lg-box" data-form="login" novalidate>${marca}<h2>Quem está usando?</h2>
     <div class="lg-users">${L.map(c => `<button type="button" class="lg-u${c.id === sel ? ' on' : ''}" data-act="lg-sel" data-id="${esc(c.id)}"><span class="lg-av">${c.foto ? `<img src="${esc(c.foto)}" alt="">` : esc(iniciais(c.nome))}</span><b>${esc(c.nome)}</b><small>${esc(nivelNome(c.papel))}${c.cargo && norm(c.cargo) !== norm(nivelNome(c.papel)) ? ' · ' + esc(c.cargo) : ''}</small></button>`).join('')}</div>
@@ -14407,7 +14423,7 @@ Object.assign(ACT, {
   'bio-rem': el => arm(el, 'Confirmar: remover', async () => { const uid = el.dataset.id, id = bioRemoverLocal(uid), eq = get('equipe', uid); if (eq && id) await save('equipe', uid, { ...eq, bio: (eq.bio || []).filter(b => b.id !== id) }); try { logReg('negou', 'equipe', uid, 'Removeu a biometria do aparelho ' + aparelhoTxt(), []); } catch { } toast('Biometria removida deste aparelho. Para entrar, use a senha.'); const bx = el.closest('.bio-box'); if (bx) bx.outerHTML = bioBoxHTML(uid); }),
   'bio-revogar': el => arm(el, 'Confirmar: revogar todas', () => pedirSenha('__admin', 'Revogar as biometrias de ' + nomeUser(el.dataset.id), async () => { const uid = el.dataset.id, eq = get('equipe', uid); if (!eq) return; const { rosto, ...semRosto } = eq; await save('equipe', uid, { ...semRosto, bio: [] }); bioRemoverLocal(uid); try { logReg('negou', 'equipe', uid, 'Revogou todas as biometrias', []); } catch { } toast('Biometrias revogadas: em todos os aparelhos, este usuário volta a entrar só com a senha.'); closeModal(); })),
   /* tela de entrada: entra com a digital ou o rosto de quem está selecionado */
-  'lg-bio': async el => { const uid = ($('#lg-user') || {}).value || M.lgSel; if (!uid) { toast('Toque no seu nome primeiro.'); return; } const c = contaPorId(uid); if (!c || c.novo) { toast('Entre com a senha.'); return; }
+  'lg-bio': async el => { const uid = ($('#lg-user') || {}).value || M.lgSel || (() => { try { return bioDono(); } catch { return ''; } })(); if (!uid) { toast('Ninguém cadastrou a digital neste aparelho ainda. Toque no seu nome e entre com a senha; depois cadastre a digital.'); return; } const c = contaPorId(uid); if (!c || c.novo) { toast('Entre com a senha.'); return; }
     if (!bioTem(uid)) { acessoComoCadastrar('digital', uid); return; }
     el.disabled = true; const ok = await bioVerificar(uid); el.disabled = false; if (!ok) return; const eqp = get('equipe', uid); if (eqp && eqp.trocarSenha) { provTroca(uid); return; } entrarComo(uid); },
   /* janela de autorização: a biometria de quem autoriza vale como a senha dele */
@@ -14530,8 +14546,9 @@ async function faceSessao(modo, uid) {
 /* botões de entrada: a digital e, logo abaixo, o reconhecimento facial (os dois sempre aparecem; o que não estiver cadastrado explica como cadastrar) */
 function lgBioBtns(uid) {
   try { if (uid && rostoTem(uid)) setTimeout(() => { faceCarregar().catch(() => { }); }, 1500); } catch { }
-  const c = uid && contaPorId(uid); if (!c || c.novo) return '<div class="lg-bios" hidden></div>';
-  const tb = bioTem(uid), tr = rostoTem(uid);
+  const c = uid && contaPorId(uid); if (uid && (!c || c.novo)) return '<div class="lg-bios" hidden></div>';
+  /* v17: sem ninguém selecionado os botões continuam à vista (antes sumiam): a digital entra como o dono deste aparelho; o rosto, quem tiver rosto cadastrado */
+  const tb = uid ? bioTem(uid) : !!(() => { try { return bioDono(); } catch { return ''; } })(), tr = uid ? rostoTem(uid) : contasLogin().some(x => rostoTem(x.id));
   return `<div class="lg-bios"><button type="button" class="btn lg-bio${tb ? '' : ' lg-off'}" data-act="lg-bio">${BIO_IC} Entrar com a digital${tb ? '' : ' <small>(não cadastrada)</small>'}</button><button type="button" class="btn lg-rosto${tr ? '' : ' lg-off'}" data-act="lg-rosto">🙂 Entrar com reconhecimento facial${tr ? '' : ' <small>(não cadastrado)</small>'}</button></div>`;
 }
 function acessoComoCadastrar(tipo, uid) {
@@ -14551,7 +14568,7 @@ Object.assign(ACT, {
   'fc-cancelar': () => { FC.cancel = true; fcFechar(); if (FC.res) { const r = FC.res; FC.res = null; r(false); } },
   'rosto-cad': async el => { const uid = el.dataset.id || OPID(); if (S.op && uid !== OPID()) { toast('Cada pessoa cadastra o próprio rosto, entrando com o próprio usuário.'); return; } const ok = await faceSessao('cadastro', uid); if (ok) document.querySelectorAll('.rosto-box').forEach(b => b.outerHTML = rostoBoxHTML(uid)); },
   'rosto-rem': el => arm(el, 'Confirmar: remover', async () => { const uid = el.dataset.id, eq = get('equipe', uid); if (!eq) return; const { rosto, ...r } = eq; await save('equipe', uid, r); try { logReg('negou', 'equipe', uid, 'Removeu o reconhecimento facial', []); } catch { } toast('Reconhecimento facial removido.'); document.querySelectorAll('.rosto-box').forEach(b => b.outerHTML = rostoBoxHTML(uid)); }),
-  'lg-rosto': async () => { const uid = ($('#lg-user') || {}).value || M.lgSel; if (!uid) { toast('Toque no seu nome primeiro.'); return; } const c = contaPorId(uid); if (!c || c.novo) { toast('Entre com a senha.'); return; }
+  'lg-rosto': async () => { let uid = ($('#lg-user') || {}).value || M.lgSel; if (!uid) { const R = contasLogin().filter(x => rostoTem(x.id)); if (R.length === 1) uid = R[0].id; else { toast(R.length ? 'Toque no seu nome e depois em “Entrar com reconhecimento facial”.' : 'Ninguém cadastrou o rosto ainda. Entre com a senha e cadastre em Minha conta.'); return; } } const c = contaPorId(uid); if (!c || c.novo) { toast('Entre com a senha.'); return; }
     if (!rostoTem(uid)) { acessoComoCadastrar('rosto', uid); return; }
     if (!(await faceSessao('verificar', uid))) return; const eqp = get('equipe', uid); if (eqp && eqp.trocarSenha) { provTroca(uid); return; } entrarComo(uid); },
   'sn-rosto': async () => { const uid = ($('#sn-user') || {}).value || OPID(); if (!podeUser(uid, SENHA_PERM)) { toast(`${nomeUser(uid)} não tem permissão para esta operação.`); return; }
@@ -19117,18 +19134,29 @@ const blobB64 = b => new Promise((ok, er) => { const r = new FileReader(); r.onl
 let IA_MODELO = null; /* v16: modelo que a ponte usou (a ponte versão 7 troca sozinha quando o Google desliga um modelo) */
 const iaModeloAnotar = r => { try { const m = r.headers.get('X-Bancada-Modelo'); if (m) IA_MODELO = { nome: m, auto: r.headers.get('X-Bancada-Modelo-Auto') === '1' }; } catch { } };
 /* v17: foto enviada à IA no máximo com 1600 px (foto da câmera em tamanho cheio demorava muito para subir pela internet do celular) */
-async function imgReduzIA(im) { try { if (!im || !/^image\//.test(im.type || 'image/') || im.size < 700000) return im; const bm = await createImageBitmap(im); const k = Math.min(1, 1600 / Math.max(bm.width, bm.height)); const cv = document.createElement('canvas'); cv.width = Math.round(bm.width * k); cv.height = Math.round(bm.height * k); cv.getContext('2d').drawImage(bm, 0, 0, cv.width, cv.height); try { bm.close(); } catch { } const b = await new Promise(ok => cv.toBlob(ok, 'image/jpeg', .85)); return b && b.size < im.size ? b : im; } catch { return im; } }
+async function imgReduzIA(im) { try { if (!im || !/^image\//.test(im.type || 'image/') || im.size < 350000) return im; const bm = await createImageBitmap(im); const k = Math.min(1, 1280 / Math.max(bm.width, bm.height)); const cv = document.createElement('canvas'); cv.width = Math.round(bm.width * k); cv.height = Math.round(bm.height * k); cv.getContext('2d').drawImage(bm, 0, 0, cv.width, cv.height); try { bm.close(); } catch { } const b = await new Promise(ok => cv.toBlob(ok, 'image/jpeg', .85)); return b && b.size < im.size ? b : im; } catch { return im; } }
+/* v17: chamada à ponte com até 3 tentativas para falhas passageiras (rede, 500/502/503/504, 429): espera 1,5 s e 4 s entre elas */
+async function pontePost(url, corpo, sinal) {
+  let ult = null;
+  for (let k = 0; k < 3; k++) {
+    if (k) { await new Promise(ok => setTimeout(ok, k === 1 ? 1500 : 4000)); if (sinal && sinal.aborted) throw { code: 'ia_parado' }; }
+    const t0r = Date.now(); let r;
+    try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: corpo, signal: sinal }); }
+    catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; ult = (navigator.onLine !== false && Date.now() - t0r > 45000) ? { code: 'ia_lenta', message: 'A IA do Google demorou demais e a ligação foi encerrada.' } : { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; if (ult.code === 'ia_lenta' || navigator.onLine === false) throw ult; continue; }
+    const t = await r.text(); iaModeloAnotar(r);
+    if (r.ok) return t;
+    ult = { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
+    if (!(r.status === 429 || r.status >= 500)) throw ult;
+  }
+  throw ult;
+}
 const IA_PONTE = {
   limits: async () => ({ images: true }),
   async json(pedido, o = {}) {
     const parts = [{ text: pedido + '\n\nResponda somente com JSON válido, sem nenhum texto antes ou depois.' }];
     for (const im of (o.images || [])) { const rz = await imgReduzIA(im); parts.push({ inline_data: { mime_type: rz.type || 'image/jpeg', data: await blobB64(rz) } }); }
-    const url = String(EMP_CFG.ponte || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
-    let r; const t0r = Date.now();
-    try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], generationConfig: { responseMimeType: 'application/json' } }), signal: o.signal || (IA_OP && IA_OP.ac.signal) }); }
-    catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; throw (navigator.onLine !== false && Date.now() - t0r > 45000) ? { code: 'ia_lenta', message: 'A IA do Google demorou demais e a ligação foi encerrada.' } : { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
-    const t = await r.text(); iaModeloAnotar(r);
-    if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
+    const url = String((EMP_CFG && EMP_CFG.ponte) || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
+    const t = await pontePost(url, JSON.stringify({ contents: [{ role: 'user', parts }], generationConfig: { responseMimeType: 'application/json' }, bancadaNivel: IA_NIVEL }), o.signal || (IA_OP && IA_OP.ac.signal));
     let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
     const txt = ((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join('').trim();
     try { return JSON.parse(txt.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '')); } catch { throw { code: 'ia_erro', message: 'A IA respondeu fora do formato esperado.' }; }
@@ -19138,10 +19166,8 @@ const IA_PONTE = {
 IA_PONTE.buscar = async function (pedido, o = {}) {
   const parts = [{ text: pedido }];
   for (const im of (o.images || [])) { const rz = await imgReduzIA(im); parts.push({ inline_data: { mime_type: rz.type || 'image/jpeg', data: await blobB64(rz) } }); }
-  const url = String(EMP_CFG.ponte || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
-  let r; const t0r = Date.now(); try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts }], tools: [{ google_search: {} }] }), signal: o.signal || (IA_OP && IA_OP.ac.signal) }); }
-  catch (e) { if (e && e.name === 'AbortError') throw { code: 'ia_parado' }; throw (navigator.onLine !== false && Date.now() - t0r > 45000) ? { code: 'ia_lenta', message: 'A IA do Google demorou demais e a ligação foi encerrada.' } : { code: 'ia_rede', message: 'Sem conexão com a IA. Verifique a internet.' }; }
-  const t = await r.text(); iaModeloAnotar(r); if (!r.ok) throw { code: r.status === 403 ? 'ia_negado' : r.status === 429 ? 'ia_cota' : 'ia_erro', status: r.status, message: t.slice(0, 400) };
+  const url = String((EMP_CFG && EMP_CFG.ponte) || PONTE_PADRAO).replace(/\/+$/, '') + '/?empresa=' + encodeURIComponent(EMP_COD);
+  const t = await pontePost(url, JSON.stringify({ contents: [{ role: 'user', parts }], tools: [{ google_search: {} }], bancadaNivel: IA_NIVEL }), o.signal || (IA_OP && IA_OP.ac.signal));
   let j; try { j = JSON.parse(t); } catch { throw { code: 'ia_erro', message: 'Resposta inválida da IA.' }; }
   const c = (j.candidates || [])[0] || {}, txt = ((c.content || {}).parts || []).map(p => p.text || '').join('').trim();
   const fontes = (((c.groundingMetadata || {}).groundingChunks) || []).map(g => g.web).filter(Boolean).map(w => ({ titulo: w.title || '', url: w.uri || '' }));
@@ -19152,7 +19178,7 @@ IA_PONTE.buscar = async function (pedido, o = {}) {
 async function iaSample() {
   /* v17: dentro do Claude, se a IA do Claude não estiver liberada, usa a ponte da empresa (quando houver) */
   if (window.claude && window.claude.use) { try { const s = await window.claude.use('sample'); if (s) return s; } catch { } }
-  return EMP_CFG ? IA_PONTE : null;
+  return EMP_CFG || (EMP_COD && /^https:$/.test(location.protocol) && !(window.claude && window.claude.use)) ? IA_PONTE : null;
 }
 
 
