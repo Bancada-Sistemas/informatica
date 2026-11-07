@@ -367,6 +367,7 @@ table.mx input{width:18px;height:18px}
 .steps span{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .fe-dados{margin:0 0 8px;padding:0!important}.fe-dados .f{grid-column:1/-1}
 .pz-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 14px}.pz-r{display:grid;grid-template-columns:1fr 80px auto;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)}.pz-r input{text-align:right}
+.ini-val-t{font-size:1rem;margin:18px 0 8px;color:var(--muted)}
 .os-voz-b{display:flex;align-items:center;gap:8px;width:100%;justify-content:flex-start;margin:0 0 10px;padding:12px 14px;font-size:1.05rem}.os-voz-b small{color:var(--muted);font-weight:400;margin-left:auto;font-size:.8rem}.vz{display:flex;flex-direction:column;gap:10px}.vz-passo{font-size:.85rem;color:var(--muted)}.vz-q{margin:0;font-size:1.5rem;line-height:1.25}.vz-dica{margin:0}.vz-ouvido{min-height:1.6em;font-size:1.2rem;font-weight:600;color:var(--primary,#2563eb)}.vz-ops{display:flex;flex-direction:column;gap:6px;max-height:42vh;overflow:auto}.vz-op{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);cursor:pointer}.vz-op small{display:block;color:var(--muted)}.vz-n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--line);font-weight:700;font-size:.85rem;flex:0 0 auto}.vz-mic{display:flex;gap:8px;flex-wrap:wrap}.vz-mic-b{font-size:1.05rem;padding:12px 16px}.vz-mic-b.on{background:#dc2626;color:#fff;border-color:#dc2626}.vz-mic input{flex:1 1 200px;min-width:0}.vz-res{display:flex;flex-direction:column;gap:4px}.vz-res-i{display:flex;justify-content:space-between;gap:10px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}.vz-res-i span{color:var(--muted)}.vz-falar{font-size:.85rem}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .ftc{position:relative;background:#000;border-radius:12px;overflow:hidden}.ftc video{display:block;width:100%;max-height:68vh;object-fit:contain;background:#000}.ftc-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.ftc-flash.on{animation:ftcfl .35s}@keyframes ftcfl{0%{opacity:.8}100%{opacity:0}}
@@ -2076,7 +2077,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 385;
+const APP_VER = 17, APP_BUILD = 386;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -9023,7 +9024,11 @@ function relDespHtml(L, titulo, sub) {
 REL_PER.push(['desp', 'Despesas pagas no período (por categoria)', 'despesas'], ['result', 'Resultado: faturamento × despesas pagas', 'custos']);
 
 /* página inicial personalizável: atalhos, cartões e painéis escolhidos por quem tem permissão */
-const INI_PADRAO = { verAtalhos: true, atalhos: [], cards: ['os', 'vendas', 'caixa', 'alug', 'orc'], paineis: ['os', 'devol', 'orc', 'baixo'] };
+const INI_PADRAO = { verAtalhos: true, atalhos: [], cards: ['agenda', 'os', 'orc', 'alug', 'vendas', 'caixa'], paineis: ['os', 'orc', 'devol', 'baixo'] };
+/* v17: ordem padrão — Agenda, Na bancada e OS em aberto primeiro; o que mostra valores (R$) fica no fim da página */
+const INI_VALOR = { cards: ['vendas', 'mes', 'caixa', 'receber', 'pagar'], paineis: ['receber', 'pagar'] };
+const INI_ORD = { cards: ['agenda', 'os', 'orc', 'alug', 'baixo'], paineis: ['os', 'orc', 'devol', 'baixo'], atalhos: [] };
+const iniPad = (g, L) => { const pri = INI_ORD[g] || [], val = INI_VALOR[g] || [], r = k => pri.includes(k) ? pri.indexOf(k) : val.includes(k) ? 1000 + val.indexOf(k) : 500; const al = iniAlfa(g, L); return [...al].sort((a, b) => (r(a) - r(b)) || (al.indexOf(a) - al.indexOf(b))); };
 /* padrão: tudo marcado e em ordem alfabética; vira ordem própria só quando alguém move (setas ou arrastar) */
 const INI_DEFS = g => g === 'atalhos' ? INI_ATALHOS : g === 'cards' ? INI_CARDS : INI_PAINEIS;
 const iniAlfa = (g, L) => { const d = INI_DEFS(g); return [...L].sort((a, b) => String((d[a] || [a])[0]).localeCompare(String((d[b] || [b])[0]), 'pt-BR')); };
@@ -9032,7 +9037,7 @@ const iniCfg = () => {
   ['atalhos', 'cards', 'paineis'].forEach(g => {
     const todos = Object.keys(INI_DEFS(g)), cur = (C[g] || []).filter(k => todos.includes(k));
     const L = [...cur, ...todos.filter(k => !cur.includes(k) && !(des[g] || []).includes(k))];
-    R[g] = man[g] ? L : iniAlfa(g, L);
+    R[g] = man[g] ? L : iniPad(g, L);
   });
   return R;
 };
@@ -9116,8 +9121,11 @@ V.inicio = cfgPrev => {
   };
   const C = cfgPrev || iniCfg(), semEmpresa = !S.empresa.fantasia && !S.empresa.razao;
   const atalhos = C.verAtalhos ? (C.atalhos || []).filter(planoAtalhoOk).map(k => INI_ATALHOS[k] ? INI_ATALHOS[k][1]() : '').join('') : '';
-  const cards = (C.cards || []).map(k => INI_CARDS[k] ? INI_CARDS[k][1](D) : '').filter(Boolean);
-  const paineis = (C.paineis || []).map(k => INI_PAINEIS[k] ? INI_PAINEIS[k][1](D) : '').filter(Boolean);
+  const ehV = (g, k) => (INI_VALOR[g] || []).includes(k);
+  const cards = (C.cards || []).filter(k => !ehV('cards', k)).map(k => INI_CARDS[k] ? INI_CARDS[k][1](D) : '').filter(Boolean);
+  const paineis = (C.paineis || []).filter(k => !ehV('paineis', k)).map(k => INI_PAINEIS[k] ? INI_PAINEIS[k][1](D) : '').filter(Boolean);
+  const cardsV = (C.cards || []).filter(k => ehV('cards', k)).map(k => INI_CARDS[k] ? INI_CARDS[k][1](D) : '').filter(Boolean);
+  const paineisV = (C.paineis || []).filter(k => ehV('paineis', k)).map(k => INI_PAINEIS[k] ? INI_PAINEIS[k][1](D) : '').filter(Boolean);
   return `
   ${semEmpresa ? `<div class="banner"><span class="grow"><b>Cadastre os dados da sua empresa.</b> Nome, CNPJ, endereço, telefone e logo saem no cabeçalho dos orçamentos, contratos e recibos.</span><button class="btn primary sm" data-act="empresa-edit">Cadastrar empresa</button></div>` : ''}
   <div class="page-head"><div><p class="eyebrow">${esc(dataLonga())}</p><h1>Resumo do dia</h1></div>
@@ -9125,13 +9133,16 @@ V.inicio = cfgPrev => {
   ${atalhos ? `<nav class="ini-atalhos" aria-label="Atalhos">${atalhos}</nav>` : ''}
   ${cards.length ? `<section class="stats">${cards.join('')}</section>` : ''}
   ${paineis.length ? `<div class="home-grid" style="--cols:${Math.min(4, paineis.length)}">${paineis.join('')}</div>` : ''}
+  ${cardsV.length || paineisV.length ? `<h2 class="ini-val-t">Valores</h2>` : ''}
+  ${cardsV.length ? `<section class="stats">${cardsV.join('')}</section>` : ''}
+  ${paineisV.length ? `<div class="home-grid" style="--cols:${Math.min(4, paineisV.length)}">${paineisV.join('')}</div>` : ''}
   `;
 };
 function iniEditorBody() {
   const E = M.ini;
   const grupo = (k, tit, defs, max) => {
     const sel = E[k], resto = iniAlfa(k, Object.keys(defs).filter(x => !sel.includes(x))), cheio = max && sel.length >= max;
-    return `<section class="ini-col"><h3 style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${tit} <span class="muted">${sel.length}${max ? ' de ' + max : ''}</span>${sel.length > 1 ? `<button type="button" class="btn sm ghost" data-act="ini-ord-pad" data-g="${k}" style="margin-left:auto" title="Volta para a ordem alfabética; os itens escolhidos continuam">↺ Ordem alfabética</button>` : ''}</h3>
+    return `<section class="ini-col"><h3 style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${tit} <span class="muted">${sel.length}${max ? ' de ' + max : ''}</span>${sel.length > 1 ? `<button type="button" class="btn sm ghost" data-act="ini-ord-pad" data-g="${k}" style="margin-left:auto" title="Volta para a ordem padrão: Agenda, Na bancada e OS em aberto primeiro; o que tem valores (R$) no fim. Os itens escolhidos continuam">↺ Restaurar o padrão</button>` : ''}</h3>
       <p class="muted ini-sub">Aparecem nesta ordem (segure e arraste pelo ⠿ ou use as setas):</p>
       <div data-ord-g="${k}">${sel.length ? sel.map((x, i) => `<div class="ini-it on drg-row" data-k="${esc(x)}"><span class="drg-h" title="Segure e arraste para mudar a posição" aria-hidden="true">⠿</span><span class="ini-n">${i + 1}</span><label class="nm"><input type="checkbox" checked data-act="ini-tog" data-g="${k}" data-k="${x}">${esc(defs[x][0])}</label><button type="button" class="icon-btn" data-act="ini-mov" data-g="${k}" data-i="${i}" data-d="-1" ${i ? '' : 'disabled'} aria-label="Subir" title="Mover para cima">↑</button><button type="button" class="icon-btn" data-act="ini-mov" data-g="${k}" data-i="${i}" data-d="1" ${i < sel.length - 1 ? '' : 'disabled'} aria-label="Descer" title="Mover para baixo">↓</button></div>`).join('') : '<p class="muted ini-sub">Nenhum escolhido.</p>'}</div>
       ${resto.length ? `<p class="muted ini-sub" style="margin-top:10px">Disponíveis para adicionar${cheio ? ' (limite atingido: desmarque um acima)' : ''}:</p>${resto.map(x => `<div class="ini-it"><label class="nm"><input type="checkbox" data-act="ini-tog" data-g="${k}" data-k="${x}"${cheio ? ' disabled' : ''}>${esc(defs[x][0])}</label></div>`).join('')}` : ''}</section>`;
@@ -9183,7 +9194,7 @@ Object.assign(ACT, {
   'ini-ver-at': el => { M.ini.verAtalhos = el.checked; if (M.ini.verAtalhos && !M.ini.atalhos.length) M.ini.atalhos = iniAlfa('atalhos', Object.keys(INI_ATALHOS)); iniRedraw(); },
   'ini-tog': el => { const gk = el.dataset.g, g = M.ini[gk], k = el.dataset.k, i = g.indexOf(k), des = M.ini.desmarcados = { ...(M.ini.desmarcados || {}) }; des[gk] = [...(des[gk] || [])]; if (i >= 0) { g.splice(i, 1); if (!des[gk].includes(k)) des[gk].push(k); } else { g.push(k); des[gk] = des[gk].filter(x => x !== k); if (!(M.ini.ordemManual || {})[gk]) M.ini[gk] = iniAlfa(gk, g); } iniRedraw(); },
   'ini-mov': el => { const g = M.ini[el.dataset.g], i = +el.dataset.i, j = i + +el.dataset.d; if (j < 0 || j >= g.length) return; [g[i], g[j]] = [g[j], g[i]]; M.ini.ordemManual = { ...(M.ini.ordemManual || {}), [el.dataset.g]: true }; iniRedraw(); },
-  'ini-ord-pad': el => { const g = el.dataset.g; if (!M.ini || !Array.isArray(M.ini[g])) return; M.ini[g] = iniAlfa(g, M.ini[g]); M.ini.ordemManual = { ...(M.ini.ordemManual || {}), [g]: false }; iniRedraw(); toast('Ordem alfabética restaurada. Toque em Salvar para gravar.'); },
+  'ini-ord-pad': el => { const g = el.dataset.g; if (!M.ini || !Array.isArray(M.ini[g])) return; M.ini[g] = iniPad(g, M.ini[g]); M.ini.ordemManual = { ...(M.ini.ordemManual || {}), [g]: false }; iniRedraw(); toast('Ordem padrão restaurada (Agenda e OS primeiro, valores no fim). Toque em Salvar para gravar.'); },
   'ini-padrao': () => { M.ini = { ...JSON.parse(JSON.stringify(INI_PADRAO)), atalhos: iniAlfa('atalhos', Object.keys(INI_ATALHOS)), cards: iniAlfa('cards', Object.keys(INI_CARDS)), paineis: iniAlfa('paineis', Object.keys(INI_PAINEIS)), ordemManual: {}, desmarcados: {} }; iniRedraw(); },
   'ini-salvar': async () => {
     const old = (S.ajustes || []).find(x => x.id === 'inicio') || {};
@@ -11258,7 +11269,7 @@ async function eqBusca(p, o) {
   const pinta = () => { if (IA_OP !== op) return; eqAviso(p, `<span class="grow"><span class="spin" aria-hidden="true"></span> <b>Pesquisando o equipamento</b> por ${nome} · <b>${Math.round((Date.now() - t0) / 1000)} s</b><br><small>${esc(etapa)}</small></span>${pararBtn()}`, 'info'); };
   const aviso = t => { etapa = t; pinta(); }; pinta(); const iv = setInterval(() => { if (IA_OP !== op || !document.getElementById(tela)) { clearInterval(iv); return; } pinta(); }, 1000);
   const fim = () => { clearInterval(iv); iaOpFim(op); };
-  const deNovo = `<button type="button" class="btn sm" data-act="eq-busca-novo" data-p="${p}">↻ Pesquisar de novo</button>`; M.eqUlt = { p, o };
+  const deNovo = `<button type="button" class="btn sm" data-act="eq-busca-novo" data-p="${p}">↻ Pesquisar de novo</button>`; window.EQ_ULT = { p, o }; /* global: o M da janela muda quando abre outra (ex.: ajuste da foto) e o “Pesquisar de novo” ficava sem saber o que repetir */
   const preencher = (r, extra) => { const nomeR = r.nome || [r.marca, r.modelo].filter(Boolean).join(' ');
     const modelo = r.modelo || (nomeR || '').replace(new RegExp('^' + (r.marca || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '');
     const tipo = TIPOS_EQ.includes(r.tipo) ? r.tipo : tipoDoTexto([r.tipo, r.categoria, r.subcategoria, nomeR].filter(Boolean).join(' '));
@@ -11289,7 +11300,7 @@ async function eqBusca(p, o) {
     const msg = e && e.code === 'ia_parado' ? 'Pesquisa parada.' : e && e.code === 'nada' ? 'Não encontrei este equipamento.' : e && e.code === 'ia_lenta' ? 'A pesquisa demorou demais.' : fotoErroMsg(e);
     eqAviso(p, `<span class="grow">❌ ${esc(msg)} ${o.codigo && !/^\d{8,14}$/.test(o.codigo) ? 'O código ficou no Nº de série. ' : ''}Tente outra foto, digite o nome (ex.: Notebook Dell Inspiron 15) ou preencha os campos.</span><span class="actions">${deNovo}<button type="button" class="btn sm" data-act="eq-dig" data-p="${p}">${ic('edit')}Digitar</button></span>`); }
 }
-ACT['eq-busca-novo'] = () => { const u = M.eqUlt; if (u) eqBusca(u.p, u.o); };
+ACT['eq-busca-novo'] = el => { const u = window.EQ_ULT || { p: el && el.dataset.p }; if (!u || !u.o) { toast('Não há pesquisa para repetir: leia o código, tire a foto ou digite de novo.'); return; } eqBusca(u.p, u.o); };
 setTimeout(() => { try { ACT_PERM['eq-busca-novo'] = ''; AJUDA['eq-busca-novo'] = 'Faz a pesquisa do equipamento de novo.'; } catch { } }, 0);
 document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.eq-idfoto') && t.files && t.files[0]) { const f = t.files[0], pp = t.dataset.p; t.value = ''; fotoAntes(f, 'Ajustar a foto do equipamento', g => eqPorFoto(pp, g)); } });
 
@@ -11340,7 +11351,7 @@ function iaErroMsg(e) { const m = String((e && e.message) || ''), st = e && e.st
   if (/not.found|no longer available|is not supported for generateContent/i.test(m) || st === 404) return 'O modelo de IA usado pela ponte (Gemini) não está disponível para esta chave. A ponte versão 7.1 troca de modelo sozinha: atualize o código da ponte no Cloudflare (manual da nuvem, passo A4.5) ou coloque gemini-flash-latest na variável MODELO.';
   if (e.code === 'nada') return 'A IA não achou dados deste produto.';
   return 'A IA respondeu com erro' + (st ? ' ' + st : '') + (m ? ': ' + m.replace(/[{}"\n]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140) : '') + '.'; }
-const fotoErroMsg = e => !e ? 'Não consegui ler a foto.' : /^ia_/.test(e.code || '') ? iaErroMsg(e) : e.code === 'not_granted' ? 'A leitura não foi permitida. Ela usa o Claude da sua conta: toque de novo e responda “Permitir”.' : e.code === 'sem_texto' ? 'Não achei texto legível na foto. Fotografe mais de perto a etiqueta ou a caixa, com boa luz e sem reflexo.' : e.code === 'ocr_falhou' || e.code === 'ocr_lento' ? 'Neste aparelho a foto não pode ser lida automaticamente.' : e.code === 'sem_claude' ? 'O texto foi lido, mas o Claude não respondeu neste aparelho. Preencha à mão.' : 'Não consegui ler a foto. Tente mais de perto, com boa luz e a etiqueta inteira.';
+const fotoErroMsg = e => !e ? 'Não consegui ler a foto.' : /^ia_/.test(e.code || '') ? iaErroMsg(e) : e.code === 'not_granted' ? 'A leitura não foi permitida. Ela usa o Claude da sua conta: toque de novo e responda “Permitir”.' : e.code === 'sem_texto' ? 'Não achei texto legível na foto. Fotografe mais de perto a etiqueta ou a caixa, com boa luz e sem reflexo.' : e.code === 'ocr_falhou' || e.code === 'ocr_lento' ? 'Neste aparelho a foto não pode ser lida automaticamente.' : e.code === 'sem_claude' ? (window.claude && window.claude.use ? 'A IA não está liberada aqui dentro do Claude (toque em “Permitir” quando o Claude pedir). No aplicativo da empresa (pelo ícone ou pelo endereço do site) ela funciona pela ponte.' : 'A IA não está disponível neste aparelho: ele não está ligado à nuvem da empresa (modo de teste ou sem entrar com a conta da empresa). Entre com a conta da empresa e tente de novo.') : 'Não consegui ler a foto. Tente mais de perto, com boa luz e a etiqueta inteira.';
 
 /* plano B: a pessoa digita o que lê na caixa e o Claude organiza o cadastro (só texto) */
 const pDescHTML = () => `<div class="p-desc"><input id="p-desc-in" placeholder="Ex.: Mini teclado sem fio RGB i8 com touchpad" autocomplete="off"><button type="button" class="btn sm primary" data-act="p-desc-ok">Preencher</button></div>`;
@@ -17793,7 +17804,7 @@ Object.assign(ACT, {
   'ini-cadeado': 'Mostra com cadeado as telas que o funcionário não pode usar (em vez de esconder).',
   'ini-editar': 'Personaliza a página inicial: atalhos, cartões de resumo e painéis.',
   'ini-mov': 'Sobe ou desce este item na ordem da página inicial.',
-  'ini-ord-pad': 'Volta para a ordem alfabética; os itens escolhidos continuam.',
+  'ini-ord-pad': 'Volta para a ordem padrão: Agenda, Na bancada e OS em aberto primeiro; valores no fim.',
   'ini-padrao': 'Volta toda a página inicial para o padrão: tudo marcado e em ordem alfabética.',
   'ini-prev': 'Mostra como a página inicial vai ficar antes de salvar.',
   'ini-salvar': 'Salva a página inicial personalizada.',
@@ -19139,7 +19150,8 @@ IA_PONTE.buscar = async function (pedido, o = {}) {
   return { ...out, _fontes: fontes };
 };
 async function iaSample() {
-  if (window.claude && window.claude.use) { try { return await window.claude.use('sample'); } catch { return null; } }
+  /* v17: dentro do Claude, se a IA do Claude não estiver liberada, usa a ponte da empresa (quando houver) */
+  if (window.claude && window.claude.use) { try { const s = await window.claude.use('sample'); if (s) return s; } catch { } }
   return EMP_CFG ? IA_PONTE : null;
 }
 
