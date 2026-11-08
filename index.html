@@ -2114,7 +2114,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 401;
+const APP_VER = 17, APP_BUILD = 402;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -14467,20 +14467,28 @@ setTimeout(() => { try { ACT_PERM['parc-val-imp'] = ''; AJUDA['parc-val-imp'] = 
 const usbOk = () => { try { if (!navigator.usb) return false; const fp = document.permissionsPolicy || document.featurePolicy; if (fp && fp.allowsFeature && !fp.allowsFeature('usb')) return false; return true; } catch { return false; } };
 let USB = { dev: null };
 try { if (navigator.usb) navigator.usb.addEventListener('disconnect', e => { if (USB.dev && e.device === USB.dev) USB = { dev: null }; }); } catch { }
-function usbSaida(dev) { let best = null; /* prefere a interface de impressora (classe 7); depois dados de porta serial (10); depois qualquer uma com saída */
-  for (const itf of dev.configuration.interfaces) for (const alt of itf.alternates) { const out = alt.endpoints.find(e => e.direction === 'out' && e.type === 'bulk'); if (!out) continue; const sc = alt.interfaceClass === 7 ? 0 : alt.interfaceClass === 10 ? 1 : 2; if (!best || sc < best.sc) best = { itf: itf.interfaceNumber, alt: alt.alternateSetting, ep: out.endpointNumber, sc }; }
-  return best; }
+function usbSaidas(dev) { const L = []; /* prefere a interface de impressora (classe 7); depois dados de porta serial (10); depois qualquer uma com saída */
+  for (const itf of dev.configuration.interfaces) for (const alt of itf.alternates) { const out = alt.endpoints.find(e => e.direction === 'out' && e.type === 'bulk'); if (!out) continue; L.push({ itf: itf.interfaceNumber, alt: alt.alternateSetting, ep: out.endpointNumber, sc: alt.interfaceClass === 7 ? 0 : alt.interfaceClass === 10 ? 1 : 2, cls: alt.interfaceClass }); }
+  return L.sort((a, b) => a.sc - b.sc); }
+const usbSaida = dev => usbSaidas(dev)[0] || null;
+let USB_DET = '';
 async function usbAbrir(imp, escolher) {
   if (!usbOk()) throw Object.assign(new Error('sem-usb'), { code: 'sem-usb' });
   const igual = d => d && imp && d.vendorId === imp.vendorId && d.productId === imp.productId && (!imp.serie || !d.serialNumber || d.serialNumber === imp.serie);
   let dev = !escolher && USB.dev && igual(USB.dev) && USB.dev.opened ? USB.dev : null;
   if (!dev && !escolher && imp) { try { const L = await navigator.usb.getDevices(); dev = L.find(igual) || L.find(d => d.vendorId === imp.vendorId && d.productId === imp.productId) || null; } catch { } }
   if (!dev) dev = await navigator.usb.requestDevice({ filters: !escolher && imp && imp.vendorId ? [{ vendorId: imp.vendorId, productId: imp.productId }] : [] });
-  if (!dev.opened) await dev.open();
-  if (!dev.configuration) await dev.selectConfiguration(1);
-  const b = usbSaida(dev); if (!b) throw Object.assign(new Error('sem-saida'), { code: 'sem-canal' });
-  const itf = dev.configuration.interfaces.find(i => i.interfaceNumber === b.itf);
-  if (!itf.claimed) await dev.claimInterface(b.itf);
+  USB_DET = `${dev.manufacturerName || ''} ${dev.productName || ''} (${dev.vendorId.toString(16).padStart(4, '0')}:${dev.productId.toString(16).padStart(4, '0')})`.trim();
+  try { if (!dev.opened) await dev.open(); } catch (e) { e.etapa = 'abrir'; throw e; }
+  try { if (!dev.configuration) await dev.selectConfiguration(1); } catch (e) { e.etapa = 'configurar'; throw e; }
+  const S0 = usbSaidas(dev); if (!S0.length) throw Object.assign(new Error('a impressora não mostrou saída de dados no USB'), { code: 'sem-canal', etapa: 'saida' });
+  USB_DET += ' · interfaces: ' + dev.configuration.interfaces.map(i => i.interfaceNumber + '/classe ' + i.alternates[0].interfaceClass).join(', ');
+  let b = null, ult = null;
+  for (let volta = 0; volta < 2 && !b; volta++) {
+    for (const c of S0) { const itf = dev.configuration.interfaces.find(i => i.interfaceNumber === c.itf); try { if (!itf.claimed) await dev.claimInterface(c.itf); b = c; break; } catch (e) { ult = e; } }
+    if (!b && volta === 0) { try { await dev.reset(); } catch { } try { if (!dev.opened) await dev.open(); if (!dev.configuration) await dev.selectConfiguration(1); } catch { } } /* reinicia a ligação e tenta de novo */
+  }
+  if (!b) { const e = ult || new Error('não consegui tomar a interface'); e.etapa = 'tomar'; throw e; }
   if (b.alt) { try { await dev.selectAlternateInterface(b.itf, b.alt); } catch { } }
   if (b.sc === 1) { try { const com = dev.configuration.interfaces.find(i => i.alternates.some(a => a.interfaceClass === 2)); if (com) await dev.controlTransferOut({ requestType: 'class', recipient: 'interface', request: 0x22, value: 0x03, index: com.interfaceNumber }); } catch { } } /* porta serial USB: liga DTR/RTS */
   USB = { dev, ep: b.ep }; return USB;
@@ -14499,7 +14507,11 @@ BT_VIAS.push(['usb', 'Cabo USB (OTG)']);
   openModal('Impressora USB', e && e.code === 'sem-usb' ? `<p><b>Este navegador não libera o USB.</b></p><p>Use o <b>Google Chrome</b> no celular Android (ou Chrome/Edge no computador). Dentro do Claude o acesso pode estar bloqueado: abra o aplicativo pelo ícone instalado ou pelo endereço do Bancada no Chrome.</p>`
     : neg ? `<p><b>O aparelho não deixou usar a impressora pelo USB.</b></p><ul style="padding-left:18px;line-height:1.6"><li>No <b>celular</b>: desligue e ligue o cabo OTG, e quando o Android perguntar, toque em <b>Permitir</b>. Feche outros aplicativos de impressão que possam estar usando a impressora.</li><li>No <b>computador Windows</b>: a impressora com driver instalado fica presa ao Windows. Use o botão <b>Imprimir</b> normal (Ctrl + P), ou remova o driver para usar pelo USB direto.</li></ul>`
     : `<p><b>Não consegui imprimir pelo USB.</b></p><ul style="padding-left:18px;line-height:1.6"><li>Confira se a impressora está <b>ligada</b>, com papel e com a tampa fechada.</li><li>Use um <b>adaptador OTG</b> (USB-C ou micro-USB para USB fêmea) e o cabo USB da impressora.</li><li>Tire e coloque o cabo de novo e toque em <b>Testar</b>.</li><li>Se sair texto estranho, troque em Impressoras: <b>Formato da imagem → Compatível (ESC *)</b> ou <b>Modo → Texto</b>. Na Bematech, a impressora precisa estar no modo <b>ESC/POS</b> (configurável no utilitário da Bematech).</li></ul>`,
-    `<button type="button" class="btn" data-act="close">Fechar</button>`); }; }
+    `<button type="button" class="btn" data-act="close">Fechar</button><button type="button" class="btn primary" data-act="usb-denovo">Tentar de novo</button>`);
+  try { const b = $('#modals').lastElementChild.querySelector('.sheet-b'); const et = { abrir: 'abrir a impressora', configurar: 'configurar a ligação', saida: 'achar a saída de dados', tomar: 'tomar a porta da impressora (outro serviço pode estar usando)' }[e && e.etapa] || 'enviar';
+    b.insertAdjacentHTML('beforeend', `<p class="muted" style="font-size:.8rem;margin-top:10px;overflow-wrap:anywhere">Detalhe para o suporte: falhou ao ${esc(et)} · ${esc((e && e.name) || 'Erro')}: ${esc((e && e.message) || '')}${USB_DET ? ' · ' + esc(USB_DET) : ''}</p><p style="font-size:.9rem"><b>Outro aplicativo pode estar segurando a impressora.</b> Se o <b>RawBT</b> estiver instalado, desinstale (o Bancada não precisa dele) ou vá em Configurações → Apps → RawBT → <b>Forçar parada</b> e <b>Abrir por padrão → Limpar padrões</b>. Ao conectar o cabo, se o Android oferecer abrir outro aplicativo, toque em <b>Cancelar</b>. Depois tire e coloque o cabo e toque em <b>Tentar de novo</b>.</p>`); } catch { } }; }
+ACT['usb-denovo'] = () => { closeModal(); const L = btImps(), x = L.find(i => i.via === 'usb'); if (x) btTeste(x.id); else usbCadastrar(); };
+setTimeout(() => { try { ACT_PERM['usb-denovo'] = ''; } catch { } }, 0);
 async function usbCadastrar() {
   let dev;
   try { dev = (await usbAbrir(null, true)).dev; } catch (e) { if (e) e.usb = true; if (e && e.name === 'NotFoundError') { toast('Nenhuma impressora escolhida. Ligue o cabo OTG, ligue a impressora e tente de novo.', 7000); return; } btErroConexao(e); return; }
