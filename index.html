@@ -3,6 +3,8 @@
 .sheet.xl .irow.pc>.ir-pc-w{grid-column:1/-1!important;display:flex;align-items:center;gap:8px}.sheet.xl .irow.pc>.ir-pc-w .ir-pc-l{display:block}
 .orc-steps{display:flex;flex-wrap:wrap;width:100%;margin:2px 0 4px}.card .acts .orc-steps{order:-1}
 .net-pill{position:fixed;top:calc(env(safe-area-inset-top,0px) + 62px);left:10px;z-index:900;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:600 .82rem/1.25 var(--f-body,system-ui);box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 20px);text-align:left;white-space:normal}.net-off{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}.net-fraca{background:var(--amber-soft);color:var(--amber)}.net-ok{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.ir-cp{grid-column:1/-1;font-size:.78rem;margin:-2px 0 2px}.ir-cp-tot{color:var(--muted)}
+.ir-cpw{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ir-cpw .ir-cpi{width:110px;flex:0 0 110px}.ir-cpw small{flex:1 1 auto}
 </style></head><body>
 <script>/* b399: tema já no primeiro instante (sem clarão branco) */try{var tc=localStorage.getItem('bancada-tema-cedo');if(tc)document.documentElement.setAttribute('data-theme',tc);}catch(e){}</script>
 <div id="boot-tela" role="status" aria-live="polite"><div class="bt-c"><div class="bt-logo" aria-hidden="true"><svg viewBox="0 0 64 64" width="56" height="56"><rect width="64" height="64" rx="14" fill="#0C7356"/><rect x="14" y="14" width="36" height="24" rx="3" fill="none" stroke="#fff" stroke-width="4"/><path d="M10 46h44M24 38v8M40 38v8" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div><b id="boot-t">Abrindo o Bancada…</b><small id="boot-m">Só um instante.</small><div class="bt-bar"><i></i></div><button type="button" id="boot-r" hidden onclick="location.reload()">Tentar de novo</button></div></div>
@@ -2110,7 +2112,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 399;
+const APP_VER = 17, APP_BUILD = 400;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -2170,12 +2172,16 @@ setInterval(() => {
   VER_LEMBRAR = 0; avisoVersao();
 }, 20000);
 /* versão do GitHub: confere se o arquivo publicado é mais novo — ao abrir já recarrega na versão nova; aberto, avisa */
+let VER_IDX_T = 0;
 async function verChecar(inicio) {
   if (window.claude && window.claude.use) return;
   if (!/^https?:$/.test(location.protocol)) return;
   try {
-    const r = await fetch(location.pathname + '?vchk=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return;
-    const t = await r.text(), m = /const APP_VER = (\d+), APP_BUILD = (\d+);/.exec(t); if (!m) return; const v = +m[2];
+    /* b400: confere primeiro o arquivinho versao.json (poucos bytes) a cada minuto; o aplicativo inteiro (3 MB) só se ele não existir, e no máximo de 5 em 5 minutos */
+    let v = 0; try { const rj = await fetch('versao.json?vchk=' + Date.now(), { cache: 'no-store' }); if (rj.ok) v = +((await rj.json()) || {}).build || 0; } catch { }
+    if (!v) { if (!inicio && Date.now() - VER_IDX_T < 5 * 60e3) return; VER_IDX_T = Date.now();
+      const r = await fetch(location.pathname + '?vchk=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return;
+      const t = await r.text(), m = /const APP_VER = (\d+), APP_BUILD = (\d+);/.exec(t); if (!m) return; v = +m[2]; }
     if (v <= APP_BUILD) return;
     let ja = 0; try { ja = +(sessionStorage.getItem('bancada-build-rec') || 0); } catch { }
     if (inicio && ja < v) { VER_NOVA = v; verRecarregar(); return; }
@@ -2190,7 +2196,7 @@ setTimeout(() => { try { sessionStorage.removeItem('bancada-ver-rec'); } catch {
 setTimeout(() => { try { ACT_PERM['ver-forcar'] = ''; AJUDA['ver-forcar'] = 'Troca a cópia guardada do site pela versão nova e reinicia o aplicativo.'; } catch { } }, 0);
 setTimeout(() => { ACT['ver-forcar'] = async () => { await verRenovarCache(); const u = new URL(location.href); u.searchParams.set('_v', Date.now() + ''); location.replace(u.toString()); }; }, 0);
 setTimeout(() => verChecar(true), 300);
-setInterval(() => verChecar(false), 5 * 60e3);
+setInterval(() => { if (!document.hidden) verChecar(false); }, 60e3); /* b400: a cada minuto (era 5) — o aviso de versão nova chega logo */
 document.addEventListener('visibilitychange', () => { if (!document.hidden) verChecar(false); });
 /* v360: fora do Claude (endereço da empresa) também dá para exportar: no computador abre "Salvar como" (escolhe pasta e nome);
    no celular ou em navegador sem essa janela, o arquivo vai para Downloads */
@@ -4069,7 +4075,7 @@ function docFile(title, inner) {
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Figtree:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap"><style>${DOC_CSS}body{background:#e8ebea;margin:0;padding:24px 12px;font-family:Arial,sans-serif}.tip{max-width:800px;margin:0 auto 12px;background:#fff8e0;border:1px solid #e8d48a;padding:8px 12px;border-radius:6px;font-size:13px}@media print{body{background:#fff;padding:0}.tip{display:none}.doc{box-shadow:none;max-width:none;padding:0}}@page{size:A4;margin:14mm}</style></head><body><p class="tip">Para imprimir ou salvar em PDF, abra o menu do navegador e escolha Imprimir (Ctrl+P).</p>${inner}</body></html>`;
 }
 function showDoc(kind, x) {
-  if (kind !== 'envparc' && typeof tercDe === 'function' && tercDe(x) && TERC_CLI.has(x.id)) { const v = tercVista(kind, x); if (!v) return; x = v; TERC_DOC_CLI = true; setTimeout(() => { TERC_DOC_CLI = false; }, 0); }
+  if (kind !== 'envparc' && kind !== 'parcval' && typeof tercDe === 'function' && tercDe(x) && TERC_CLI.has(x.id)) { const v = tercVista(kind, x); if (!v) return; x = v; TERC_DOC_CLI = true; setTimeout(() => { TERC_DOC_CLI = false; }, 0); }
   let title, html, txt = '', fname, tel = '';
   const c = cliente(x.clienteId); tel = cliTelWa(c); const TD = tercDest(x); if (TD) tel = TD.tel; /* b396: serviço de empresa parceira vai para a parceira */
   if (kind === 'orc') { title = `Orçamento ${pad(x.numero)}`; html = docOrc(x); txt = txtOrc(x); fname = `Orcamento-${pad(x.numero)}.html`; }
@@ -4084,9 +4090,10 @@ function showDoc(kind, x) {
   if (kind === 'recibo') { title = `Recibo aluguel ${pad(x.numero)}`; html = docRecibo(x); fname = `Recibo-aluguel-${pad(x.numero)}.html`; txt = (() => { const PQ = alugParcRec(x); return `*Recibo — aluguel nº ${pad(x.numero)}*\nRecebemos ${brl(alugPago(x))} (${extenso(alugPago(x))})${PQ && PQ.ini ? `, referente ${PQ.ini === PQ.fim ? 'à parcela ' + PQ.ini : 'às parcelas ' + PQ.ini + ' a ' + PQ.fim} de ${PQ.N}` : ''}. Obrigado!`; })(); }
   if (kind === 'entrada') { title = `OS ${pad(x.numero)} — entrada`; html = docEntrada(x); fname = `OS-${pad(x.numero)}-entrada.html`; txt = msgDocEntrada(x); }
   if (kind === 'laudo') { title = `Laudo técnico — OS ${pad(x.numero)}`; html = docLaudo(x); fname = `Laudo-tecnico-OS-${pad(x.numero)}.html`; txt = msgDocLaudo(x); }
+  if (kind === 'parcval') { title = `Valores cobrados — ${x.nome}`; html = docParcVal(x); fname = `Valores-${String(x.nome).replace(/[^\w]+/g, '-')}.html`; txt = ''; tel = ''; }
   if (kind === 'envparc') { const ee = envDe(x) || {}; title = `Envio para conserto — OS ${pad(x.numero)}`; html = docEnvParc(x); fname = `Envio-parceira-OS-${pad(x.numero)}.html`; txt = txtEnvParc(x); tel = parcTel(ee.id); }
   if (MSG_TIPOS[kind] && kind !== 'assinatura') { try { const t2 = msgTexto(kind, x); if (t2) txt = t2; } catch { } }
-  if (tercDe(x) && kind !== 'envparc') { html = tercNoDoc(html, tercBoxDoc(x)); if (TD && txt) txt = tercTxt(x, txt); }
+  if (tercDe(x) && kind !== 'envparc' && kind !== 'parcval') { html = tercNoDoc(html, tercBoxDoc(x)); if (TD && txt) txt = tercTxt(x, txt); }
   html = quebraLongas(html);
   const D = M.doc = { title, html, txt, fname, tok: Date.now(), kind, ref: x, tel };
   M.job = { tipo: 'doc', title, html };
@@ -6028,7 +6035,7 @@ const FORMS = {
     if (await save('config', 'empresa', d)) { closeModal(); toast('Dados da empresa salvos.'); }
   },
   async orcamento(f, d) {
-    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
+    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}), ...(num(i.custoParc) ? { custoParc: r2(num(i.custoParc)) } : {}) }));
     if (!d.clienteId) { toast('Selecione o cliente do orçamento.'); return; }
     if (!itens.length) { toast('Adicione pelo menos um item.'); return; }
     const id = f.dataset.id || uid(), old = get('orcamentos', id) || {};
@@ -6037,7 +6044,7 @@ const FORMS = {
     if (await save('orcamentos', id, o)) { closeModal(); toast(`Orçamento ${pad(o.numero)} salvo.`); if (!f.dataset.id) showDoc('orc', { ...o, id }); }
   },
   async aluguel(f, d) {
-    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), serie: i.serie || '', qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
+    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), serie: i.serie || '', qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}), ...(num(i.custoParc) ? { custoParc: r2(num(i.custoParc)) } : {}) }));
     if (!d.clienteId) { toast('Selecione o cliente (locatário).'); return; }
     if (!itens.length) { toast('Adicione pelo menos um equipamento.'); return; }
     { const z = itens.find(i => !(num(i.preco) > 0)); if (z) { toast(`Informe o valor por ${perNome[M.periodo][0]} de “${z.nome}”: está R$ 0,00.`); const k = M.itens.findIndex(i => i.nome.trim() === z.nome), el = $('#ir-v-' + k); if (el) { el.focus(); el.select && el.select(); } return; } }
@@ -6048,7 +6055,7 @@ const FORMS = {
     const porProd = {}; itens.forEach(it => { if (it.produtoId) porProd[it.produtoId] = (porProd[it.produtoId] || 0) + it.qtd; });
     for (const [pid, q] of Object.entries(porProd)) { const p = get('produtos', pid); if (!p) continue; const livres = totalEquip(p) - ocupadasMax(pid, d.inicio, d.fim, id); if (q > livres) { toast(`${p.nome}: só ${Math.max(0, livres)} unidade(s) livre(s) de ${dBR(d.inicio)} a ${dBR(d.fim)}. Veja a disponibilidade no formulário.`); return; } }
     const old = get('alugueis', id) || {};
-    const vendas = (M.vendas || []).filter(i => String(i.nome || '').trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
+    const vendas = (M.vendas || []).filter(i => String(i.nome || '').trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}), ...(num(i.custoParc) ? { custoParc: r2(num(i.custoParc)) } : {}) }));
     const n = periodos(M.periodo, d.inicio, d.fim), bruto = r2(sum(itens, i => i.qtd * i.preco) * n), desconto = num(d.desconto);
     const a = { ...old, numero: old.numero || nextNum('alugueis'), at: old.at || Date.now(), clienteId: d.clienteId, inicio: d.inicio, fim: d.fim, periodo: M.periodo, itens, desconto, caucao: num(d.caucao), total: r2(Math.max(0, bruto - desconto)), formaPagamento: d.formaPagamento, valorObs: (d.valorObs || '').trim(), obsGeral: (d.obsGeral || '').trim(), local: d.local, obs: d.obs, status: ag ? 'agendado' : (old.status && old.status !== 'agendado' ? old.status : 'ativo'), pagamentos: old.pagamentos || [], por: old.por || OPID(), vendas: old.vendaId && get('vendas', old.vendaId) ? (old.vendas || []) : vendas, vendaModo: old.vendaId && get('vendas', old.vendaId) ? 'fora' : (d.vendaModo === 'dentro' ? 'dentro' : 'fora') };
     Object.assign(a, { vendaModo: 'fora', totalVenda: 0, vendaBaixa: [], saldoVenc: d.saldoVenc || a.inicio, vendaMostrar: d.vendaMostrar || 'itens', vendaVenc: d.vendaVenc || old.vendaVenc || a.inicio, vendaForma: d.vendaForma ?? old.vendaForma ?? '' });
@@ -6498,7 +6505,7 @@ Object.assign(FORMS, {
   async laudo(f, d) {
     if (!d.diagnostico.trim()) { toast('Escreva o diagnóstico.'); return; }
     const o = get('os', f.dataset.id); if (!o) return;
-    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
+    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}), ...(num(i.custoParc) ? { custoParc: r2(num(i.custoParc)) } : {}) }));
     const subtotal = r2(sum(itens, i => i.qtd * i.preco)), desconto = descCalc(subtotal, d.descontoIn, d.descTipo), frete = num(d.frete), acrescimo = num(d.acrescimo), now = Date.now();
     const laudo = { diagnostico: d.diagnostico.trim(), causa: d.causa, solucao: d.solucao, conclusao: d.conclusao, tecnico: d.tecnico, garantia: d.garantia, obs: d.obs, interno: (d.interno || '').trim(), obsFim: (d.obsFim || '').trim(), testes: M.testes.filter(t => t.nome.trim() && (t.on || t.res || String(t.obs || '').trim())).map(({ on, novo, padrao, ...t }) => t), at: (o.laudo && o.laudo.at) || now, atualizado: now, por: (o.laudo && o.laudo.por) || S.me };
     let status = o.status, hist = [...(o.historico || [])];
@@ -14258,7 +14265,12 @@ function docEnvParc(o) {
 }
 const txtEnvParc = o => { const e = envDe(o) || {}, E = S.empresa; return `Olá, ${parcNome(e.id) || 'parceiro'}! Aqui é da *${E.fantasia || 'nossa empresa'}*.\nEstamos enviando para conserto: *${osEquip(o)}*${o.serie ? ` (nº de série ${o.serie})` : ''}.\n*Nossa OS nº ${pad(o.numero)}*${e.os ? ` · sua OS nº ${e.os}` : ''}\nDefeito: ${o.defeito || '—'}${o.acessorios ? `\nAcessórios: ${o.acessorios}` : ''}${e.prev ? `\nPrevisão de volta combinada: ${dBR(e.prev)}` : ''}${num(e.custo) ? `\nValor combinado: ${brl(e.custo)}` : ''}\nPor favor, fale com a gente sempre citando a nossa OS nº ${pad(o.numero)}.`; };
 const _tercOB = osBody;
-osBody = function (o) { const h = _tercOB.apply(this, arguments); const e = envDe(o); if (!e) return h; return `<p class="banner info" style="font-size:.88rem;margin:0 0 8px"><span class="grow">📤 Enviado para <b>${esc(parcNome(e.id))}</b>${e.os ? ` (OS deles nº ${esc(e.os)})` : ''}${e.data ? ` em ${dBR(e.data)}` : ''}${e.volta ? ` · voltou em ${dBR(e.volta)}` : e.prev ? ` · volta prevista ${dBR(e.prev)}` : ''}. O que vai para a parceira leva só o equipamento e o nº da nossa OS, sem dados do cliente.</span><button type="button" class="btn sm" data-act="env-guia" data-id="${o.id}" title="Guia de envio para a parceira: equipamento, defeito, checklist e o nº da nossa OS. Não leva nome, telefone nem e-mail do cliente.">📄 Guia de envio</button></p>` + h; };
+osBody = function (o) { const h = _tercOB.apply(this, arguments); const e = envDe(o); if (!e) return h; return `<p class="banner info" style="font-size:.88rem;margin:0 0 8px"><span class="grow">📤 Enviado para <b>${esc(parcNome(e.id))}</b>${e.os ? ` (OS deles nº ${esc(e.os)})` : ''}${e.data ? ` em ${dBR(e.data)}` : ''}${e.volta ? ` · voltou em ${dBR(e.volta)}` : e.prev ? ` · volta prevista ${dBR(e.prev)}` : ''}. O que vai para a parceira leva só o equipamento e o nº da nossa OS, sem dados do cliente.</span>${o.status !== 'entregue' && !e.volta && lpPermitido(e.id) ? `<button type="button" class="btn sm" data-act="env-lp" data-id="${o.id}" title="Link para a parceira preencher o laudo (diagnóstico, peças e serviços com os valores dela, prazo), sem dados do cliente">🔗 ${e.lp ? 'Reenviar link do laudo' : 'Link do laudo para a parceira'}</button>` : ''}<button type="button" class="btn sm" data-act="env-guia" data-id="${o.id}" title="Guia de envio para a parceira: equipamento, defeito, checklist e o nº da nossa OS. Não leva nome, telefone nem e-mail do cliente.">📄 Guia de envio</button></p>` + lpBloco(o, e) + h; };
+function lpBloco(o, e) { const L = e.laudoParc; if (!L) return e.lp && lpPermitido(e.id) ? `<p class="muted" style="font-size:.82rem;margin:-4px 0 8px">🔗 Link do laudo enviado em ${dBR(new Date(e.lp.at).toISOString().slice(0, 10))} · aguardando a parceira preencher. <button type="button" class="lnk" data-act="env-lp-ver" data-id="${o.id}">Ver o link</button> · <button type="button" class="lnk" data-act="lp-conferir">Conferir agora</button></p>` : '';
+  const tot = r2(sum(L.itens || [], i => num(i.qtd || 1) * num(i.valor)));
+  return `<section class="panel lp-box" style="margin-bottom:10px"><div class="panel-head"><h3 style="margin:0">🔧 Laudo da parceira ${esc(parcNome(e.id))}</h3><button type="button" class="btn sm primary" data-act="env-lp-usar" data-id="${o.id}" title="Leva diagnóstico, solução e itens (com o custo da parceira) para o seu laudo; você preenche o seu valor para o cliente final">Usar no meu laudo</button></div>
+    <div class="kv" style="font-size:.9rem">${L.diagnostico ? `<div><span class="k">Diagnóstico</span><span class="v">${esc(L.diagnostico)}</span></div>` : ''}${L.solucao ? `<div><span class="k">Solução</span><span class="v">${esc(L.solucao)}</span></div>` : ''}<div><span class="k">Conclusão</span><span class="v"><b>${esc(LP_CONC[L.conclusao] || '—')}</b></span></div>${L.prazo ? `<div><span class="k">Pronto até</span><span class="v">${dBR(L.prazo)}</span></div>` : ''}${L.obs ? `<div><span class="k">Observações</span><span class="v">${esc(L.obs)}</span></div>` : ''}${L.por ? `<div><span class="k">Preenchido por</span><span class="v">${esc(L.por)} · ${new Date(L.em).toLocaleString('pt-BR')}</span></div>` : ''}</div>
+    ${(L.itens || []).length ? `<div class="list" style="margin-top:6px">${L.itens.map(i => `<div class="row" style="padding:4px 0"><span class="grow" style="min-width:0">${esc(i.nome)}</span><span class="mono" style="white-space:nowrap">${num(i.qtd) || 1} × ${brl(i.valor)}</span></div>`).join('')}<div class="row" style="padding:4px 0;font-weight:700"><span class="grow">Custo na parceira</span><span class="mono">${brl(tot)}</span></div></div>` : ''}</section>`; }
 ACT['env-guia'] = el => { const o = get('os', el.dataset.id); if (o && envDe(o)) showDoc('envparc', o); };
 setTimeout(() => { try { ACT_PERM['env-guia'] = 'os'; AJUDA['env-guia'] = 'Abre a guia de envio para a empresa parceira (imprimir ou WhatsApp para ela): equipamento, defeito, checklist e o nº da nossa OS, sem nenhum dado do cliente.'; } catch { } }, 0);
 
@@ -14332,6 +14344,123 @@ setInterval(() => { try { if (netQtd() && navigator.onLine !== false) netEsperar
 /* se o aparelho não conseguir guardar a cópia (ex.: aberto em duas abas), avisa antes de fechar com algo pendente */
 addEventListener('beforeunload', e => { if (window.FS_SEM_PERSIST && netQtd()) { e.preventDefault(); e.returnValue = ''; } });
 
+/* b400 REGRA: trocar de ABA dentro de uma janela (ex.: Recebidos ⇄ Enviados) troca o conteúdo da MESMA janela — não abre outra por cima a cada toque.
+   Vale para qualquer fileira de abas (.seg, .tabs, role=tablist) da janela que está na frente. */
+let ABA_TROCA = 0, ABA_OV = null;
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.seg [data-act], .tabs [data-act], [role=tablist] [data-act], [role=tab][data-act]'); const ov = b && b.closest('#modals > .ov'); if (ov && ov === $('#modals').lastElementChild) { ABA_TROCA = Date.now(); ABA_OV = ov; } else ABA_OV = null; }, true);
+{ const _abaOM = openModal; openModal = function () { const v = ABA_OV; ABA_OV = null; if (v && Date.now() - ABA_TROCA < 400 && v.isConnected && v === $('#modals').lastElementChild) v.remove(); return _abaOM.apply(this, arguments); }; }
+/* b400: LAUDO PELA EMPRESA PARCEIRA (equipamento ENVIADO para conserto): link para quem conserta preencher diagnóstico, solução, peças/serviços com os valores dela e o prazo.
+   A página da parceira mostra só o equipamento e o nº da nossa OS — nada do cliente. O laudo dela chega na OS; “Usar no meu laudo” leva tudo para o laudo,
+   com o custo da parceira em cada item, e a empresa preenche o SEU valor para o cliente final. Precisa da ponte 7.6. */
+async function lpCriar(o) {
+  const e = envDe(o); if (!e) return null;
+  const H = parcHist(e.id), ult = n => { const L = H.get(norm(n || '').trim()); return L && L[0] ? L[0].valor : 0; }; /* link novo a cada envio: leva os itens atuais e os últimos valores */
+  if (typeof agDisponivel !== 'function' || !agDisponivel()) { toast('Para criar o link, ligue a ponte da empresa (Configurações → Integrações).', 7000); return null; }
+  try {
+    const idToken = await firebase.auth().currentUser.getIdToken();
+    const r = await fetchT(agPonte() + '/lp/criar?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken, ref: o.id, osNum: pad(o.numero), parcNome: parcNome(e.id), parcOs: e.os || '', empNome: S.empresa.fantasia || S.empresa.nome || '', empTel: S.empresa.whatsapp || S.empresa.telefone || '', dias: 60,
+      servicos: [...new Set((S.produtos || []).filter(p => p.tipo === 'servico' && !p.inativo && !p.exemplo).map(p => p.nome).filter(Boolean))].sort((x, y) => x.localeCompare(y)),
+      pre: (o.itens || []).filter(i => String(i.nome || '').trim()).map(i => { const u = ult(i.nome), v = num(i.custoParc) || u; return { nome: i.nome, qtd: num(i.qtd) || 1, valor: v, ult: !!u && Math.abs(v - u) < 0.005 }; }),
+      sug: Object.fromEntries([...H.values()].map(L => [L[0].nome, L[0].valor])), /* último valor que ESTA parceira cobrou de cada item */ /* só os NOMES dos serviços cadastrados; nunca os preços */
+      equip: { tipo: o.tipoEquip || '', marca: o.marca || '', modelo: o.modelo || '', serie: o.serie || '', defeito: o.defeito || '', acessorios: o.acessorios || '', diag: (o.laudo || {}).diagnostico || '' } }) }, 15000);
+    if (r.status === 404) { toast('A ponte da empresa ainda não tem o laudo da parceira. Instale a ponte 7.6 e tente de novo.', 9000); return null; }
+    const j = await r.json().catch(() => null); if (!r.ok || !j || !j.url) { toast('Não consegui criar o link agora. Tente de novo.'); return null; }
+    const lp = { id: j.id, url: j.url, at: Date.now() }, at = get('os', o.id); if (at) await save('os', o.id, { ...at, env: { ...at.env, lp } }); return lp;
+  } catch { toast('Sem conexão com a ponte agora. Tente de novo.'); return null; }
+}
+const lpTxt = (o, url) => { const e = envDe(o) || {}, E = S.empresa; return `Olá, ${parcNome(e.id) || 'parceiro'}! Aqui é da *${E.fantasia || 'nossa empresa'}*.\nPor favor, preencha o laudo do equipamento *${osEquip(o)}*${o.serie ? ` (série ${o.serie})` : ''} — *nossa OS nº ${pad(o.numero)}*${e.os ? ` · sua OS nº ${e.os}` : ''}:\n${url}\nInforme o diagnóstico, as peças e serviços com os seus valores e o prazo. Pode corrigir e enviar de novo pelo mesmo link. Obrigado!`; };
+ACT['env-lp'] = async el => { const o = get('os', el.dataset.id); if (!o) return; if (!lpPermitido((envDe(o) || {}).id)) { toast('Esta parceira está sem permissão para o link do laudo (cadastro da parceira → “Pode receber o link…”).', 8000); return; }
+  el.disabled = true; const lp = await lpCriar(o); el.disabled = false; if (!lp) return; try { refreshOsView(); } catch { } lpMensagem(o.id); };
+/* b400: antes de mandar, mostra a mensagem com o link clicável para ver a página como a parceira vai ver */
+function lpMensagem(id) { const o = get('os', id), e = o && envDe(o); if (!e || !e.lp) return; const txt = lpTxt(o, e.lp.url), tel = parcTel(e.id);
+  const corpo = esc(txt).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(esc(e.lp.url), `<a href="${esc(e.lp.url)}" target="_blank" rel="noopener" data-act="lp-ver" data-url="${esc(e.lp.url)}" style="overflow-wrap:anywhere">${esc(e.lp.url)}</a>`).replace(/\n/g, '<br>');
+  openModal('🔗 Link do laudo — ' + parcNome(e.id), `<p class="muted" style="margin:0 0 8px;font-size:.85rem">Mensagem que vai para <b>${esc(parcNome(e.id))}</b>${tel ? ` (${esc((get('fornecedores', e.id) || {}).whatsapp || (get('fornecedores', e.id) || {}).telefone || tel)})` : ' — <b>sem telefone no cadastro</b>: copie e mande por outro meio'}. Toque no link para ver a página exatamente como a parceira vai ver. Sem nenhum dado do cliente.</p>
+    <div class="box" style="background:var(--surface-2,rgba(127,127,127,.08));border-radius:12px;padding:12px;line-height:1.5;font-size:.95rem">${corpo}</div>
+    <div class="actions" style="justify-content:flex-start;margin-top:10px"><button type="button" class="btn" data-act="lp-ver" data-url="${esc(e.lp.url)}">👁 Ver como a parceira vê</button><button type="button" class="btn" data-act="env-lp-copiar" data-id="${o.id}">${ic('copy')}Copiar mensagem</button></div>`,
+    `<button type="button" class="btn" data-act="close">Fechar</button>${tel ? `<button type="button" class="btn primary" data-act="lp-wa" data-id="${o.id}">${ic('wa')}Enviar pelo WhatsApp</button>` : `<button type="button" class="btn primary" data-act="env-lp-copiar" data-id="${o.id}">${ic('copy')}Copiar mensagem</button>`}`); }
+ACT['lp-ver'] = el => abrirExterno(el.dataset.url);
+ACT['lp-wa'] = el => { const o = get('os', el.dataset.id), e = o && envDe(o); if (!e || !e.lp) return; abrirExterno(waUrl(parcTel(e.id), lpTxt(o, e.lp.url))); closeModal(); };
+ACT['env-lp-ver'] = el => lpMensagem(el.dataset.id);
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'lp-ver': 'os', 'lp-wa': 'os', 'env-lp-ver': 'os' }); Object.assign(AJUDA, { 'lp-ver': 'Abre a página do link exatamente como a parceira vai ver.', 'lp-wa': 'Manda a mensagem com o link pelo WhatsApp da parceira.', 'env-lp-ver': 'Mostra de novo a mensagem com o link do laudo, para ver ou reenviar.' }); } catch { } }, 0);
+ACT['env-lp-copiar'] = async el => { const o = get('os', el.dataset.id), e = o && envDe(o); if (!e || !e.lp) return; try { await navigator.clipboard.writeText(lpTxt(o, e.lp.url)); toastOk('Mensagem com o link copiada.'); } catch { toast(e.lp.url, 9000); } };
+/* busca os laudos preenchidos pelas parceiras */
+let LP_ULT = 0;
+async function lpConferir(manual) {
+  if (typeof agDisponivel !== 'function' || !agDisponivel() || !S.loaded) return;
+  const esperando = (S.os || []).some(o => o.env && o.env.lp && o.env.lp.at > Date.now() - 60 * 864e5 && !o.env.volta);
+  if (!esperando && !manual) return; LP_ULT = Date.now();
+  let j; try { const idToken = await firebase.auth().currentUser.getIdToken(); const r = await fetchT(agPonte() + '/lp/novas?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken }) }, 15000); j = await r.json().catch(() => null); if (!r.ok || !j) return; } catch { return; }
+  const lidas = [];
+  for (const a of j.laudos || []) { lidas.push(a.chave); const o = get('os', a.ref); if (!o || !o.env || !lpPermitido(o.env.id)) continue;
+    const L = a.laudo || {}, tot = r2(sum(L.itens || [], i => num(i.qtd || 1) * num(i.valor)));
+    await save('os', o.id, { ...o, env: { ...o.env, laudoParc: L, custo: tot || o.env.custo, ...(L.prazo ? { prev: L.prazo } : {}) }, historico: [...(o.historico || []), { st: o.status, at: Date.now(), por: OPID(), obs: `Laudo da parceira ${parcNome(o.env.id)} recebido${tot ? ' · ' + brl(tot) : ''}${L.prazo ? ' · pronto até ' + dBR(L.prazo) : ''}` }] });
+    toast(`🔧 ${parcNome(o.env.id)} mandou o laudo da OS ${pad(o.numero)}${tot ? ' · ' + brl(tot) : ''}. Abra a OS e toque em “Usar no meu laudo”.`, 10000); }
+  if (lidas.length) { try { const idToken = await firebase.auth().currentUser.getIdToken(); await fetchT(agPonte() + '/lp/lidas?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken, chaves: lidas }) }, 15000); } catch { } }
+  if (manual) toast(lidas.length ? `${lidas.length} laudo${lidas.length === 1 ? '' : 's'} de parceira recebido${lidas.length === 1 ? '' : 's'}.` : 'Nenhum laudo novo das parceiras.');
+}
+ACT['lp-conferir'] = () => lpConferir(true);
+setInterval(() => { try { if (document.visibilityState === 'visible' && Date.now() - LP_ULT > 3 * 60000 && pode('os')) lpConferir(false); } catch { } }, 60000);
+document.addEventListener('visibilitychange', () => { try { if (!document.hidden && Date.now() - LP_ULT > 60000 && pode('os')) lpConferir(false); } catch { } });
+/* leva o laudo da parceira para o meu laudo: diagnóstico/solução (se estiverem vazios) e os itens com o custo da parceira; o meu valor eu preencho */
+const LP_CONC = { viavel: 'Reparo viável', inviavel: 'Reparo inviável', semdefeito: 'Sem defeito encontrado', aguardando: 'Aguardando peça' };
+ACT['env-lp-usar'] = async el => { const o = get('os', el.dataset.id), L = o && o.env && o.env.laudoParc; if (!L) return; const meu = o.laudo || {};
+  const ja = new Set((o.itens || []).map(i => norm(i.nome || ''))), novos = (L.itens || []).filter(i => !ja.has(norm(i.nome))).map(i => { const p = (S.produtos || []).find(x => x.tipo !== 'aluguel' && norm(x.nome || '') === norm(i.nome)); return { nome: p ? p.nome : i.nome, ...(p ? { produtoId: p.id } : {}), qtd: num(i.qtd) || 1, preco: 0, custoParc: r2(num(i.valor)) }; }); /* escolhido da lista = ligado ao cadastro; escrito pela parceira = avulso (dá para cadastrar) */
+  const itens = (o.itens || []).map(i => { const p = (L.itens || []).find(z => norm(z.nome) === norm(i.nome || '')); return p ? { ...i, custoParc: r2(num(p.valor)) } : i; });
+  await save('os', o.id, { ...o, itens: [...itens, ...novos], laudo: { ...meu, diagnostico: meu.diagnostico || L.diagnostico || '', solucao: meu.solucao || L.solucao || '', ...(meu.conclusao ? {} : { conclusao: L.conclusao || 'viavel' }) } });
+  laudoForm(o.id); toast(`Itens da parceira no laudo: preencha o seu valor para o cliente final em cada um (o custo da parceira aparece embaixo).`, 9000); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'env-lp': 'os', 'env-lp-copiar': 'os', 'env-lp-usar': 'os', 'lp-conferir': 'os' }); Object.assign(AJUDA, {
+  'env-lp': 'Cria um link para a empresa parceira que vai consertar preencher o laudo (diagnóstico, peças e serviços com os valores dela e o prazo) e manda pelo WhatsApp dela. Ela não vê nada do cliente, só o equipamento e o nº da nossa OS.',
+  'env-lp-copiar': 'Copia a mensagem com o link do laudo para mandar à parceira por outro meio.', 'env-lp-usar': 'Leva o laudo da parceira para o seu laudo: diagnóstico, solução e os itens com o custo dela; você preenche o seu valor para o cliente final.', 'lp-conferir': 'Confere agora se alguma parceira mandou laudo.' }); } catch { } }, 0);
+/* no laudo: custo da parceira embaixo de cada item e a margem no total */
+{ const _lpIR = itemRows; itemRows = function () { const h = _lpIR.apply(this, arguments); if (!M || !M.itens || !M.itens.some(i => num(i.custoParc)) || (M.kind === 'os' && M.id && envDe(get('os', M.id) || {}))) return h; const t = document.createElement('template'); t.innerHTML = h;
+    t.content.querySelectorAll('.irow:not(.head)').forEach(r => { const v = r.querySelector('.ir-val'); if (!v) return; const it = M.itens[+v.dataset.i] || {}; if (!num(it.custoParc)) return; r.insertAdjacentHTML('beforeend', `<small class="muted ir-cp">🔧 Custo na parceira: ${brl(it.custoParc)} (unit.)</small>`); });
+    return t.innerHTML; }; }
+{ const _lpMT = mTotals; mTotals = function () { const r = _lpMT.apply(this, arguments); try { const el = $('#m-tot'); if (el && M && M.itens && M.itens.some(i => num(i.custoParc))) { const L = M.itens.filter(i => String(i.nome || '').trim()), c = r2(sum(L, i => num(i.qtd) * num(i.custoParc))), v = r2(sum(L, i => num(i.qtd) * num(i.preco)));
+  el.insertAdjacentHTML('beforeend', `<div class="l ir-cp-tot"><span>🔧 Custo na parceira</span><span class="mono">${brl(c)}</span></div><div class="l ir-cp-tot"><span>Sua margem</span><span class="mono">${brl(r2(v - c))}</span></div>`); } } catch { } return r; }; }
+
+/* b400: no cadastro da parceira — permitir ou não o link do laudo (padrão: permitido) */
+const lpPermitido = pid => ((get('fornecedores', pid) || {}).lpPermite || 'sim') !== 'nao';
+{ const _lpFF = fornForm; fornForm = function (id, ...r) { const out = _lpFF.call(this, id, ...r); setTimeout(() => { const f = document.querySelector('#modals .ov:last-child form[data-form="fornecedor"]'); if (!f || f.querySelector('[name="lpPermite"]')) return;
+  const x = (id && get('fornecedores', id)) || {}, fs = f.querySelector('.fn-pane[data-p="dados"] fieldset'); if (!fs) return;
+  const d = document.createElement('fieldset'); d.className = 'lp-perm'; d.innerHTML = `<legend>Empresa parceira: laudo pelo link</legend>${field('Pode receber o link para preencher o laudo dos equipamentos que enviamos?', `<select name="lpPermite"><option value="sim"${(x.lpPermite || 'sim') !== 'nao' ? ' selected' : ''}>Sim — pode preencher o laudo pelo link</option><option value="nao"${x.lpPermite === 'nao' ? ' selected' : ''}>Não — não mandar o link para esta parceira</option></select>`, '', 'O link mostra só o equipamento e o nº da nossa OS, nunca dados do cliente. Com “Não”, o botão do link some e laudos que ela mandar pelo link não entram.')}`;
+  fs.insertAdjacentElement('afterend', d);
+  const sinc = () => { d.hidden = !f.querySelector('input[name="tipos"][value="parceira"]:checked'); }; sinc(); f.addEventListener('change', e => { if (e.target && e.target.name === 'tipos') sinc(); }); }, 40); return out; }; }
+/* b400: HISTÓRICO DOS VALORES QUE CADA PARCEIRA COBRA (de cada serviço/peça): vem dos laudos que ela mandou pelo link e dos custos lançados nas OS enviadas a ela */
+function parcHist(pid) { const H = new Map(), add = (nome, valor, data, o) => { const k = norm(nome || '').trim(); if (!k || !(num(valor) > 0)) return; if (!H.has(k)) H.set(k, []); H.get(k).push({ nome, valor: r2(num(valor)), data, os: o.numero, osId: o.id }); };
+  for (const o of S.os || []) { const e = o.env; if (!e || e.id !== pid) continue; const L = e.laudoParc;
+    if (L && (L.itens || []).length) L.itens.forEach(i => add(i.nome, i.valor, L.em || Date.parse(e.data) || o.at, o));
+    else if (e.volta) (o.itens || []).forEach(i => add(i.nome, i.custoParc, Date.parse(e.volta) || o.at, o)); } /* sem laudo pelo link: só conta o custo lançado depois que o equipamento voltou */
+  for (const L of H.values()) L.sort((a, b) => (b.data || 0) - (a.data || 0)); return H; }
+const parcUltimo = (pid, nome) => { const L = parcHist(pid).get(norm(nome || '').trim()); return L && L[0] || null; };
+/* no laudo da OS enviada: último valor cobrado por esta parceira ao lado de cada item */
+{ const _phIR = itemRows; itemRows = function () { const h = _phIR.apply(this, arguments); try { const o = M && M.kind === 'os' && M.id && get('os', M.id), e = o && envDe(o); if (!e || !M.itens) return h; const H = parcHist(e.id);
+    /* OS enviada para parceira: o custo da parceira em cada item já vem com o ÚLTIMO VALOR que ela cobrou (dá para mudar) */
+    M.itens.forEach(it => { if (!String(it.nome || '').trim() || num(it.custoParc) || it.cpMexeu) return; const u = (H.get(norm(it.nome).trim()) || []).find(x => x.osId !== o.id); if (u) { it.custoParc = u.valor; it.cpUlt = true; } });
+    const t = document.createElement('template'); t.innerHTML = h;
+    t.content.querySelectorAll('.irow:not(.head)').forEach(r => { const v = r.querySelector('.ir-val'); if (!v) return; const i = +v.dataset.i, it = M.itens[i] || {}; if (!String(it.nome || '').trim()) return;
+      r.insertAdjacentHTML('beforeend', `<label class="ir-cp ir-cpw"><span>🔧 Custo na parceira (unit.)</span><input class="ir-cpi" data-i="${i}" data-money="1" inputmode="decimal" value="${num(it.custoParc) ? fmtNum(it.custoParc) : ''}" placeholder="0,00" aria-label="Custo na parceira"><small class="muted">${it.cpUlt ? 'último valor cobrado' : ''}</small></label>`); });
+    return t.innerHTML; } catch { return h; } }; }
+document.addEventListener('input', e => { const t = e.target; if (!t || !t.classList || !t.classList.contains('ir-cpi') || !M || !M.itens) return; const it = M.itens[+t.dataset.i]; if (!it) return; it.custoParc = String(t.value).trim() === '' ? 0 : num(t.value); it.cpUlt = false; it.cpMexeu = true; const s = t.parentElement.querySelector('small'); if (s && s.textContent) s.textContent = ''; mTotals(); });
+/* tela da parceira: aba “Valores cobrados” */
+function parcValoresHTML(pid) { const H = [...parcHist(pid).values()].sort((a, b) => a[0].nome.localeCompare(b[0].nome));
+  if (!H.length) return emptyBox('Sem valores ainda', 'Os valores aparecem quando a parceira manda o laudo pelo link ou quando você lança o custo dela no laudo de uma OS enviada.');
+  return `<div class="list">${H.map(L => `<div class="row" style="padding:8px 0;align-items:flex-start"><div class="grow" style="min-width:0"><b>${esc(L[0].nome)}</b><div class="muted" style="font-size:.82rem">Último: ${dBR(new Date(L[0].data).toISOString().slice(0, 10))} · OS ${pad(L[0].os)}${L.length > 1 ? ` · antes: ${L.slice(1, 4).map(x => `${brl(x.valor)} (${dBR(new Date(x.data).toISOString().slice(0, 10))})`).join(', ')}` : ''}</div></div><b class="mono" style="white-space:nowrap">${brl(L[0].valor)}</b></div>`).join('')}</div>`; }
+{ const _phPA = parcAbrir; parcAbrir = function (pid, v) { if (v !== 'val') { const r = _phPA.apply(this, arguments); parcAbaVal(pid, v); return r; }
+    _phPA.call(this, pid, 'rec'); const ov = document.querySelector('#modals .ov:last-child'); if (!ov) return; ov.querySelector('.sheet-h h2').textContent = '💲 Valores cobrados por ' + parcNome(pid);
+    const seg = ov.querySelector('.sheet-b .seg'); seg.querySelectorAll('button').forEach(b => b.classList.remove('on')); parcAbaVal(pid, v); const l = ov.querySelector('.sheet-b .list, .sheet-b .empty'); const d = document.createElement('div'); d.innerHTML = parcValoresHTML(pid); if (l) l.replaceWith(...d.childNodes); else seg.insertAdjacentElement('afterend', d); };
+  function parcAbaVal(pid, v) { const seg = document.querySelector('#modals .ov:last-child .sheet-b .seg'); if (!seg || seg.querySelector('[data-v="val"]')) return; seg.insertAdjacentHTML('beforeend', `<button type="button" class="${v === 'val' ? 'on' : ''}" data-act="parc-abrir" data-id="${esc(pid)}" data-v="val">Valores cobrados</button>`); } }
+/* b400: relatório “Valores cobrados” da parceira (imprimir/PDF) e aba no cadastro dela */
+function docParcVal(f) { const H = [...parcHist(f.id).values()].sort((a, b) => a[0].nome.localeCompare(b[0].nome)), E = S.empresa;
+  return `<div class="doc">${docHead('Valores cobrados pela parceira', esc(f.nome), 'Emitido em ' + dBR(today()), null)}
+    <p style="margin:8px 0">Último valor que <b>${esc(f.nome)}</b> cobrou de cada serviço ou peça, com os valores anteriores.</p>
+    ${H.length ? `<table class="it"><thead><tr><th>Serviço / peça</th><th class="r">Último valor</th><th>Quando · OS</th><th>Anteriores</th></tr></thead><tbody>${H.map(L => `<tr><td>${esc(L[0].nome)}</td><td class="r"><b>${brl(L[0].valor)}</b></td><td>${dBR(new Date(L[0].data).toISOString().slice(0, 10))} · ${pad(L[0].os)}</td><td>${L.slice(1, 5).map(x => brl(x.valor)).join(', ') || '—'}</td></tr>`).join('')}</tbody></table>` : '<p>Nenhum valor registrado ainda.</p>'}
+    <p class="cl" style="margin-top:14px">${cidadeData()}</p>${docFoot()}</div>`; }
+ACT['parc-val-imp'] = el => { const f = get('fornecedores', el.dataset.id); if (f) showDoc('parcval', f); };
+setTimeout(() => { try { ACT_PERM['parc-val-imp'] = ''; AJUDA['parc-val-imp'] = 'Imprime (ou salva em PDF) o relatório com o último valor que esta parceira cobrou de cada serviço.'; } catch { } }, 0);
+{ const _pvFF = fornForm; fornForm = function (id, ...r) { const out = _pvFF.call(this, id, ...r); setTimeout(() => { const f = document.querySelector('#modals .ov:last-child form[data-form="fornecedor"]'); const x = id && get('fornecedores', id); if (!f || !x || !fornTipos(x).includes('parceira') || f.querySelector('.fn-pane[data-p="valores"]')) return;
+  const tabs = f.querySelector('.fn-tabs'); if (tabs) tabs.insertAdjacentHTML('beforeend', `<button type="button" data-act="fn-tab" data-t="valores">Valores cobrados</button>`);
+  const pane = document.createElement('div'); pane.className = 'fn-pane'; pane.dataset.p = 'valores'; pane.hidden = true; pane.innerHTML = `<p class="muted" style="margin:0 0 8px;font-size:.85rem">Último valor que esta parceira cobrou de cada serviço (dos laudos que ela mandou pelo link e dos custos das OS que voltaram).</p>${parcValoresHTML(id)}<div class="actions" style="justify-content:flex-start;margin-top:10px"><button type="button" class="btn" data-act="parc-val-imp" data-id="${esc(id)}">${ic('print')}Imprimir relatório</button></div>`;
+  const ult = [...f.querySelectorAll('.fn-pane')].pop(); (ult || tabs).insertAdjacentElement('afterend', pane); }, 60); return out; }; }
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
