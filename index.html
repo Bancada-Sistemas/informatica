@@ -2086,7 +2086,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 394;
+const APP_VER = 17, APP_BUILD = 395;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -13588,14 +13588,14 @@ V.indicadores = () => {
 };
 document.addEventListener('change', e => { if (e.target && e.target.id === 'ind-per') { const c = indCfg(); c.per = e.target.value; indGuardar(c); render(); } });
 let IND_T = 0;
-const indTipoOS = (o, atras) => o.status === 'orcamento' ? 'os-aprov' : o.status === 'peca' ? 'os-peca' : o.status === 'pronto' ? 'os-retirada' : (atras || osAtrasada(o)) ? 'os-atraso' : 'os-andamento';
+const indTipoOS = (o, atras) => o.status === 'orcamento' ? 'os-aprov' : o.status === 'peca' ? 'os-peca' : o.status === 'pronto' ? retTipo(o) : (atras || osAtrasada(o)) ? 'os-atraso' : 'os-andamento';
 const IND_PEDE_PRAZO = ['os-peca', 'os-atraso'];
 function indVarsOS(o, extra) { const v = msgVars('laudo', o); return { ...v, situacao_os: osSt(o).t, previsao: o.previsao ? dBR(o.previsao) : '', pronto_desde: dBR(dayISO(indProntoEm(o) || o.at || Date.now())), ultimo_servico: o.entregueEm ? dBR(dayISO(o.entregueEm)) : '', ...(extra || {}) }; }
 function indListaHTML(k) {
   const A = indAlertas(), wa = (tipo, id, extra) => `<button type="button" class="btn sm" data-act="ind-wa" data-tipo="${tipo}" data-id="${id}"${extra || ''}>WhatsApp</button>`;
   const osRow = (o, tipo, mais) => `<div class="row"><div class="grow click" data-act="os-view" data-id="${o.id}" role="button" style="cursor:pointer"><b>OS ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">${esc(osEquip(o))} · ${esc(osSt(o).t)}${o.previsao ? ' · previsão ' + dBR(o.previsao) : ''}</div></div>${tipo ? wa(tipo, o.id) : ''}${mais || ''}</div>`;
   if (k === 'atras') return ['OS atrasadas', A.atras.map(o => osRow(o, indTipoOS(o, true)))];
-  if (k === 'pronto') return ['OS prontas sem retirada (há ' + lemCfg().retiradaDias + ' dias ou mais)', A.pronto.map(o => osRow(o, 'os-retirada'))];
+  if (k === 'pronto') return ['OS prontas sem retirada (há ' + lemCfg().retiradaDias + ' dias ou mais)', A.pronto.map(o => osRow(o, retTipo(o)))];
   if (k === 'prev') return ['Manutenção preventiva vencendo', A.prev.map(o => osRow(o, 'os-preventiva', `<button type="button" class="btn sm ghost" data-act="ind-prev-ok" data-id="${o.id}" title="Tira este cliente da lista (já foi chamado)">Já chamei</button>`))];
   if (k === 'orc') return ['Orçamentos sem resposta (mais de ' + lemCfg().orcDias + ' dias)', A.orc.map(o => `<div class="row"><div class="grow click" data-act="orc-open" data-id="${o.id}" role="button" style="cursor:pointer"><b>Orçamento ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">enviado em ${dBR(dayISO(o.at))}${o.validadeAte ? ' · válido até ' + dBR(o.validadeAte) : ''}</div></div>${wa('orc-cobranca', o.id)}</div>`)];
   if (k === 'ent') { const C = indCfg(), P = indPeriodo(C.per); return ['OS entregues: ' + P.nome, relCalc(P.de, P.ate).osEnt.map(o => osRow(o, ''))]; }
@@ -13633,7 +13633,7 @@ Object.assign(ACT, {
     if (w.prazo) { const d = ($('#iw-data') || {}).value || ''; if (!d || d < today()) { toast('Escolha a nova previsão (hoje ou depois).'); $('#iw-data') && $('#iw-data').focus(); return; }
       const ok = await save('os', x.id, { ...x, previsao: d, previsoes: [...(x.previsoes || []), { de: x.previsao || '', para: d, at: Date.now(), por: OPID(), motivo: w.tipo === 'os-peca' ? 'Aguardando peça' : 'Atraso' }] }); if (!ok) return;
       if (w.linha && d >= today()) { try { w.linha.remove(); } catch { } } }
-    if (!w.orc && ['os-retirada', 'st-pronto', 'st-cancelada'].includes(w.tipo)) { const x2 = get('os', x.id); if (x2) await save('os', x.id, { ...x2, lembRetiradaEm: Date.now() }); if (w.linha) { try { w.linha.remove(); } catch { } } }
+    if (!w.orc && ['os-retirada', 'os-retirada-tinta', 'st-pronto', 'st-cancelada'].includes(w.tipo)) { const x2 = get('os', x.id); if (x2) await save('os', x.id, { ...x2, lembRetiradaEm: Date.now() }); if (w.linha) { try { w.linha.remove(); } catch { } } }
     const tel = cliTelWa(cliente(x.clienteId)); closeModal(); IND_WA = null;
     if (!tel) { try { await navigator.clipboard.writeText(txt); } catch { } toast((w.prazo ? 'Nova previsão gravada. ' : '') + 'O cliente não tem WhatsApp cadastrado: a mensagem foi copiada.', 6000); return; }
     abrirExterno(waUrl(tel, txt)); if (w.prazo) toastOk('Nova previsão gravada na OS.');
@@ -13948,7 +13948,7 @@ indListaHTML = function (k) {
   const A = indAlertas();
   if (k === 'aprovLink') return ['Clientes que aprovaram pelo link', (A.aprovLink || []).map(o => osRow(o, ''))];
   if (k === 'inicio') return ['Serviços aprovados sem começar', (A.inicio || []).map(o => osRow(o, ''))];
-  if (k === 'retComb') return ['Não vieram buscar na data combinada', (A.retComb || []).map(o => osRow(o, 'os-retirada'))];
+  if (k === 'retComb') return ['Não vieram buscar na data combinada', (A.retComb || []).map(o => osRow(o, retTipo(o)))];
   return _stxLista(k);
 };
 /* b394: preventiva conta por EQUIPAMENTO (nº de série; sem série, tipo+marca+modelo do mesmo cliente). OS nova do MESMO equipamento tira da lista;
@@ -13989,6 +13989,15 @@ setTimeout(() => { try { REG_TESTES.push({ id: 'ex-recursos-v17b394', titulo: 'E
   if (!(S.envios || []).some(e => e.exemplo)) await save('envios', uid(), { tel: '5581998765432', txt: 'Olá, Lúcia! Aqui é da *Bancada Informática*. O orçamento do seu notebook (exemplo) está pronto. (EXEMPLO de mensagem na fila do WhatsApp da empresa, pedida por um funcionário sem WhatsApp próprio)', cliente: cli.nome, clienteId: cli.id, porNome: 'Funcionário (exemplo)', status: 'fila', ...X, at: at - 20 * 60e3 });
   try { bkGuardar({ codigo: '7896541200017' }, { nome: 'Impressora Epson L3250 (exemplo)', marca: 'Epson', modelo: 'L3250', tipo: 'Impressora', categoria: 'Impressoras' }); } catch { }
 } }); } catch (e) { console.warn('ex17', e); } }, 0);
+/* b395: impressora a jato de tinta/tanque que não foi buscada: a partir do 2º lembrete, o texto avisa do risco de entupir a cabeça/cartucho pela falta de uso e que a empresa não se responsabiliza */
+const retJato = o => { if (!/impress|multifunc/i.test(o.tipoEquip || '')) return false; const t = [(o.estadoChk || []).join(' '), o.marca, o.modelo].join(' '); if (/laser|toner/i.test(t)) return false; return true; };
+const retTipo = o => o.lembRetiradaEm && retJato(o) && msgDoTipo('os-retirada-tinta').length ? 'os-retirada-tinta' : 'os-retirada';
+setTimeout(() => { try {
+  MSG_TIPOS['os-retirada-tinta'] = 'Retirada atrasada — impressora a jato de tinta (2º lembrete em diante)';
+  MSG_VAR_TIPO['os-retirada-tinta'] = ['equipamento', 'pronto_desde', 'valor', 'link_resposta'];
+  MSG_PADRAO.push({ id: 'p-os-retirada-tinta', tipo: 'os-retirada-tinta', nome: 'Retirada atrasada — risco de entupimento', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está pronta para retirada desde {pronto_desde} e ainda não foi buscada.\n\n⚠️ *Importante:* impressora a jato de tinta parada por muitos dias corre o risco de *entupir de novo a cabeça de impressão ou o cartucho* por falta de uso. A *{empresa}* *não se responsabiliza* se a cabeça ou o cartucho voltar a entupir por causa desse tempo parado.\n\nQuando você vem buscar? Toque aqui e escolha o dia: {link_resposta}' });
+  MSG_TIPOS_B393.push('os-retirada-tinta'); RESP_TIPO['os-retirada-tinta'] = 'retirada';
+} catch (e) { console.warn('tinta', e); } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -15627,10 +15636,12 @@ const MSG_PADRAO = [
 ];
 const msgDoc = () => get('ajustes', 'mensagens') || {};
 const MSG_TIPOS_B393 = ['os-aprov', 'os-peca', 'os-atraso', 'os-andamento', 'os-retirada', 'os-preventiva', 'orc-cobranca'];
-const msgLista = () => { const d = msgDoc(); if (!Array.isArray(d.lista)) return MSG_PADRAO.map(x => ({ ...x })); const tem = new Set(d.lista.map(m => m.tipo)); return [...d.lista, ...MSG_PADRAO.filter(p => MSG_TIPOS_B393.includes(p.tipo) && !tem.has(p.tipo)).map(x => ({ ...x }))]; };
+/* modelos padrão de tipos novos aparecem para quem já tinha a lista salva; depois de salva, um modelo excluído não volta sozinho (só pelo Restaurar) */
+/* b395 REGRA: nenhum grupo fica sem texto — se todos os textos de uma situação forem excluídos, o texto padrão dela volta sozinho */
+const msgLista = () => { const d = msgDoc(); if (!Array.isArray(d.lista)) return MSG_PADRAO.map(x => ({ ...x })); const tipos = new Set(d.lista.map(m => m.tipo)); return [...d.lista, ...MSG_PADRAO.filter(p => !tipos.has(p.tipo)).map(x => ({ ...x }))]; };
 const msgDoTipo = t => msgLista().filter(m => m.tipo === t);
 const msgPrincipal = t => { const L = msgDoTipo(t); return L.find(m => m.principal) || L[0] || null; };
-async function msgSalvar(lista) { const d = msgDoc(); const { id, ...rest } = d; const ok = await save('ajustes', 'mensagens', { ...rest, lista, alteradoEm: Date.now(), alteradoPor: OPID() }); if (ok) scheduleRender(true); return ok; }
+async function msgSalvar(lista) { const d = msgDoc(); const { id, ...rest } = d; const vistos = [...new Set([...(d.vistos || []), ...MSG_PADRAO.map(p => p.id)])]; const ok = await save('ajustes', 'mensagens', { ...rest, lista, vistos, alteradoEm: Date.now(), alteradoPor: OPID() }); if (ok) scheduleRender(true); return ok; }
 const msgItens = L => (L || []).map(i => `• ${fmtQ(i.qtd)}× ${i.nome} — ${brl(i.qtd * i.preco)}${i.fim ? ` (válido de ${dBR(i.ini)} até ${dBR(i.fim)})` : ''}`).join('\n');
 function msgVars(kind, x) {
   x = x || {}; const c = cliente(x.clienteId), e = S.empresa || {}, n = x.numero != null ? pad(x.numero) : '';
@@ -15686,7 +15697,7 @@ Object.assign(ACT, {
   'msg-principal': async el => { const L = msgLista(), m = L.find(x => x.id === el.dataset.id); if (!m) return; if (await msgSalvar(L.map(x => x.tipo === m.tipo ? { ...x, principal: x.id === m.id } : x))) toastOk('Mensagem padrão definida.'); },
   'msg-padrao': el => arm(el, 'Confirmar: restaurar', async () => { const p = MSG_PADRAO.find(x => x.id === el.dataset.id); if (!p) return; if (await msgSalvar(msgLista().map(x => x.id === p.id ? { ...x, nome: p.nome, texto: p.texto } : x))) toastOk('Texto padrão restaurado.'); }),
   'msg-padrao-todos': el => arm(el, 'Confirmar: restaurar todos', async () => { const L = msgLista(), extras = L.filter(m => !MSG_PADRAO.some(p => p.id === m.id)); if (await msgSalvar([...MSG_PADRAO.map(p => ({ ...p })), ...extras])) toastOk('Mensagens padrão restauradas. As que você criou foram mantidas.'); }),
-  'msg-del': el => arm(el, 'Confirmar exclusão', async () => { if (await msgSalvar(msgLista().filter(x => x.id !== el.dataset.id))) toast('Mensagem excluída.'); })
+  'msg-del': el => arm(el, 'Confirmar exclusão', async () => { const L = msgLista(), m = L.find(x => x.id === el.dataset.id), resto = L.filter(x => x.id !== el.dataset.id); if (await msgSalvar(resto)) toast(m && !resto.some(x => x.tipo === m.tipo) && MSG_PADRAO.some(p => p.tipo === m.tipo) ? 'Mensagem excluída. Como era o último texto deste grupo, o texto padrão voltou (o grupo nunca fica vazio).' : 'Mensagem excluída.', 6000); })
 });
 Object.assign(FORMS, {
   async msgModelo(f, d) {
