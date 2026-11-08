@@ -1,13 +1,29 @@
-<!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:only light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.irow.pc{grid-template-columns:minmax(0,1fr) 62px 100px 112px 88px 32px}.ir-pc-w{display:block;margin:0}.ir-pc-w .ir-pc{width:100%}.ir-pc-l{display:none}.ir-pc-nota{font-size:.82rem;margin:0 0 4px}.ir-pc-tot{color:var(--accent,#1d4ed8)}
+<!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#EDF1EF;color:#13201D}@media (prefers-color-scheme:dark){html:not([data-theme=light]) body{background:#0C1312;color:#E2EBE7}}html[data-theme=dark] body{background:#0C1312;color:#E2EBE7}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.irow.pc{grid-template-columns:minmax(0,1fr) 62px 100px 112px 88px 32px}.ir-pc-w{display:block;margin:0}.ir-pc-w .ir-pc{width:100%}.ir-pc-l{display:none}.ir-pc-nota{font-size:.82rem;margin:0 0 4px}.ir-pc-tot{color:var(--accent,#1d4ed8)}
 @media (max-width:640px){.irow.pc{grid-template-columns:64px minmax(0,1fr) minmax(0,auto) 38px}.irow.pc>.ir-pc-w{grid-column:1/-1;display:flex;align-items:center;gap:8px}.irow.pc>.ir-pc-w .ir-pc-l{display:block;font-size:.8rem;flex:1 1 auto;min-width:0}.irow.pc>.ir-pc-w .ir-pc{flex:0 0 120px;width:120px}}
 .sheet.xl .irow.pc>.ir-pc-w{grid-column:1/-1!important;display:flex;align-items:center;gap:8px}.sheet.xl .irow.pc>.ir-pc-w .ir-pc-l{display:block}
 .orc-steps{display:flex;flex-wrap:wrap;width:100%;margin:2px 0 4px}.card .acts .orc-steps{order:-1}
+.net-pill{position:fixed;top:calc(env(safe-area-inset-top,0px) + 62px);left:10px;z-index:900;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:600 .82rem/1.25 var(--f-body,system-ui);box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 20px);text-align:left;white-space:normal}.net-off{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}.net-fraca{background:var(--amber-soft);color:var(--amber)}.net-ok{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 </style></head><body>
+<script>/* b399: tema já no primeiro instante (sem clarão branco) */try{var tc=localStorage.getItem('bancada-tema-cedo');if(tc)document.documentElement.setAttribute('data-theme',tc);}catch(e){}</script>
+<div id="boot-tela" role="status" aria-live="polite"><div class="bt-c"><div class="bt-logo" aria-hidden="true"><svg viewBox="0 0 64 64" width="56" height="56"><rect width="64" height="64" rx="14" fill="#0C7356"/><rect x="14" y="14" width="36" height="24" rx="3" fill="none" stroke="#fff" stroke-width="4"/><path d="M10 46h44M24 38v8M40 38v8" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div><b id="boot-t">Abrindo o Bancada…</b><small id="boot-m">Só um instante.</small><div class="bt-bar"><i></i></div><button type="button" id="boot-r" hidden onclick="location.reload()">Tentar de novo</button></div></div>
+<style>#boot-tela{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;background:#EDF1EF;color:#13201D;font:15px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .25s}#boot-tela.sai{opacity:0;pointer-events:none}
+@media (prefers-color-scheme:dark){html:not([data-theme=light]) #boot-tela{background:#0C1312;color:#E2EBE7}}html[data-theme=dark] #boot-tela{background:#0C1312;color:#E2EBE7}
+#boot-tela .bt-c{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;max-width:340px}#boot-tela b{font-size:1.15rem}#boot-tela small{opacity:.75;line-height:1.4;font-size:.92rem}
+#boot-tela .bt-bar{width:180px;height:4px;border-radius:4px;background:rgba(127,127,127,.25);overflow:hidden;margin-top:6px}#boot-tela .bt-bar i{display:block;width:40%;height:100%;border-radius:4px;background:#3DC496;animation:btbar 1.1s ease-in-out infinite}
+@keyframes btbar{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}#boot-tela button{margin-top:10px;font:inherit;font-weight:600;padding:10px 18px;border-radius:10px;border:0;background:#0C7356;color:#fff}</style>
+<script>(function(){var t0=Date.now(),T=document.getElementById('boot-t'),Mg=document.getElementById('boot-m'),B=document.getElementById('boot-r'),at=false;
+try{var r=JSON.parse(localStorage.getItem('bancada-retomar')||'null');at=!!(r&&r.motivo==='atualizacao'&&Date.now()-r.t<180000);}catch(e){}
+if(at){T.textContent='Atualizando para a versão nova…';Mg.textContent='Não feche o aplicativo. Isso leva poucos segundos.';}
+var iv=setInterval(function(){var el=document.getElementById('boot-tela');if(!el){clearInterval(iv);return;}
+var v=document.getElementById('view'),pronto=(v&&v.children.length)||document.getElementById('nuvem-tela')||document.querySelector('.lg-wrap');
+if(pronto){clearInterval(iv);el.classList.add('sai');setTimeout(function(){el.remove();},300);return;}
+var s=(Date.now()-t0)/1000;if(s>25){T.textContent='Está demorando mais que o normal';Mg.textContent='A internet do aparelho pode estar fraca. Pode esperar mais um pouco ou tocar em Tentar de novo. Nada foi perdido.';B.hidden=false;}
+else if(s>8){Mg.textContent=(at?'Versão nova baixada. ':'')+'Conectando à nuvem da empresa… com internet fraca pode levar alguns segundos.';}},250);})();</script>
 <title>Bancada Assistência Técnica de Informática</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230C7356'/%3E%3Crect x='14' y='14' width='36' height='36' rx='9' fill='none' stroke='white' stroke-width='6'/%3E%3Cline x1='25' y1='39' x2='40' y2='24' stroke='white' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: app shell — side rail on desktop, bottom tab bar on phone; work happens in panels, every form opens in a sheet */
 :root{
@@ -2094,7 +2110,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 398;
+const APP_VER = 17, APP_BUILD = 399;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -9279,7 +9295,7 @@ const GRAF_TEMA = [['aparelho', 'Igual ao aparelho'], ['claro', 'Claro (dia)'], 
 function aplicarTema(t) {
   const r = document.documentElement, hr = new Date().getHours();
   const v = t === 'claro' ? 'light' : t === 'escuro' ? 'dark' : t === 'horario' ? (hr >= 18 || hr < 6 ? 'dark' : 'light') : null;
-  if (v) r.setAttribute('data-theme', v); else r.removeAttribute('data-theme');
+  if (v) r.setAttribute('data-theme', v); else r.removeAttribute('data-theme'); try { localStorage.setItem('bancada-tema-cedo', v || ''); } catch { }
   const m = document.querySelector('meta[name=color-scheme]') || Object.assign(document.head.appendChild(document.createElement('meta')), { name: 'color-scheme' });
   m.content = v ? (v === 'dark' ? 'dark' : 'only light') : 'light dark'; /* "only light": o Chrome do Android com "tema escuro para sites" não escurece nem inverte a tela e a impressão */
 }
@@ -14275,6 +14291,47 @@ const orcAbertoDaOS = o => { if (!o) return null; const ab = x => x && ['aberto'
     await save('os', o.id, { ...o, terc: t, itens: (o.itens || []).map(i => pcTem(i) || PC[i.nome] == null ? i : { ...i, precoCli: PC[i.nome] }), laudo: o.laudo || { ...{ diagnostico: 'Curto no circuito de carga da placa-mãe: não liga nem na fonte (exemplo)', solucao: 'Reparo na placa (troca do CI de carga) e testes de funcionamento', conclusao: 'viavel', testes: [{ nome: 'Liga / inicializa', res: 'falha', obs: 'Não liga (relato da parceira)' }, { nome: 'Carregamento da bateria', res: 'falha', obs: 'Não carrega' }], interno: 'EXEMPLO de informação interna: CI comprado no fornecedor por R$ 60; não sai no laudo.' }, at: Math.min(Date.now(), at + 864e5), por: OPID() }, status: ['recebido', 'analise'].includes(o.status) ? 'orcamento' : o.status }); }
   for (const o of [...(S.os || [])]) if (o.exemplo && JSON.stringify([o.defeito, o.historico]).includes('System Soluções')) await save('os', o.id, { ...o, defeito: tr(o.defeito), historico: (o.historico || []).map(h => ({ ...h, obs: tr(h.obs) })) });
 } catch { } ocup = false; }, 3000); }
+/* b399: AVISO DE CONEXÃO — sem internet o aplicativo continua funcionando (cópia no aparelho) e mostra:
+   “📴 Sem internet — trabalhando no aparelho · N alterações esperando”, “📶 Internet fraca…” e, quando volta, “✓ Internet de volta — tudo enviado para a nuvem”. */
+const NET = { pend: new Map(), K: 'bancada-pend-envio', vis: '', okAte: 0, tinha: 0, txt: '' };
+const netLs = () => { try { return JSON.parse(localStorage.getItem(NET.K) || '{}') || {}; } catch { return {}; } };
+const netLsSet = o => { try { localStorage.setItem(NET.K, JSON.stringify(o)); } catch { } };
+const netQtd = () => Object.keys(netLs()).length;
+const _netGOF = gravarOuFila;
+gravarOuFila = function (pr) {
+  const k = uid(), o = netLs(); o[k] = Date.now(); netLsSet(o); NET.pend.set(k, Date.now());
+  const fim = () => { NET.pend.delete(k); const o2 = netLs(); delete o2[k]; netLsSet(o2); netAtualiza(); };
+  try { pr.then(fim, fim); } catch { fim(); } return _netGOF(pr);
+};
+/* alterações de uma abertura anterior (feitas sem internet): a nuvem avisa quando terminou de enviar */
+let NET_ESP = false;
+function netEsperarNuvem() { if (NET_ESP) return; try { if (!window.firebase || !firebase.apps || !firebase.apps.length) return; NET_ESP = true; firebase.firestore().waitForPendingWrites().then(() => { NET_ESP = false; const o = netLs(); for (const k of Object.keys(o)) if (!NET.pend.has(k)) delete o[k]; netLsSet(o); netAtualiza(); }, () => { NET_ESP = false; }); } catch { NET_ESP = false; } }
+const netAlt = n => `${n} alteraç${n === 1 ? 'ão' : 'ões'}`;
+function netAtualiza() {
+  const n = netQtd(), off = navigator.onLine === false, velho = Object.values(netLs()).some(t => Date.now() - t > 8000);
+  if (n) NET.tinha = Math.max(NET.tinha, n);
+  let st = off ? 'off' : (n && velho ? 'fraca' : '');
+  if (!st && (NET.vis === 'off' || NET.vis === 'fraca')) { st = 'ok'; NET.okAte = Date.now() + 5000; }
+  else if (!st && NET.vis === 'ok' && Date.now() < NET.okAte) st = 'ok';
+  const txt = st === 'off' ? `📴 Sem internet — trabalhando no aparelho${n ? ` · ${netAlt(n)} esperando` : ''}` : st === 'fraca' ? `📶 Internet fraca — ${netAlt(n)} esperando para subir` : st === 'ok' ? `✓ Internet de volta${NET.tinha ? ' — tudo enviado para a nuvem' : ''}` : '';
+  if (st !== 'ok' && !st) NET.tinha = 0;
+  NET.vis = st; if (txt === NET.txt) return; NET.txt = txt; /* REGRA: só mexe na tela quando muda */
+  let p = document.getElementById('net-pill');
+  if (!txt) { if (p) p.remove(); return; }
+  if (!p) { p = document.createElement('button'); p.type = 'button'; p.id = 'net-pill'; p.dataset.act = 'net-info'; document.body.appendChild(p); }
+  p.className = 'net-pill net-' + st; p.textContent = txt; p.title = 'Toque para entender';
+}
+ACT['net-info'] = () => { const n = netQtd(); toast(navigator.onLine === false || NET.vis === 'fraca'
+  ? `Pode continuar trabalhando: o que você salvar fica guardado neste aparelho${n ? ` (${netAlt(n)} agora)` : ''} e sobe sozinho para a nuvem quando a internet voltar. Os outros aparelhos recebem nessa hora. Precisam de internet: WhatsApp, IA, agenda do Google, banco/Pix e respostas dos clientes.`
+  : 'A internet voltou e tudo o que foi feito sem conexão já está na nuvem.', 9000); };
+setTimeout(() => { try { ACT_PERM['net-info'] = ''; AJUDA['net-info'] = 'Mostra se o aplicativo está sem internet (trabalhando com a cópia do aparelho) e quantas alterações ainda vão subir para a nuvem.'; } catch { } }, 0);
+addEventListener('online', () => { netEsperarNuvem(); netAtualiza(); }); addEventListener('offline', netAtualiza);
+setInterval(() => { try { if (netQtd() && navigator.onLine !== false) netEsperarNuvem(); netAtualiza(); } catch { } }, 2000);
+/* sair da conta com alterações ainda não enviadas: elas se perderiam */
+{ const _ns = ACT['nuvem-sair']; if (_ns) ACT['nuvem-sair'] = el => { const n = netQtd(); if (n) { toast(`Ainda há ${netAlt(n)} esperando a internet para subir. Conecte o aparelho e espere o aviso “tudo enviado para a nuvem” antes de sair da conta, senão elas se perdem.`, 9000); return; } return _ns(el); }; }
+/* se o aparelho não conseguir guardar a cópia (ex.: aberto em duas abas), avisa antes de fechar com algo pendente */
+addEventListener('beforeunload', e => { if (window.FS_SEM_PERSIST && netQtd()) { e.preventDefault(); e.returnValue = ''; } });
+
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -19471,7 +19528,7 @@ async function nuvemEmpresa() {
   catch { nuvemTela('semrede'); return; }
   try { firebase.initializeApp(EMP_CFG.firebaseConfig); } catch { nuvemTela('semrede'); return; }
   try { firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED, merge: true }); } catch { } /* v17: a cópia no aparelho guarda tudo (leitura econômica) */
-  try { firebase.firestore().enablePersistence({ synchronizeTabs: true }).catch(() => { }); } catch { }
+  try { firebase.firestore().enablePersistence({ synchronizeTabs: true }).catch(() => { window.FS_SEM_PERSIST = true; }); } catch { }
   let ligado = false;
   firebase.auth().onAuthStateChanged(u => {
     if (u && u.isAnonymous) { if (ligado) return; acVerificar(u, () => { ligado = true; FB_USER = u; nuvemTela(null); S.me = u.uid; S.userReady = true; S.isAdmin = true; registered = true; ligarDB(fbAdapter(firebase.firestore())); acVigiarAparelho(u.uid); acOuvirPedidos(); }); return; }
