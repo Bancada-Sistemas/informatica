@@ -1,6 +1,7 @@
 <!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:only light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.irow.pc{grid-template-columns:minmax(0,1fr) 62px 100px 112px 88px 32px}.ir-pc-w{display:block;margin:0}.ir-pc-w .ir-pc{width:100%}.ir-pc-l{display:none}.ir-pc-nota{font-size:.82rem;margin:0 0 4px}.ir-pc-tot{color:var(--accent,#1d4ed8)}
 @media (max-width:640px){.irow.pc{grid-template-columns:64px minmax(0,1fr) minmax(0,auto) 38px}.irow.pc>.ir-pc-w{grid-column:1/-1;display:flex;align-items:center;gap:8px}.irow.pc>.ir-pc-w .ir-pc-l{display:block;font-size:.8rem;flex:1 1 auto;min-width:0}.irow.pc>.ir-pc-w .ir-pc{flex:0 0 120px;width:120px}}
 .sheet.xl .irow.pc>.ir-pc-w{grid-column:1/-1!important;display:flex;align-items:center;gap:8px}.sheet.xl .irow.pc>.ir-pc-w .ir-pc-l{display:block}
+.orc-steps{display:flex;flex-wrap:wrap;width:100%;margin:2px 0 4px}.card .acts .orc-steps{order:-1}
 </style></head><body>
 <title>Bancada Assistência Técnica de Informática</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230C7356'/%3E%3Crect x='14' y='14' width='36' height='36' rx='9' fill='none' stroke='white' stroke-width='6'/%3E%3Cline x1='25' y1='39' x2='40' y2='24' stroke='white' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -1860,6 +1861,9 @@ html{hyphens:manual;-webkit-hyphens:manual;word-break:normal}
 <div id="toast-root"></div>
 
 <script>
+/* b397 REGRA: no celular a barra de endereço aparece/some ao rolar e muda a ALTURA da tela; isso disparava os ajustes de layout (cartões do Início, barras de botões, “Mais ▲”) e fazia piscar. Ajuste por tamanho só roda quando a LARGURA muda ou a altura muda muito (girar o celular, teclado). */
+(function () { var orig = window.addEventListener.bind(window), w0 = innerWidth, h0 = innerHeight, ok = true; orig('resize', function () { var dw = Math.abs(innerWidth - w0), dh = Math.abs(innerHeight - h0); ok = dw >= 2 || dh >= 140; if (ok) { w0 = innerWidth; h0 = innerHeight; } });
+  window.addEventListener = function (t, fn, o) { if (t === 'resize' && typeof fn === 'function') return orig(t, function (e) { if (!ok && e && e.isTrusted) return; return fn.apply(this, arguments); }, o); return orig(t, fn, o); }; })();
 /* v345 DIAGNÓSTICO: mede o que deixa o aplicativo travado (sem responder a cliques e ao Esc) */
 var DG = { on: true, P: {}, trava: 0, travaEm: '', t0: Date.now() };
 (function () {
@@ -2090,7 +2094,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 396;
+const APP_VER = 17, APP_BUILD = 397;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -2640,7 +2644,7 @@ const totalEquip = p => num(p.estoque) || 1;
 function alugadas(prodId, excetoId) { return ocupadasDia(prodId, today(), excetoId); }
 function orcStatus(o) {
   if (o.status === 'aberto' && o.validadeAte && o.validadeAte < today()) return { t: 'Vencido', c: 'warn' };
-  return ({ aberto: { t: 'Em aberto', c: 'info' }, aprovado: { t: 'Aprovado', c: 'ok' }, recusado: { t: 'Recusado', c: 'bad' }, convertido: { t: 'Vendido', c: 'ok' } })[o.status] || { t: o.status, c: '' };
+  return ({ aberto: { t: 'Aguardando aprovação', c: 'info' }, aprovado: { t: 'Aprovado', c: 'ok' }, recusado: { t: 'Não aprovado', c: 'bad' }, convertido: { t: 'Vendido', c: 'ok' } })[o.status] || { t: o.status, c: '' };
 }
 
 /* ======================= telas ======================= */
@@ -3033,7 +3037,7 @@ V.caixa = () => {
 /* ---------- Orçamentos ---------- */
 V.orcamentos = () => `<div class="page-head"><div><p class="eyebrow">Propostas para clientes</p><h1>Orçamentos</h1></div><div class="actions"><button class="btn" data-act="rel-filtro" data-t="orc">${ic('print')}Imprimir relatório</button><button class="btn primary" data-act="orc-new">${ic('plus')}Novo orçamento</button></div></div>
   <div class="toolbar"><div class="search">${ic('search')}<input id="q-orc" data-q="orcamentos" placeholder="Buscar por cliente, número ou equipamento" value="${esc(S.q.orcamentos || '')}"></div>${ordSel('orcamentos')}${tercSelHTML('orcamentos')}
-  <div class="seg">${[['aberto', 'Em aberto'], ['aprovado', 'Aprovados'], ['convertido', 'Vendidos'], ['recusado', 'Recusados'], ['todos', 'Todos']].map(([k, l]) => `<button data-act="filt" data-k="orcamentos" data-v="${k}" class="${S.filt.orcamentos === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+  <div class="seg">${[['aberto', 'Aguardando aprovação'], ['aprovado', 'Aprovados'], ['convertido', 'Vendidos'], ['recusado', 'Não aprovados'], ['todos', 'Todos']].map(([k, l]) => `<button data-act="filt" data-k="orcamentos" data-v="${k}" class="${S.filt.orcamentos === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
   <div id="list">${orcList()}</div>`;
 function orcList() {
   const f = S.filt.orcamentos, q = norm(S.q.orcamentos || '');
@@ -3047,9 +3051,8 @@ function orcList() {
     <div class="title"><span data-cli="${esc(o.clienteId || '')}">${esc(cliNome(o.clienteId))}</span></div>
     <div class="meta">${o.equipamento ? `<span>${esc(o.equipamento)}</span>` : ''}<span>${esc((o.itens || []).map(i => i.nome).join(' · '))}</span>${o.por ? `<span>por ${esc(quem(o.por))}</span>` : ''}</div>
     <div class="acts"><button class="btn sm" data-act="orc-open" data-id="${o.id}">${ic('orcamentos')}Abrir</button><button class="btn sm" data-act="orc-doc" data-id="${o.id}" title="Imprimir / PDF">${ic('print')}Imprimir</button>
-      ${o.status === 'aberto' ? `<button type="button" class="btn sm" data-act="orc-st" data-st="aprovado" data-id="${o.id}" data-ajuda="Aprovar: o cliente aceitou, mas ainda não pagou. O orçamento passa para Aprovado; nada é cobrado nem sai do estoque. Ex.: o cliente disse “pode trocar a tela”; o serviço vai para a bancada e a cobrança fica para quando ele buscar (aí é Transformar em venda).">Aprovar</button><button type="button" class="btn sm" data-act="orc-st" data-st="recusado" data-id="${o.id}" data-ajuda="Recusar: o cliente não aceitou. O orçamento passa para Recusado e sai da lista dos que aguardam resposta. Nada é apagado: se o cliente mudar de ideia, use Reabrir.">Recusar</button>` : ''}
+      ${orcStBotoes(o)}
       ${o.status === 'aprovado' || o.status === 'aberto' ? `<button type="button" class="btn sm primary" data-act="orc-vender" data-id="${o.id}" data-ajuda="Transformar em venda: é cobrar. Leva itens, cliente, desconto e frete para o caixa de Vendas; lá você escolhe Pix, cartão, crediário… Baixa o estoque, entra no caixa e o orçamento vai para Vendidos. Ex.: o cliente veio buscar o notebook e pagou. Dá para fazer direto do Em aberto, sem aprovar antes.">Transformar em venda</button>` : ''}
-      ${o.status === 'recusado' ? `<button type="button" class="btn sm" data-act="orc-st" data-st="aberto" data-id="${o.id}" data-ajuda="Reabrir: volta um orçamento Recusado para Em aberto, para negociar de novo. Depois é só Aprovar, Recusar ou Transformar em venda.">Reabrir</button>` : ''}
       ${o.status === 'convertido' ? `<button class="btn sm" data-act="orc-desfazer" data-id="${o.id}" title="Cancela a venda e o orçamento volta para Aprovado" data-ajuda="Desfazer venda: cancela a venda feita a partir deste orçamento (com senha de autorização) e o orçamento volta para Aprovado.">↺ Desfazer venda</button>` : ''}
       <button class="btn sm danger" data-act="orc-del" data-id="${o.id}" style="margin-left:auto">Excluir</button></div></div>`; }).join('')}</div>`;
 }
@@ -6014,7 +6017,7 @@ const FORMS = {
     if (!itens.length) { toast('Adicione pelo menos um item.'); return; }
     const id = f.dataset.id || uid(), old = get('orcamentos', id) || {};
     const subtotal = r2(sum(itens, i => i.qtd * i.preco)), desconto = descCalc(subtotal, d.descontoIn, d.descTipo), frete = num(d.frete), at = old.at || Date.now(), dias = num(d.validadeDias) || 7;
-    const o = { ...old, numero: old.numero || nextNum('orcamentos'), at, clienteId: d.clienteId, equipamento: [d.tipoEquip, (d.marca || '').trim(), (d.modelo || '').trim()].filter(Boolean).join(' ') + ((d.serie || '').trim() ? ', nº série ' + d.serie.trim() : ''), tipoEquip: d.tipoEquip || '', marca: (d.marca || '').trim(), modelo: (d.modelo || '').trim(), serie: (d.serie || '').trim(), problema: d.problema, itens, subtotal, desconto, descTipo: d.descTipo || 'valor', descIn: num(d.descontoIn), frete, total: r2(Math.max(0, subtotal - desconto + frete)), validadeDias: dias, validadeAte: addDays(dayISO(at), dias), prazo: d.prazo, garantia: d.garantia, condicoes: d.condicoes, obs: d.obs, status: old.status || 'aberto', por: old.por || OPID() };
+    const o = { ...old, numero: old.numero || nextNum('orcamentos'), at, clienteId: d.clienteId, equipamento: [d.tipoEquip, (d.marca || '').trim(), (d.modelo || '').trim()].filter(Boolean).join(' ') + ((d.serie || '').trim() ? ', nº série ' + d.serie.trim() : ''), tipoEquip: d.tipoEquip || '', marca: (d.marca || '').trim(), modelo: (d.modelo || '').trim(), serie: (d.serie || '').trim(), problema: d.problema, itens, subtotal, desconto, descTipo: d.descTipo || 'valor', descIn: num(d.descontoIn), frete, total: r2(Math.max(0, subtotal - desconto + frete)), validadeDias: dias, validadeAte: addDays(dayISO(at), dias), prazo: d.prazo, garantia: d.garantia, condicoes: d.condicoes, obs: d.obs, status: old.status || (['aberto', 'aprovado', 'recusado'].includes(d.orcSt) ? d.orcSt : 'aberto'), por: old.por || OPID() };
     if (await save('orcamentos', id, o)) { closeModal(); toast(`Orçamento ${pad(o.numero)} salvo.`); if (!f.dataset.id) showDoc('orc', { ...o, id }); }
   },
   async aluguel(f, d) {
@@ -6432,7 +6435,7 @@ Object.assign(ACT, {
   },
   'os-cobrar': el => {
     const o = get('os', el.dataset.id); if (!o) return;
-    S.cart = { itens: (o.itens || []).map(i => ({ produtoId: i.produtoId || null, nome: i.nome, qtd: i.qtd, preco: i.preco })), clienteId: o.clienteId || '', desconto: num(o.desconto), descIn: num(o.desconto), descTipo: 'valor', acrescimo: num(o.acrescimo), frete: num(o.frete), orcamentoId: null, osId: o.id };
+    S.cart = { itens: (o.itens || []).map(i => ({ produtoId: i.produtoId || null, nome: i.nome, qtd: i.qtd, preco: i.preco })), clienteId: o.clienteId || '', desconto: num(o.desconto), descIn: num(o.desconto), descTipo: 'valor', acrescimo: num(o.acrescimo), frete: num(o.frete), orcamentoId: orcAbertoDaOS(o), osId: o.id };
     S.vendasTab = 'pdv'; closeAll(); go('vendas'); toast('Peças e serviços da OS carregados no cupom.');
   },
   'os-del': el => arm(el, 'Confirmar exclusão', () => pedirSenha('excluir', 'Excluir ordem de serviço', async () => { const r = await (async () => {
@@ -8171,11 +8174,11 @@ const REL_FILT = {
     ['cancelados', 'Cancelados', a => a.status === 'cancelado'],
     ['todos', 'Todos', () => true]] },
   orc: { nome: 'Orçamentos', f: [
-    ['aberto', 'Em aberto', o => o.status === 'aberto' && !(o.validadeAte && o.validadeAte < today())],
+    ['aberto', 'Aguardando aprovação', o => o.status === 'aberto' && !(o.validadeAte && o.validadeAte < today())],
     ['vencido', 'Vencidos', o => o.status === 'aberto' && o.validadeAte && o.validadeAte < today()],
     ['aprovado', 'Aprovados', o => o.status === 'aprovado'],
     ['convertido', 'Vendidos', o => o.status === 'convertido'],
-    ['recusado', 'Recusados', o => o.status === 'recusado'],
+    ['recusado', 'Não aprovados', o => o.status === 'recusado'],
     ['todos', 'Todos', () => true]] },
   rec: { nome: 'Contas a receber', f: [
     ['todas', 'Todas em aberto', () => true],
@@ -10878,7 +10881,7 @@ function ssMelhorar(sel) {
   w.insertBefore(inp, sel); w.appendChild(lb);
   /* b396 REGRA: toda escolha com busca tem o × para deixar em branco (quando a lista tem a opção em branco) */
   const xb = document.createElement('button'); xb.type = 'button'; xb.className = 'ss-x'; xb.title = 'Limpar: deixar em branco'; xb.setAttribute('aria-label', 'Limpar'); xb.textContent = '×'; w.insertBefore(xb, lb);
-  const xs = () => { xb.hidden = !sel.value || ![...sel.options].some(o => o.value === ''); };
+  const xs = () => { const h = !sel.value || ![...sel.options].some(o => o.value === ''); if (xb.hidden !== h) xb.hidden = h; };
   xb.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (![...sel.options].some(o => o.value === '')) return; sel.value = ''; inp.value = ''; sel.dispatchEvent(new Event('change', { bubbles: true })); sel.dispatchEvent(new Event('input', { bubbles: true })); xs(); });
   const sync = () => { if (document.activeElement !== inp) inp.value = ssTexto(sel); xs(); };
   sync(); sel._ssSync = sync;
@@ -12464,7 +12467,9 @@ const ulLbl = (m, aberto) => { m.textContent = aberto ? 'Mais ▼' : 'Mais ▲';
 const UL_FIXO = b => b.classList.contains('primary') || b.dataset.act === 'close' || /^\s*(cancelar|fechar|voltar|← voltar|imprimir)\s*$/i.test(b.textContent); /* v17 (regra): Fechar e Imprimir sempre na barra */
 function umaLinha(box, baixo) {
   if (!box || !box.offsetParent) return; const bts = () => [...box.children].filter(b => (b.tagName === 'BUTTON' || b.matches('a.btn,label.btn')) && !b.classList.contains('ul-mais'));
-  const assin = bts().length + ':' + box.clientWidth; if (box.dataset.ul === assin) return;
+  const ulW = () => box.matches('.sheet-f') ? box.clientWidth : (box.parentElement || box).clientWidth; const assin = bts().length + ':' + ulW(); if (box.dataset.ul === assin) return;
+  { const [n0, w0] = String(box.dataset.ul || '').split(':'); if (box.dataset.ul && +n0 === bts().length && Math.abs(+w0 - ulW()) < 12) return; } /* b397: mudança pequena de largura (barra do navegador, fonte carregando) não refaz a barra: era o que fazia piscar */
+  const ulReabrir = !!box.querySelector('.ul-menu') || box._ulAberto;
   bts().forEach(b => { b.classList.remove('ul-oc', 'ul-ico'); if (b.dataset.ulLbl !== undefined) { if (b.dataset.ulLbl) b.setAttribute('aria-label', b.dataset.ulLbl); else b.removeAttribute('aria-label'); delete b.dataset.ulLbl; } }); box.querySelector('.ul-mais')?.remove(); box.querySelector('.ul-menu')?.remove(); box.classList.remove('ul-on');
   const vis = () => [...box.children].filter(b => b.offsetParent && !b.classList.contains('ul-menu') && b.tagName !== 'STYLE'), umaSo = () => { const L = vis(); if (L.length < 2) return true; const t = L.map(b => b.offsetTop); return Math.max(...t) - Math.min(...t) < 6 && box.scrollWidth <= box.clientWidth + 2; };
   /* v17 (regra): toda janela que tem × em cima tem também “Fechar” na barra de baixo */
@@ -12475,23 +12480,25 @@ function umaLinha(box, baixo) {
   /* 1º: os botões com ícone viram só o ícone (do fim para o começo); se assim couber, não precisa do “Mais” */
   const ico = b => { if (!b.querySelector('svg.i') || b.classList.contains('ul-ico')) return false; b.dataset.ulLbl = b.getAttribute('aria-label') || ''; const t = b.textContent.replace(/\s+/g, ' ').trim(); b.setAttribute('aria-label', t); if (!b.title) b.title = t; b.classList.add('ul-ico'); return true; };
   const cand = tudo ? [] : bts().filter(b => !UL_FIXO(b) && b.querySelector('svg.i')).reverse(), feitos = [];
-  for (const b of cand) { if (ico(b)) feitos.push(b); if (umaSo()) { box.dataset.ul = bts().length + ':' + box.clientWidth; return; } }
+  for (const b of cand) { if (ico(b)) feitos.push(b); if (umaSo()) { box.dataset.ul = bts().length + ':' + ulW(); return; } }
   feitos.forEach(b => { b.classList.remove('ul-ico'); if (b.dataset.ulLbl) b.setAttribute('aria-label', b.dataset.ulLbl); else b.removeAttribute('aria-label'); delete b.dataset.ulLbl; });
   const m = document.createElement('button'); m.type = 'button'; m.className = 'btn ul-mais' + (box.matches('.sheet-f') ? '' : ' sm'); ulLbl(m, false); m.title = 'Outras opções';
   const fix = bts().filter(UL_FIXO), mov = bts().filter(b => !UL_FIXO(b)); const ref = fix[0] || null; box.insertBefore(m, box.matches('.sheet-f') ? box.firstChild : ref); box.classList.add('ul-on');
   const oc = []; for (let i = mov.length - 1; i >= 0 && (tudo || !umaSo()); i--) { mov[i].classList.add('ul-oc'); oc.unshift(mov[i]); }
   if (!oc.length) { m.remove(); box.classList.remove('ul-on'); box.dataset.ul = assin; return; }
   /* só uma opção ficaria no “Mais”: não usa o “Mais”; ela volta como ícone */
-  if (!tudo && oc.length === 1 && oc[0].querySelector('svg.i')) { oc[0].classList.remove('ul-oc'); m.remove(); box.classList.remove('ul-on'); ico(oc[0]); box.dataset.ul = bts().length + ':' + box.clientWidth; return; }
-  m.onclick = e => { e.preventDefault(); e.stopPropagation(); const old = box.querySelector('.ul-menu'); if (old) { old.remove(); ulLbl(m, false); return; } document.querySelectorAll('.ul-menu').forEach(x => { const mm = x.parentElement && x.parentElement.querySelector('.ul-mais'); x.remove(); if (mm) ulLbl(mm, false); });
-    const mn = document.createElement('div'); mn.className = 'ul-menu' + (baixo ? ' baixo' : ''); oc.forEach(b => { const c = document.createElement('button'); c.type = 'button'; c.className = 'btn' + (b.classList.contains('danger') ? ' danger' : ''); c.innerHTML = b.innerHTML; c.disabled = b.disabled; c.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); mn.remove(); ulLbl(m, false); b.click(); }; mn.appendChild(c); });
-    box.appendChild(mn); ulLbl(m, true); };
-  box.dataset.ul = bts().length + ':' + box.clientWidth;
+  if (!tudo && oc.length === 1 && oc[0].querySelector('svg.i')) { oc[0].classList.remove('ul-oc'); m.remove(); box.classList.remove('ul-on'); ico(oc[0]); box.dataset.ul = bts().length + ':' + ulW(); return; }
+  m.onclick = e => { e.preventDefault(); e.stopPropagation(); const old = box.querySelector('.ul-menu'); if (old) { old.remove(); box._ulAberto = false; ulLbl(m, false); return; } document.querySelectorAll('.ul-menu').forEach(x => { const mm = x.parentElement && x.parentElement.querySelector('.ul-mais'); if (x.parentElement) x.parentElement._ulAberto = false; x.remove(); if (mm) ulLbl(mm, false); });
+    const mn = document.createElement('div'); mn.className = 'ul-menu' + (baixo ? ' baixo' : ''); oc.forEach(b => { const c = document.createElement('button'); c.type = 'button'; c.className = 'btn' + (b.classList.contains('danger') ? ' danger' : ''); c.innerHTML = b.innerHTML; c.disabled = b.disabled; c.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); mn.remove(); box._ulAberto = false; ulLbl(m, false); b.click(); }; mn.appendChild(c); });
+    box.appendChild(mn); box._ulAberto = true; ulLbl(m, true); };
+  box.dataset.ul = bts().length + ':' + ulW();
+  if (ulReabrir && m.isConnected) m.onclick(new Event('click')); /* b397: a barra foi refeita com o “Mais” aberto: continua aberto */
 }
 function umaLinhaTudo() { try { document.querySelectorAll('#modals .sheet-f').forEach(f => umaLinha(f, false)); document.querySelectorAll('#view .sel-acts').forEach(a => umaLinha(a, true)); document.querySelectorAll('#view .page-head .actions').forEach(a => umaLinha(a, true)); } catch { } }
 rodapeEnxuto = umaLinhaTudo;
-window.addEventListener('resize', () => { document.querySelectorAll('[data-ul]').forEach(x => delete x.dataset.ul); umaLinhaTudo(); });
-document.addEventListener('pointerdown', e => { if (!e.target.closest || !e.target.closest('.ul-menu, .ul-mais')) document.querySelectorAll('.ul-menu').forEach(x => { const m = x.parentElement && x.parentElement.querySelector('.ul-mais'); x.remove(); if (m) ulLbl(m, false); }); }, true);
+let UL_LARG = innerWidth, UL_RT = 0;
+window.addEventListener('resize', () => { if (Math.abs(innerWidth - UL_LARG) < 2) return; UL_LARG = innerWidth; clearTimeout(UL_RT); UL_RT = setTimeout(() => { document.querySelectorAll('[data-ul]').forEach(x => delete x.dataset.ul); umaLinhaTudo(); }, 150); });
+document.addEventListener('pointerdown', e => { if (!e.target.closest || !e.target.closest('.ul-menu, .ul-mais')) document.querySelectorAll('.ul-menu').forEach(x => { const m = x.parentElement && x.parentElement.querySelector('.ul-mais'); if (x.parentElement) x.parentElement._ulAberto = false; x.remove(); if (m) ulLbl(m, false); }); }, true);
 /* ======================= v368: carnê — trocar a forma de pagamento das parcelas em aberto ======================= 
    Pagar agora (Pix, dinheiro, cartão de crédito parcelado…) com desconto por antecipar (tira os juros do carnê das parcelas que ainda não venceram),
    ou trocar por boleto do banco. O valor original de cada parcela fica guardado. */
@@ -14238,6 +14245,26 @@ osBody = function (o) { const h = _tercOB.apply(this, arguments); const e = envD
 ACT['env-guia'] = el => { const o = get('os', el.dataset.id); if (o && envDe(o)) showDoc('envparc', o); };
 setTimeout(() => { try { ACT_PERM['env-guia'] = 'os'; AJUDA['env-guia'] = 'Abre a guia de envio para a empresa parceira (imprimir ou WhatsApp para ela): equipamento, defeito, checklist e o nº da nossa OS, sem nenhum dado do cliente.'; } catch { } }, 0);
 
+/* b397: SITUAÇÃO DO ORÇAMENTO no mesmo formato da OS: toca na opção (Aguardando aprovação · Aprovado · Não aprovado). Orçamento já salvo grava na hora. */
+const ORC_ST = [['aberto', 'Aguardando aprovação'], ['aprovado', 'Aprovado'], ['recusado', 'Não aprovado']];
+function orcStBotoes(o, novo) { const st = (o && o.status) || 'aberto'; if (st === 'convertido') return '';
+  return `<div class="steps osv-steps orc-steps" role="radiogroup" aria-label="Situação do orçamento">${ORC_ST.map(([k, t]) => `<button type="button" role="radio" aria-checked="${k === st}" class="${k === st ? 'now' : ''}${k === 'recusado' ? ' st-canc' : ''}" data-act="orc-st-b" data-id="${esc(novo ? '' : o.id)}" data-st="${k}" title="Muda a situação do orçamento para “${esc(t)}”${novo ? '' : ' e salva na hora'}.">${esc(t)}</button>`).join('')}</div>`; }
+ACT['orc-st-b'] = async el => { const st = el.dataset.st, id = el.dataset.id, box = el.closest('.orc-steps');
+  const marca = () => { if (box) [...box.children].forEach(b => { const on = b.dataset.st === st; b.classList.toggle('now', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); }); };
+  if (!id) { const h = el.closest('form') && el.closest('form').querySelector('[name="orcSt"]'); if (h) h.value = st; marca(); return; }
+  const o = get('orcamentos', id); if (!o || o.status === st) return; marca();
+  if (await save('orcamentos', o.id, { ...o, status: st })) { toast(`Orçamento ${pad(o.numero)}: ${orcStatus({ ...o, status: st }).t.toLowerCase()}.`); if (!el.closest('#modals')) render(); } };
+setTimeout(() => { try { ACT_PERM['orc-st-b'] = 'orcamentos'; AJUDA['orc-st-b'] = 'Muda a situação do orçamento tocando na opção: Aguardando aprovação, Aprovado (o cliente aceitou) ou Não aprovado (o cliente recusou). Ex.: o cliente disse “pode fazer” → Aprovado.'; } catch { } }, 0);
+/* no formulário do orçamento: a situação logo no começo */
+{ const _orcF = orcForm; orcForm = function (id, ...r) { const out = _orcF.call(this, id, ...r); setTimeout(() => { const f = document.querySelector('#modals .ov:last-child form[data-form="orcamento"]'); if (!f || f.querySelector('.orc-steps')) return; const o = id ? get('orcamentos', id) : { status: 'aberto' }; const h = orcStBotoes(o, !id); if (!h) return; const d = document.createElement('div'); d.className = 'orc-st-box'; d.style.cssText = 'margin:0 0 10px'; d.innerHTML = `<div class="muted" style="font-size:.8rem;font-weight:700;margin-bottom:2px">Situação</div>${h}${id ? '' : '<input type="hidden" name="orcSt" value="aberto">'}`; (f.querySelector('.sheet-b') || f).prepend(d); }, 30); return out; }; }
+
+/* b397: cobrar a OS no caixa também dá baixa no orçamento gerado a partir dela (fica “Vendido”, ligado à venda) */
+const orcAbertoDaOS = o => { if (!o) return null; const ab = x => x && ['aberto', 'aprovado'].includes(x.status); const a = o.orcamentoId && get('orcamentos', o.orcamentoId); if (ab(a)) return a.id; const b = (S.orcamentos || []).filter(x => x.osId === o.id && ab(x)).sort((p, q) => (q.at || 0) - (p.at || 0))[0]; return b ? b.id : null; };
+/* acerto dos que já ficaram para trás: OS já cobrada (venda válida) e o orçamento dela ainda em aberto/aprovado */
+{ let feito = false; const acerta = async () => { if (feito || !S.loaded || !pode('orcamentos')) return; feito = true; let n = 0;
+    for (const x of [...(S.orcamentos || [])]) { if (!['aberto', 'aprovado'].includes(x.status)) continue; const o = osDoOrc(x); const v = o && o.vendaId && get('vendas', o.vendaId); if (!v || v.cancelada) continue; if (await save('orcamentos', x.id, { ...x, status: 'convertido', vendaId: v.id })) n++; }
+    if (n) toast(`${n} orçamento${n === 1 ? '' : 's'} de OS já cobrada${n === 1 ? ' ficou' : 's ficaram'} como Vendido.`, 6000); };
+  const iv = setInterval(() => { if (feito) { clearInterval(iv); return; } try { acerta(); } catch { } }, 3000); }
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -14314,11 +14341,18 @@ setTimeout(() => { try { let tm = 0; new MutationObserver(() => { ipPreparar(); 
 const CAB_CV = document.createElement('canvas').getContext('2d');
 function caberCampo(c) {
   if (!c || !c.offsetParent || c.matches('[type=checkbox],[type=radio],[type=date],[type=hidden],[type=file],[type=color],[type=range]')) return;
-  const txt = c.tagName === 'SELECT' ? ((c.options[c.selectedIndex] || {}).text || '') : (c.value || ''); if (c.dataset.cabFs) { c.style.fontSize = ''; delete c.dataset.cabFs; }
-  if (!txt.trim()) return; const st = getComputedStyle(c), fs = parseFloat(st.fontSize) || 14, avail = c.clientWidth - (parseFloat(st.paddingLeft) || 0) - (parseFloat(st.paddingRight) || 0) - 2 - (c.tagName === 'SELECT' && st.appearance !== 'none' ? 21 : 0); /* lista nativa: a setinha ocupa ~20px */
-  CAB_CV.font = `${st.fontWeight} ${fs}px ${st.fontFamily}`; const w = CAB_CV.measureText(txt).width; if (w <= avail || avail <= 0) return;
-  const nf = Math.max(11, Math.floor(fs * avail / w * 10) / 10); c.style.fontSize = nf + 'px'; c.dataset.cabFs = '1';
-  if (nf === 11) { CAB_CV.font = `${st.fontWeight} 11px ${st.fontFamily}`; if (CAB_CV.measureText(txt).width > avail) { const l = c.closest('label.f, .field'); if (l && !l.classList.contains('f-larga') && l.parentElement && /grid/.test(getComputedStyle(l.parentElement).display)) { l.classList.add('f-larga'); c.style.fontSize = ''; delete c.dataset.cabFs; setTimeout(() => caberCampo(c), 0); return; } if (!c.title) c.title = txt; } }
+  /* b397: sem “voltar ao normal e diminuir de novo” a cada vez (isso fazia a tela tremer no celular): só escreve quando o tamanho da letra precisa mudar */
+  const txt = c.tagName === 'SELECT' ? ((c.options[c.selectedIndex] || {}).text || '') : (c.value || ''), st = getComputedStyle(c), tem = !!c.dataset.cabFs;
+  const fs0 = tem ? (+c.dataset.cabFs0 || parseFloat(st.fontSize) || 14) : (parseFloat(st.fontSize) || 14), atual = parseFloat(st.fontSize) || fs0;
+  const tira = () => { if (tem) { c.style.fontSize = ''; delete c.dataset.cabFs; delete c.dataset.cabFs0; delete c.dataset.cabK; } };
+  const chave = txt + '|' + fs0 + '|' + innerWidth; if (tem && c.dataset.cabK === chave) return; /* já ajustado para este texto e esta largura de tela: não encolhe de novo (a lista fica mais estreita com a letra menor e encolhia sem parar) */
+  if (!txt.trim()) { tira(); return; }
+  const avail = c.clientWidth - (parseFloat(st.paddingLeft) || 0) - (parseFloat(st.paddingRight) || 0) - 2 - (c.tagName === 'SELECT' && st.appearance !== 'none' ? 21 : 0); /* lista nativa: a setinha ocupa ~20px */
+  if (avail <= 0) return;
+  CAB_CV.font = `${st.fontWeight} ${fs0}px ${st.fontFamily}`; const w = CAB_CV.measureText(txt).width; if (w <= avail) { tira(); return; }
+  const nf = Math.max(11, Math.floor(fs0 * avail / w * 10) / 10);
+  if (!tem || Math.abs(nf - atual) >= 0.3) { if (!tem) c.dataset.cabFs0 = String(fs0); c.style.fontSize = nf + 'px'; c.dataset.cabFs = '1'; } c.dataset.cabK = chave;
+  if (nf === 11) { CAB_CV.font = `${st.fontWeight} 11px ${st.fontFamily}`; if (CAB_CV.measureText(txt).width > avail) { const l = c.closest('label.f, .field'); if (l && !l.classList.contains('f-larga') && l.parentElement && /grid/.test(getComputedStyle(l.parentElement).display)) { l.classList.add('f-larga'); setTimeout(() => caberCampo(c), 0); return; } if (!c.title) c.title = txt; } }
 }
 function caberCampos(raiz) { try { (raiz || document).querySelectorAll('#view select, #view input, #modals select, #modals input').forEach(caberCampo); } catch { } }
 { let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(() => caberCampos(), 120); }).observe(document.body, { childList: true, subtree: true });
