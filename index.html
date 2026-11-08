@@ -62,6 +62,7 @@ main.ini-prev-main{height:100%!important;max-width:none;width:100%;padding:16px 
 .fg.et-ctl-box{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.et-ctl-box .seg{flex-wrap:nowrap}
 .graf-sel{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted);font-weight:600}
 .graf-sel select{width:auto!important;max-width:200px;flex:none!important;padding:5px 28px 5px 9px;font-size:.82rem;min-height:0}
+@media (max-width:360px){.graf-sel{max-width:100%;min-width:0}.graf-sel select{flex:1 1 auto!important;min-width:0;max-width:calc(100% - 90px)}}
 .fg .graf-sel{flex-direction:column;align-items:stretch}.fg .graf-sel select{width:100%}
 .dot-c{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:middle;flex:none}
 .rosca{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.rosca svg{width:170px;height:170px;flex:none}.rosca svg circle{transition:opacity .15s}.rosca svg circle[data-act]:hover{opacity:.8}
@@ -523,7 +524,7 @@ table.mx input{width:18px;height:18px}
 /* linha de campo + botões (cliente, fornecedor…): o campo ocupa o espaço todo e os botões têm a mesma altura dele */
 :is(div,label):has(> .cb){display:flex;gap:6px;align-items:stretch}
 :is(div,label):has(> .cb)>.cb{flex:1 1 auto;min-width:0}
-:is(div,label):has(> .cb)>.icon-btn,:is(div,label):has(> .cb)>.btn{flex:none;width:44px;min-height:42px;height:auto;padding:0;display:inline-flex;align-items:center;justify-content:center}
+:is(div,label):has(> .cb)>.icon-btn,:is(div,label):has(> .cb)>.btn{flex:none;width:auto;min-width:44px;min-height:42px;height:auto;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap} /* b394: botão com texto ao lado de lista com busca cresce com o texto (antes ficava com 44px e o texto saía da caixa) */
 .f>.cb{width:100%}
 :is(div,label):has(> .cb)>.icon-btn .i,:is(div,label):has(> .cb)>.btn .i{width:19px!important;height:19px!important;margin:0}
 @media (max-width:640px){.sheet .fg>.f:has(:is(div,label)>.cb + :is(.btn,.icon-btn)){grid-column:1/-1}}
@@ -921,7 +922,10 @@ html,body{touch-action:manipulation}
 .page-head>div:first-child{min-width:0;flex:1 1 200px}
 .page-head h1{overflow-wrap:break-word}
 .page-head .actions{min-width:0;flex-wrap:wrap}
-.btn{max-width:100%}
+.btn{max-width:100%;white-space:normal;text-align:center;line-height:1.2} /* b394 REGRA: texto do botão nunca sai da caixa; se não couber numa linha, quebra entre palavras */
+.ind .stat > .eyebrow{max-width:100%}.waq-pill{position:fixed;top:calc(env(safe-area-inset-top,0px) + 62px);right:10px;z-index:900;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font-weight:600;font-size:.82rem;line-height:1.2;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 20px)}.agv-pill{top:calc(env(safe-area-inset-top,0px) + 104px)}.waq-txt{white-space:pre-wrap;font-size:.85rem;margin-top:4px;overflow-wrap:anywhere}.waq-acoes{display:flex;flex-direction:column;gap:6px;flex:none}.ind .stat > .eyebrow{letter-spacing:.03em}
+@media (max-width:340px){main.home .stats.stats{grid-template-columns:1fr}.per-bar .seg.seg{grid-template-columns:repeat(3,minmax(0,1fr))}.seg>*{padding-left:8px!important;padding-right:8px!important}}
+label:has(> .seg){flex-wrap:wrap;min-width:0}
 .panel-head{flex-wrap:wrap;min-width:0}.panel-head>*{min-width:0}
 .panel-head h2{overflow-wrap:break-word}
 .toolbar>*{min-width:0}.toolbar .seg{max-width:100%;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}.toolbar .seg::-webkit-scrollbar{display:none}
@@ -1618,7 +1622,7 @@ textarea{padding-bottom:10px}
 }
 
 /* ===== ajustes posteriores (mantidos no bloco principal) ===== */
-.lg-bios{display:flex;flex-direction:column;gap:8px}.lg-bios .btn{width:100%;justify-content:center;white-space:normal;flex-wrap:wrap;text-align:center;height:auto;min-height:44px}.lg-bios small{flex-basis:100%;font-size:.75rem}.cfg-tabs button svg{width:16px!important;height:16px!important;vertical-align:-3px;margin-right:4px;display:inline-block}.lg-bios .lg-off{opacity:.75}.lg-bios small{font-weight:500;opacity:.8}.lg-sair-area{margin-top:18px;padding-top:12px;border-top:1px dashed var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lg-sair-area small{font-size:.75rem}.lg-sair-area .btn{font-size:.82rem}html,body{overscroll-behavior-x:none}.chip-link{cursor:pointer;border:0;font:inherit;text-decoration:underline;text-underline-offset:2px}.chip-link:hover{filter:brightness(1.1)}.chks .chq.chq-oculta{display:none!important}.chq-ops:has(input:checked) label:not(:has(input:checked)){display:none}.meu-acesso .banner{margin-top:8px}.seg.seg-acoes{gap:4px}.seg.seg-acoes button{cursor:pointer}.who .who-b{display:flex;flex-wrap:wrap;gap:6px}.who .who-b .btn{flex:1 1 auto;justify-content:center}.op-menu{grid-template-columns:repeat(2,minmax(0,1fr))!important}.fu-perfil .perfil-b{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.fu-perfil select{max-width:100%}
+.lg-bios{display:flex;flex-direction:column;gap:8px}.lg-bios .btn{width:100%;justify-content:center;white-space:normal;flex-wrap:wrap;text-align:center;height:auto;min-height:44px}.lg-bios small{flex-basis:100%;font-size:.75rem}.cfg-tabs button svg{width:16px!important;height:16px!important;vertical-align:-3px;margin-right:4px;display:inline-block}.lg-bios .lg-off{opacity:.75}.lg-bios small{font-weight:500;opacity:.8}.lg-sair-area{margin-top:18px;padding-top:12px;border-top:1px dashed var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lg-sair-area small{font-size:.75rem}.lg-sair-area .btn{font-size:.82rem}html,body{overscroll-behavior-x:none}.chip-link{cursor:pointer;border:0;font:inherit;text-decoration:underline;text-underline-offset:2px}.chip-link:hover{filter:brightness(1.1)}.chks .chq.chq-oculta{display:none!important}.chq-ops:has(input:checked) label:not(:has(input:checked)){display:none}.chq-ops:has(input:checked){cursor:pointer}.chq-ops:has(input:checked)::after{content:'toque para trocar';align-self:center;font-size:.76rem;color:var(--muted);padding:0 6px}.chq-op-mais{border:1px dashed var(--line);background:none;color:var(--accent);border-radius:8px;min-width:40px;min-height:36px;font-size:1.05rem;cursor:pointer}.chq-ops:has(input:checked) .chq-op-mais{display:none}.meu-acesso .banner{margin-top:8px}.seg.seg-acoes{gap:4px}.seg.seg-acoes button{cursor:pointer}.who .who-b{display:flex;flex-wrap:wrap;gap:6px}.who .who-b .btn{flex:1 1 auto;justify-content:center}.op-menu{grid-template-columns:repeat(2,minmax(0,1fr))!important}.fu-perfil .perfil-b{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.fu-perfil select{max-width:100%}
 .fc-box{position:relative;aspect-ratio:3/4;width:min(100%,360px);margin:0 auto;border-radius:16px;overflow:hidden;background:#000}.fc-box video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.fc-box.deitada .fc-oval{left:27%;right:27%;top:5%;bottom:5%}.fc-box video{display:block}.fc-oval{position:absolute;left:12%;right:12%;top:8%;bottom:10%;border:4px solid rgba(255,255,255,.75);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.35);transition:border-color .2s}.fc-oval[data-st=ok]{border-color:#3DC496}.fc-oval[data-st=erro]{border-color:#e5533d}.fc-diag{text-align:center;font-size:.72rem;margin:0 0 4px;min-height:1em}.fc-erro{color:var(--red);display:block}.fc-msg{text-align:center;font-weight:700;margin:10px 0 4px;min-height:1.4em}.rosto-box{margin-top:6px}
 .dup-g{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:var(--surface)}.dup-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}.dup-c{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.dup-c.fica{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}.dup-c.sai{opacity:.82}.dup-c.deixa{border-style:dashed}.cmp-src{display:none!important}.cmp{display:flex;flex-direction:column;gap:6px}.cmp-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:6px 8px;border:1px solid var(--line);border-radius:10px}.cmp-n{font-weight:600;flex:1 1 auto}.cmp-obs{flex:1 1 100%;min-width:0;order:2}.cmp-row .cmp-x{order:1}.cmp-x{border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:2px 6px}.cmp-add-w{position:relative}.cmp-menu{display:flex;flex-direction:column;margin-top:6px;border:1px solid var(--line);border-radius:10px;max-height:260px;overflow:auto;background:var(--surface)}.cmp-op{text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 12px;cursor:pointer;color:var(--ink)}.cmp-op:last-child{border-bottom:0}.cmp-vazio{margin:0;font-size:.85rem}.trow{position:relative;padding-right:34px}.trow .t-x{position:absolute;right:0;top:6px}.dup-lote{position:sticky;top:-14px;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:8px 10px;margin:8px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}.dup-lote .actions{margin-left:auto}.dup-g.dup-sel-on{outline:2px solid var(--primary,#2563eb);outline-offset:2px}.dup-ed{all:unset;display:block;cursor:pointer;border-radius:6px;max-width:100%}.dup-ed:hover b,.dup-ed:focus-visible b{text-decoration:underline}.dup-ed:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.dup-edb{margin-top:6px}.dup-c.dup-novo{animation:dupNovo 1.6s ease}@keyframes dupNovo{0%{background:rgba(61,196,150,.35)}100%{background:transparent}}.dup-c.sai b{text-decoration:line-through;text-decoration-color:rgba(200,60,60,.7)}.dup-g.dup-ocup{opacity:.55;pointer-events:none}.dup-c .grow{flex:1;min-width:0}.dup-c small{display:block;color:var(--muted,#667);font-size:.8rem;overflow-wrap:anywhere}.dup-op{display:flex;flex-direction:column;gap:2px;flex:none;font-size:.88rem}.dup-pe{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:4px}.dup-pe small{flex:1 1 200px}
 .ag-div{display:flex;flex-direction:column;gap:5px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:4px 0;background:var(--surface)}.ag-div .rf-chk{font-size:.92rem}
@@ -1972,7 +1976,7 @@ const IC = {
 const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${IC[n] || ''}</svg>`;
 
 /* ======================= estado e armazenamento ======================= */
-const COLS = ['clientes', 'fornecedores', 'produtos', 'orcamentos', 'vendas', 'alugueis', 'caixas', 'os', 'fotos', 'equipe', 'convites', 'despesas', 'ajustes', 'receber', 'agenda', 'contratos', 'atendimentos', 'lixeira', 'logs', 'checklists', 'autorizacoes'];
+const COLS = ['clientes', 'fornecedores', 'produtos', 'orcamentos', 'vendas', 'alugueis', 'caixas', 'os', 'fotos', 'equipe', 'convites', 'despesas', 'ajustes', 'receber', 'agenda', 'contratos', 'atendimentos', 'lixeira', 'logs', 'checklists', 'autorizacoes', 'envios'];
 const S = {
   clientes: [], fornecedores: [], produtos: [], orcamentos: [], vendas: [], alugueis: [], caixas: [], os: [], fotos: [], equipe: [], convites: [], despesas: [], ajustes: [], receber: [], agenda: [], contratos: [], atendimentos: [], lixeira: [], empresa: {}, acessos: {}, pagamentos: {}, cfgTab: 'pagamentos',
   mode: 'local', loaded: false, canWrite: true, canAdmin: true, isAdmin: true, userReady: true, me: null, names: {},
@@ -2082,7 +2086,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 393;
+const APP_VER = 17, APP_BUILD = 394;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -3191,7 +3195,7 @@ function fotoEditor(src, opts = {}) {
         <button type="button" class="btn sm" data-act="fe-limpar">Limpar marcações</button><button type="button" class="btn sm" data-act="fe-nocrop">Tirar recorte</button><button type="button" class="btn sm ghost" data-act="fe-reset">Restaurar</button></div>
       ${opts.extra || ''}<div class="fg">${field('Brilho', '<input type="range" id="fe-br" min="40" max="180" value="100">')}${field('Contraste', '<input type="range" id="fe-ct" min="40" max="180" value="100">')}${field('Tamanho final da foto', `<select id="fe-esc"><option value="100">Original (melhor qualidade)</option><option value="75">Reduzir para 75%</option><option value="50">Reduzir para 50%</option><option value="35">Reduzir para 35%</option></select>`)}</div>
       ${opts.trocar ? `<div class="picks" style="justify-content:center">${pickBtn('Trocar por outra foto', 'camera', 'class="fe-in"')}</div>` : ''}</div>`,
-      `${opts.onDelete ? `<button type="button" class="btn danger" data-act="fe-del" style="margin-right:auto">Apagar foto</button>` : ''}<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="fe-save">${esc(opts.salvarTxt || 'Salvar foto')}</button>`, { wide: true });
+      `${opts.onDelete ? `<button type="button" class="btn danger" data-act="fe-del" style="margin-right:auto">Apagar foto</button>` : ''}<button type="button" class="btn${opts.descartar ? ' danger-t' : ''}" data-act="close" title="${opts.descartar ? 'Joga fora esta foto sem usar. Ex.: saiu tremida.' : 'Fecha sem salvar.'}">${opts.descartar ? '🗑 Descartar foto' : 'Cancelar'}</button><button type="button" class="btn primary" data-act="fe-save">${esc(opts.salvarTxt || 'Salvar foto')}</button>`, { wide: true });
     /* janela da edição em tela cheia: ferramentas na barra do título e a foto ocupando o resto */
     const sh = ov.querySelector('.sheet'); sh.classList.add('fe-sheet'); const hb = ov.querySelector('.fe-hbar'), h = ov.querySelector('.sheet-h'); if (hb && h) h.insertBefore(hb, h.querySelector('[data-act="close"]'));
     feCropMax(); const dc = $('#fe-dica'); if (dc && FE.prop) dc.textContent = FE_DICA_PROP;
@@ -6221,7 +6225,7 @@ function osBody(o) {
       ${L.causa ? `<div class="full"><span class="k">Causa provável</span><span class="v">${esc(L.causa)}</span></div>` : ''}
       ${L.solucao ? `<div class="full"><span class="k">Solução / serviço</span><span class="v">${esc(L.solucao)}</span></div>` : ''}
       <div><span class="k">Conclusão</span><span class="v"><b>${esc(CONCL[L.conclusao] || '—')}</b></span></div><div><span class="k">Testes</span><span class="v">${testesResumo(L)}</span></div>
-      <div><span class="k">Laudo por</span><span class="v">${esc(L.tecnico || quem(L.por) || '—')} · ${dBR(dayISO(L.at))}</span></div></div>`
+      <div><span class="k">Laudo por</span><span class="v">${esc(L.tecnico || quem(L.por) || '—')} · ${dBR(dayISO(L.at))}</span></div>${L.interno ? `<div class="full"><span class="k">🔒 Informações internas (não saem no laudo do cliente)</span><span class="v" style="white-space:pre-wrap">${esc(L.interno)}</span></div>` : ''}</div>`
       : '<p class="muted">Ainda sem laudo. Registre o diagnóstico, os testes feitos, as peças e a conclusão.</p>'}</section>
   <section class="osv-sec"><div class="panel-head"><h3>Peças e serviços</h3><span class="mono" style="font-weight:700">${brl(o.total)}</span></div>
     ${it.length ? `<div class="tbl-wrap"><table class="t t-itens"><thead><tr><th>Descrição</th><th class="r">Qtd</th><th class="r">Valor</th><th class="r">Subtotal</th></tr></thead><tbody>${it.map(i => `<tr><td>${esc(i.nome)}${avEh(i) ? ` <button type="button" class="chip warn av-chip" data-act="av-abrir" data-n="${esc(i.nome)}" data-p="${num(i.preco)}" title="Item avulso: toque para cadastrar como definitivo">Avulso ✎</button>` : ''}</td><td class="r mono">${fmtQ(i.qtd)}</td><td class="r mono">${brl(i.preco)}</td><td class="r mono">${brl(i.qtd * i.preco)}</td></tr>`).join('')}${num(o.desconto) ? `<tr><td colspan="3">Desconto</td><td class="r mono">− ${brl(o.desconto)}</td></tr>` : ''}${num(o.frete) ? `<tr><td colspan="3">Frete</td><td class="r mono">+ ${brl(o.frete)}</td></tr>` : ''}</tbody></table></div>
@@ -6273,16 +6277,17 @@ function testesRows() {
 }
 function laudoForm(id) {
   const o = get('os', id); if (!o) return; const L = o.laudo || {};
-  M = { kind: 'os', id, itens: (o.itens || []).map(x => ({ ...x })), testes: (L.testes && L.testes.length ? L.testes : testesDoTipo(o.tipoEquip).map(n => ({ nome: n, res: '', obs: '' }))).map(t => ({ ...t })) };
+  M = { kind: 'os', id, itens: (o.itens || []).map(x => ({ ...x })), testes: (L.testes && L.testes.length ? L.testes : ltEntrada(o, testesDoTipo(o.tipoEquip).map(n => ({ nome: n, res: '', obs: '' })))).map(t => ({ ...t })) };
   if (!M.itens.length) M.itens.push({ nome: '', qtd: 1, preco: 0 });
   const ta = (fid, name, v, ph = '') => `<textarea id="${fid}" name="${name}" placeholder="${ph}">${esc(v || '')}</textarea>`;
   openModal(`Laudo técnico — OS ${pad(o.numero)}`, `<div class="xl-cols ld-cols"><div class="xl-c">
     <p class="muted"><b style="color:var(--ink)">${esc(osEquip(o))}</b>${o.serie ? ' · série ' + esc(o.serie) : ''} · defeito relatado: ${esc(o.defeito || '—')}</p>
     ${field('Diagnóstico *', ta('lf-diag', 'diagnostico', L.diagnostico, 'O que foi constatado na análise'))}
-    <fieldset><legend>Testes realizados</legend><div class="tests" id="lf-tests">${testesRows()}</div><p class="muted" style="font-size:.8rem;margin:6px 0 0">Testes de ${esc(o.tipoEquip || 'equipamento')}. Para incluir ou excluir testes, vá em <b>Configurações → Testes do laudo</b>.</p></fieldset></div><div class="xl-c">
+    <fieldset><legend>Testes realizados</legend>${!(L.testes && L.testes.length) && M.testes.some(t => t.daEntrada) ? `<p class="banner info" style="margin:0 0 8px;font-size:.85rem">✓ ${M.testes.filter(t => t.daEntrada).length === 1 ? '1 teste veio marcado' : M.testes.filter(t => t.daEntrada).length + ' testes vieram marcados'} conforme o estado informado na entrada. Confira e altere se precisar.</p>` : ''}<div class="tests" id="lf-tests">${testesRows()}</div><p class="muted" style="font-size:.8rem;margin:6px 0 0">Testes de ${esc(o.tipoEquip || 'equipamento')}. Para incluir ou excluir testes, vá em <b>Configurações → Testes do laudo</b>.</p></fieldset></div><div class="xl-c">
     <div class="fg ld-fg">${field('Causa provável', ta('lf-causa', 'causa', L.causa), 'full')}
       ${field('Solução recomendada / serviço executado', ta('lf-sol', 'solucao', L.solucao), 'full')}
-      ${field('Observações e recomendações ao cliente', ta('lf-obs', 'obs', L.obs, 'Ex.: recomendamos trocar a bateria nos próximos meses') + `<div id="lf-recbox" data-tipo="${esc(o.tipoEquip || 'Outro')}">${recLaudoHTML(o.tipoEquip || 'Outro', L.obs)}</div>`, 'full')}</div></div><div class="xl-c">
+      ${field('Observações e recomendações ao cliente', ta('lf-obs', 'obs', L.obs, 'Ex.: recomendamos trocar a bateria nos próximos meses') + `<div id="lf-recbox" data-tipo="${esc(o.tipoEquip || 'Outro')}">${recLaudoHTML(o.tipoEquip || 'Outro', L.obs)}</div>`, 'full')}
+      ${field('🔒 Informações internas (não saem no laudo do cliente)', ta('lf-int', 'interno', L.interno, 'Ex.: peça comprada no fornecedor X por R$ 45; cliente pediu desconto; voltar a testar em 2 dias'), 'full')}</div></div><div class="xl-c">
     <div class="fg ld-fg2">
       ${field('Conclusão', `<select id="lf-concl" name="conclusao">${Object.entries(CONCL).map(([k, l]) => `<option value="${k}"${(L.conclusao || 'viavel') === k ? ' selected' : ''}>${l}</option>`).join('')}</select>`, 'w2')}
       ${field('Técnico responsável', inp('lf-tec', 'tecnico', L.tecnico || o.tecnico || S.names[S.me] || ''))}
@@ -6466,7 +6471,7 @@ Object.assign(FORMS, {
     const o = get('os', f.dataset.id); if (!o) return;
     const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco) }));
     const subtotal = r2(sum(itens, i => i.qtd * i.preco)), desconto = descCalc(subtotal, d.descontoIn, d.descTipo), frete = num(d.frete), acrescimo = num(d.acrescimo), now = Date.now();
-    const laudo = { diagnostico: d.diagnostico.trim(), causa: d.causa, solucao: d.solucao, conclusao: d.conclusao, tecnico: d.tecnico, garantia: d.garantia, obs: d.obs, obsFim: (d.obsFim || '').trim(), testes: M.testes.filter(t => t.nome.trim() && (t.on || t.res || String(t.obs || '').trim())).map(({ on, novo, padrao, ...t }) => t), at: (o.laudo && o.laudo.at) || now, atualizado: now, por: (o.laudo && o.laudo.por) || S.me };
+    const laudo = { diagnostico: d.diagnostico.trim(), causa: d.causa, solucao: d.solucao, conclusao: d.conclusao, tecnico: d.tecnico, garantia: d.garantia, obs: d.obs, interno: (d.interno || '').trim(), obsFim: (d.obsFim || '').trim(), testes: M.testes.filter(t => t.nome.trim() && (t.on || t.res || String(t.obs || '').trim())).map(({ on, novo, padrao, ...t }) => t), at: (o.laudo && o.laudo.at) || now, atualizado: now, por: (o.laudo && o.laudo.por) || S.me };
     let status = o.status, hist = [...(o.historico || [])];
     if (d.marcarPronto) status = 'pronto'; else if (status === 'recebido') status = 'analise';
     if (status !== o.status) hist.push({ st: status, at: now, por: OPID(), obs: 'Laudo técnico registrado' });
@@ -6650,7 +6655,11 @@ ACT.scan = el => {
 };
 /* leitura ao vivo pela câmera (boletos, faturas, produtos); se a câmera não for liberada, cai para a foto */
 let CAM = null;
-function camParar() { if (CAM) { clearInterval(CAM.t); try { CAM.stream.getTracks().forEach(t => t.stop()); } catch { } CAM = null; } }
+/* b394: a tela não gira sozinha durante a leitura (trava na posição em que abriu); o quadro verde gira só pelo botão “Girar quadro” */
+const camGiro = () => { try { return localStorage.getItem('bancada-cam-giro') === '1'; } catch { return false; } };
+function camGuia() { const g = $('#cam-guia'), vert = CAM && CAM.giro; if (g) g.style.cssText = 'position:absolute;border:3px solid #3DC496;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.35);' + (vert ? 'left:38%;width:24%;top:5%;bottom:5%' : 'left:6%;right:6%;top:38%;height:24%'); const st = $('#cam-st'); if (st) st.innerHTML = vert ? 'Quadro <b>em pé</b>: deixe o código inteiro dentro da faixa verde vertical.' : 'Deixe o código inteiro dentro da faixa verde, com boa luz. Em boletos, deite o celular.'; }
+ACT['cam-girar'] = () => { if (!CAM) return; CAM.giro = !CAM.giro; try { localStorage.setItem('bancada-cam-giro', CAM.giro ? '1' : '0'); } catch { } camGuia(); };
+function camParar() { try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch { } if (CAM) { clearInterval(CAM.t); try { CAM.stream.getTracks().forEach(t => t.stop()); } catch { } CAM = null; } }
 async function camDecodificar(cv) {
   if ('BarcodeDetector' in window) { try { const r = await new window.BarcodeDetector().detect(cv); if (r && r.length) return r[0].rawValue; } catch { } }
   const Z = window.ZXing; if (!Z) return null;
@@ -6664,19 +6673,22 @@ async function camAbrir(target) {
   let stream;
   try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
   catch (e) { fallback(e && e.name === 'NotAllowedError' ? 'A câmera não foi liberada (permissão negada ou bloqueada nesta página).' : 'Não foi possível abrir a câmera ao vivo.'); return; }
-  openModal('Aponte a câmera para o código', `<div style="position:relative;background:#000;border-radius:12px;overflow:hidden"><video id="cam-v" playsinline muted autoplay style="width:100%;display:block;max-height:60vh;object-fit:cover"></video><div style="position:absolute;left:6%;right:6%;top:38%;height:24%;border:3px solid #3DC496;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.35)"></div></div><p class="muted" id="cam-st" style="font-size:.88rem;text-align:center">Deixe o código inteiro dentro da faixa verde, com boa luz. Em boletos, deite o celular.</p>`,
+  openModal('Aponte a câmera para o código', `<div style="position:relative;background:#000;border-radius:12px;overflow:hidden"><video id="cam-v" playsinline muted autoplay style="width:100%;display:block;max-height:60vh;object-fit:cover"></video><div id="cam-guia"></div><button type="button" class="btn sm" data-act="cam-girar" style="position:absolute;top:8px;right:8px;z-index:2" title="Gira o quadro verde (deitado ↔ em pé) sem precisar virar o celular nem o objeto">↻ Girar quadro</button></div><p class="muted" id="cam-st" style="font-size:.88rem;text-align:center">Deixe o código inteiro dentro da faixa verde, com boa luz. Em boletos, deite o celular.</p>`,
     `<button type="button" class="btn" data-act="close">Cancelar</button>`, { wide: true });
   const v = $('#cam-v'); v.srcObject = stream; try { await v.play(); } catch { }
-  CAM = { stream, t: 0, busy: false, target };
+  CAM = { stream, t: 0, busy: false, target, giro: camGiro(), n: 0 }; camGuia();
+  try { const o = screen.orientation; if (o && o.lock) o.lock(String(o.type || '').startsWith('portrait') ? 'portrait' : 'landscape').catch(() => { }); } catch { }
   loadZX().catch(() => { });
   const cv = document.createElement('canvas');
   CAM.t = setInterval(async () => {
     if (!CAM) return; if (!v.isConnected) { camParar(); return; } if (CAM.busy || !v.videoWidth) return; CAM.busy = true;
     try {
-      const w = v.videoWidth, h = v.videoHeight, ch = Math.round(h * .4); cv.width = w; cv.height = ch;
-      cv.getContext('2d').drawImage(v, 0, Math.round(h * .3), w, ch, 0, 0, w, ch);
-      let code = await camDecodificar(cv);
+      const w = v.videoWidth, h = v.videoHeight; let code = null; CAM.n++;
+      const girado = (sx, sy, sw, sh) => { cv.width = sh; cv.height = sw; const g = cv.getContext('2d'); g.save(); g.translate(sh, 0); g.rotate(Math.PI / 2); g.drawImage(v, sx, sy, sw, sh, 0, 0, sw, sh); g.restore(); };
+      if (CAM.giro) { const cw = Math.round(w * .4); girado(Math.round(w * .3), 0, cw, h); code = await camDecodificar(cv); }
+      else { const ch = Math.round(h * .4); cv.width = w; cv.height = ch; cv.getContext('2d').drawImage(v, 0, Math.round(h * .3), w, ch, 0, 0, w, ch); code = await camDecodificar(cv); }
       if (!code) { cv.width = w; cv.height = h; cv.getContext('2d').drawImage(v, 0, 0); code = await camDecodificar(cv); }
+      if (!code && CAM && CAM.n % 2 === 0) { girado(0, 0, w, h); code = await camDecodificar(cv); } /* tenta também o quadro inteiro girado: lê código em pé mesmo sem tocar em Girar */
       if (code && CAM) {
         code = String(code).trim(); const tg = CAM.target; camParar(); closeModal();
         if (navigator.vibrate) try { navigator.vibrate(60); } catch { }
@@ -7801,10 +7813,10 @@ function cfgImpressoras() {
     <div id="bt-imps">${btImpsHTML()}</div></section>`;
 }
 V.config = () => {
-  const t = S.cfgTab, tabs = [['pagamentos', 'Formas de pagamento'], ['fornecedores', 'Fornecedores e favorecidos'], ['itens', 'Produtos e serviços'], ['checklists', 'Checklists de entrada'], ['prazos', 'Previsão de entrega'], ['testes', 'Laudo técnico'], ['mensagens', 'Mensagens do WhatsApp'], ['modelos', 'Modelos de documentos'], ['aparencia', 'Aparência e atalhos'], ['impressoras', 'Impressoras'], ['agenda', 'Agenda Google'], ...(podeRota('funcionarios') ? [['funcionarios', `${ic('funcionarios')}Funcionários ›`]] : []), ['dados', 'Dados: importar, exportar e excluir']];
+  const t = S.cfgTab, tabs = [['pagamentos', 'Formas de pagamento'], ['fornecedores', 'Fornecedores e favorecidos'], ['itens', 'Produtos e serviços'], ['checklists', 'Checklists de entrada'], ['prazos', 'Prazos e lembretes'], ['testes', 'Laudo técnico'], ['mensagens', 'Mensagens do WhatsApp'], ['modelos', 'Modelos de documentos'], ['aparencia', 'Aparência e atalhos'], ['impressoras', 'Impressoras'], ['agenda', 'Agenda Google'], ...(podeRota('funcionarios') ? [['funcionarios', `${ic('funcionarios')}Funcionários ›`]] : []), ['dados', 'Dados: importar, exportar e excluir']];
   return `<div class="page-head"><div><p class="eyebrow">Ajustes do sistema</p><h1>Configurações</h1></div><div class="actions"><button class="btn" data-act="cfg-print">${ic('print')}Imprimir relatório</button></div></div>
   <div class="seg cfg-tabs" role="tablist">${tabs.map(([k, l]) => `<button data-act="cfg-tab" data-t="${k}" class="${t === k ? 'on' : ''}">${l}</button>`).join('')}</div>
-  ${t === 'fornecedores' ? cfgFornecedores() : t === 'itens' ? cfgItens() : t === 'checklists' ? cfgChecklists() : t === 'prazos' ? cfgPrazos() : t === 'testes' ? cfgTestes() : t === 'mensagens' ? cfgMensagens() : t === 'modelos' ? cfgModelos() : t === 'aparencia' ? cfgAparencia() : t === 'impressoras' ? cfgImpressoras() : t === 'agenda' ? cfgAgenda() : t === 'importar' || t === 'dados' ? cfgDados() : cfgPagamentos()}`;
+  ${t === 'fornecedores' ? cfgFornecedores() : t === 'itens' ? cfgItens() : t === 'checklists' ? cfgChecklists() : t === 'prazos' ? cfgPrazos() + cfgLembretes() : t === 'testes' ? cfgTestes() : t === 'mensagens' ? waqCfgHTML() + stAvisoCfgHTML() + cfgMensagens() : t === 'modelos' ? cfgModelos() : t === 'aparencia' ? cfgAparencia() : t === 'impressoras' ? cfgImpressoras() : t === 'agenda' ? cfgAgenda() : t === 'importar' || t === 'dados' ? cfgDados() : cfgPagamentos()}`;
 };
 function cfgPagamentos() {
   const c = cfgPag();
@@ -13123,11 +13135,23 @@ function vzNumeros(t, modo) {
   return r;
 }
 /* b391: na OS por voz, ler código / foto / digitar abrem por cima da própria janela de voz; a pesquisa aparece nela e, ao terminar, segue para o tipo (já preenchido) */
-function vzEqEspera() { JUN_AUTO['eq:os'] = Date.now(); VZ.esperaEq = true; clearInterval(VZ.eqIv); const o = vzEl('vz-ouvido'); if (o) o.innerHTML = '<span class="muted">Aguardando o código, a foto ou o texto…</span>';
-  VZ.eqIv = setInterval(() => { if (!vzEl('vz-q')) { clearInterval(VZ.eqIv); return; } const st = document.querySelector('#eq-ler-os .eq-st'), ov = vzEl('vz-ouvido'); if (st && !st.hidden && ov && st.innerText.trim()) ov.innerHTML = `<div class="banner info" style="text-align:left">${esc(st.innerText.split('\n')[0])}</div>${IA_OP ? '<button type="button" class="btn sm" data-act="ia-parar">Parar a pesquisa</button>' : ''}`; }, 700); }
-function vzEqFim() { VZ.esperaEq = false; clearInterval(VZ.eqIv); if (!vzEl('vz-q')) return; const st = document.querySelector('#eq-ler-os .eq-st'), ok = st && /Identificado/.test(st.innerText), ov = vzEl('vz-ouvido');
-  if (ov && st) ov.innerHTML = `<div class="banner${ok ? ' info' : ''}" style="text-align:left">${esc(st.innerText.split('\n')[0])}</div>`;
-  if (ok) setTimeout(() => { if (!vzEl('vz-q') || VZ_ETAPAS[VZ.i].k !== 'equip') return; VZ.i = VZ_ETAPAS.findIndex(e => e.k === 'tipo'); vzMostrar(); }, 2200); }
+function vzEqEspera() { JUN_AUTO['eq:os'] = Date.now(); VZ.esperaEq = true; VZ.eqOk = false; VZ.eqHtml = ''; const o = vzEl('vz-ouvido'); if (o) o.innerHTML = '<span class="muted">Aguardando o código, a foto ou o texto…</span>'; vzEqEspelho(); }
+/* b394 (regra): na OS por voz a pesquisa mostra o MESMO aviso e as MESMAS opções das outras telas (Tentar de novo / pesquisa aprofundada, Digitar, Parar, Testar a IA…) — é um espelho do aviso da Nova OS */
+function vzEqEspelho() {
+  clearInterval(VZ.eqIv);
+  VZ.eqIv = setInterval(() => {
+    if (!vzEl('vz-q') || !VZ_ETAPAS[VZ.i] || VZ_ETAPAS[VZ.i].k !== 'equip') { clearInterval(VZ.eqIv); return; }
+    const st = document.querySelector('#eq-ler-os .eq-st'), ov = vzEl('vz-ouvido'); if (!st || !ov || st.hidden || !st.innerText.trim()) return;
+    const html = st.innerHTML.replace(/data-act="eq-dig"/g, 'data-act="vz-eq-dig"');
+    if (html !== VZ.eqHtml) { VZ.eqHtml = html; ov.innerHTML = `<div class="${esc(st.className.replace(/\beq-st\b|\bmuted\b/g, ''))} vz-eq-st" style="text-align:left">${html}</div>`; }
+    const ok = /Identificado/.test(st.innerText) && !IA_OP;
+    if (ok && !VZ.eqOk) { VZ.eqOk = true; setTimeout(() => { if (!vzEl('vz-q') || VZ_ETAPAS[VZ.i].k !== 'equip') return; clearInterval(VZ.eqIv); VZ.i = VZ_ETAPAS.findIndex(e => e.k === 'tipo'); vzMostrar(); }, 2200); }
+    if (!ok) VZ.eqOk = false;
+  }, 500);
+}
+function vzEqFim() { VZ.esperaEq = false; if (vzEl('vz-q')) vzEqEspelho(); }
+ACT['vz-eq-dig'] = () => vzEscolher({ v: 'digitar' });
+setTimeout(() => { try { ACT_PERM['vz-eq-dig'] = ''; AJUDA['vz-eq-dig'] = 'Abre o campo desta janela para digitar o código ou o nome do equipamento.'; } catch { } }, 0);
 const vzConv = t => { const E = VZ_ETAPAS[VZ.i], m = E && { cliente: 'tel', modelo: 'modelo', serie: 'serie', senha: 'senha' }[E.k]; return m ? vzNumeros(t, m) : t; };
 
 const vzFalarOn = () => { try { return lsGet('bancada-voz-falar') === '1'; } catch { return false; } };
@@ -13429,6 +13453,35 @@ ACT['eq-dig'] = el => ACT['jun-dig']({ dataset: { k: 'eq:' + el.dataset.p } });
 document.addEventListener('keydown', e => { const t = e.target; if (e.key === 'Enter' && t && t.id && /^jun-.*-in$/.test(t.id)) { e.preventDefault(); const k = Object.keys(JUN).find(x => JUN_ID(x) + '-in' === t.id); if (k) ACT['jun-dig-ok']({ dataset: { k } }); } });
 document.addEventListener('change', e => { const t = e.target; if (t && t.matches && t.matches('input.jun-foto') && t.files && t.files[0]) { const f = t.files[0], k = t.dataset.k; t.value = ''; fotoAntes(f, 'Ajustar a foto', g => junAdd(k, g)); } });
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'jun-dig': '', 'jun-dig-ok': '', 'jun-tira': '', 'jun-limpar': '', 'jun-ir': '' }); Object.assign(AJUDA, { 'jun-dig': 'Abre o campo para digitar o código ou o nome e juntar à pesquisa. Ex.: HP 664.', 'jun-dig-ok': 'Junta o que foi digitado às outras informações da pesquisa. Ex.: foto + “Notebook Dell Inspiron 15”.', 'jun-tira': 'Retira esta informação da pesquisa.', 'jun-limpar': 'Retira todas as informações juntadas.', 'jun-ir': 'Pesquisa usando todas as informações juntadas (código, foto, nome). Ex.: foto da etiqueta + código de barras.' }); } catch { } }, 0);
+/* v17 b394: PRAZOS DOS LEMBRETES configuráveis (Configurações → Prazos e lembretes): retirada, orçamento sem resposta e manutenção preventiva (por tipo de equipamento) */
+/* padrão combinado com o Rogério (07/11): retirada 3 dias e repete a cada 3; preventiva 4 meses para impressora, 6 meses para os demais */
+const LEM_PAD = { retiradaDias: 3, retiradaRepete: 3, orcDias: 3, prevMeses: 6, prevJanela: 60, prevPorTipo: null };
+const lemPrevPad = () => Object.fromEntries([...new Set([...TIPOS_EQ, ...cbValores('tipoEquip')])].filter(t => /impress|multifunc/i.test(t)).map(t => [t, 4]));
+const lemCfg = () => { const c = { ...LEM_PAD, ...((S.ajustes || []).find(x => x.id === 'lembretes') || {}) }; if (!c.prevPorTipo) c.prevPorTipo = lemPrevPad(); return c; };
+const lemPrevMeses = tipo => { const c = lemCfg(), v = (c.prevPorTipo || {})[tipo]; return v === 0 ? 0 : (+v || +c.prevMeses || 0); };
+/* data em que a preventiva vence (entrega + meses do tipo) */
+const lemPrevVence = o => { const m = lemPrevMeses(o.tipoEquip); if (!m || !o.entregueEm) return null; const d = new Date(o.entregueEm); d.setMonth(d.getMonth() + m); return d.getTime(); };
+function cfgLembretes() {
+  const c = lemCfg(), tipos = [...new Set([...TIPOS_EQ, ...cbValores('tipoEquip')])];
+  const n = (id, v, min, max) => `<input type="number" min="${min}" max="${max}" id="${id}" value="${esc(v)}" inputmode="numeric">`;
+  return `<section class="panel"><div class="panel-head"><div><h2>Lembretes para o cliente</h2><p class="muted" style="font-size:.85rem">Quando cada lembrete aparece em Indicadores → “Precisa de atenção hoje”, pronto para mandar pelo WhatsApp.</p></div></div>
+    <div class="fg" style="max-width:620px">
+      ${field('OS pronta e o cliente não veio buscar: avisar depois de (dias)', n('lem-ret', c.retiradaDias, 1, 365))}
+      ${field('Enquanto não buscar, lembrar de novo a cada (dias)', n('lem-rep', c.retiradaRepete ?? 3, 1, 60) + '<small class="muted">Ex.: 3 = depois de mandar o lembrete, ele volta à lista 3 dias depois, até o equipamento ser retirado.</small>')}
+      ${field('Orçamento sem resposta: avisar depois de (dias)', n('lem-orc', c.orcDias, 1, 90))}
+      ${field('Serviço aprovado: começar em até (dias)', n('lem-ini', c.inicioDias ?? 2, 1, 30) + '<small class="muted">Depois de “Aprovado”, a OS fica na agenda como pendência até alguém mudar para “Em execução”. Passou o prazo, fica em vermelho.</small>')}
+      ${field('Manutenção preventiva: lembrar depois da entrega (meses)', n('lem-prev', c.prevMeses, 0, 36) + '<small class="muted">Ex.: 4 = quatro meses depois de entregue. 0 = não lembrar.</small>')}
+      ${field('Manter o lembrete da preventiva na lista por (dias)', n('lem-jan', c.prevJanela, 7, 365) + '<small class="muted">Ex.: 60 = some da lista 60 dias depois de vencer, se ninguém chamou o cliente.</small>')}
+    </div>
+    <p class="muted" style="font-size:.85rem;margin:12px 0 6px">Preventiva diferente por tipo de equipamento, em meses (em branco = o padrão acima; 0 = não lembrar):</p>
+    <div class="pz-l">${tipos.map(t => `<label class="pz-r"><span>${esc(t)}</span><input type="number" min="0" max="36" class="lem-t" data-t="${esc(t)}" value="${esc((c.prevPorTipo || {})[t] ?? '')}" placeholder="${esc(String(c.prevMeses))}" inputmode="numeric"><small class="muted">meses</small></label>`).join('')}</div>
+    <div class="actions" style="justify-content:flex-start;margin-top:10px"><button type="button" class="btn primary" data-act="lem-salvar">Salvar lembretes</button><button type="button" class="btn" data-act="lem-padrao">↺ Restaurar o padrão</button></div></section>`;
+}
+ACT['lem-salvar'] = async () => { const v = (id, d) => { const x = parseInt(($('#' + id) || {}).value, 10); return Number.isFinite(x) && x >= 0 ? x : d; }, porTipo = {}; document.querySelectorAll('.lem-t').forEach(i => { if (String(i.value).trim() !== '') porTipo[i.dataset.t] = Math.max(0, Math.min(36, parseInt(i.value, 10) || 0)); });
+  const d = { retiradaDias: Math.max(1, v('lem-ret', 3)), retiradaRepete: Math.max(1, v('lem-rep', 3)), orcDias: Math.max(1, v('lem-orc', 3)), prevMeses: v('lem-prev', 4), prevJanela: Math.max(7, v('lem-jan', 60)), inicioDias: Math.max(1, v('lem-ini', 2)), prevPorTipo: porTipo };
+  if (await save('ajustes', 'lembretes', d)) toastOk('Lembretes salvos.'); };
+ACT['lem-padrao'] = async () => { if (await save('ajustes', 'lembretes', { ...LEM_PAD, prevPorTipo: lemPrevPad() })) { toastOk('Lembretes no padrão: retirada 3 dias (repete a cada 3), orçamento 3 dias, preventiva 4 meses para impressora e 6 meses para os demais.'); render(); } };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'lem-salvar': 'config', 'lem-padrao': 'config' }); Object.assign(AJUDA, { 'lem-salvar': 'Salva quando cada lembrete aparece. Ex.: preventiva de impressora 4 meses, notebook 6 meses.', 'lem-padrao': 'Volta aos prazos padrão: retirada 3 dias (repete a cada 3), orçamento 3 dias, preventiva 4 meses para impressora e 6 para os demais.' }); } catch { } }, 0);
 /* v17 b392: INDICADORES (painel BI) — o que pede ação hoje primeiro; depois OS por status, números do período, faturamento por mês e mais vendidos/técnicos.
    Valores em R$ escondidos até tocar no olho (60 s). Cada pessoa escolhe e ordena os blocos (Personalizar) e pode voltar ao padrão. */
 IC.indicadores = '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/><circle cx="19" cy="8" r="1.5"/>';
@@ -13464,24 +13517,24 @@ function indAlertas() {
   const h = today(), agora = Date.now(), L = {};
   if (pode('os')) {
     L.atras = S.os.filter(osAtrasada).sort((a, b) => (a.previsao || '').localeCompare(b.previsao || ''));
-    L.pronto = S.os.filter(o => o.status === 'pronto' && agora - (indProntoEm(o) || o.at || agora) > 30 * 864e5);
-    const ult = {}; S.os.forEach(o => { if (o.clienteId && (!ult[o.clienteId] || (o.at || 0) > (ult[o.clienteId].at || 0))) ult[o.clienteId] = o; });
-    L.prev = Object.values(ult).filter(o => o.status === 'entregue' && o.entregueEm && agora - o.entregueEm >= 120 * 864e5 && agora - o.entregueEm <= 185 * 864e5 && !((S.ajustes || []).find(x => x.id === 'ind-preventiva') || {})[o.id]);
+    const LC = lemCfg(); L.pronto = S.os.filter(o => o.status === 'pronto' && agora - (indProntoEm(o) || o.at || agora) >= LC.retiradaDias * 864e5 && !(o.lembRetiradaEm && agora - o.lembRetiradaEm < (+LC.retiradaRepete || 3) * 864e5));
+    const ult = prvUltimas(); /* b394: por equipamento (nº de série), não por cliente */
+    L.prev = Object.values(ult).filter(o => { const v = o.status === 'entregue' && lemPrevVence(o); return v && agora >= v && agora <= v + LC.prevJanela * 864e5; }).filter(o => !((S.ajustes || []).find(x => x.id === 'ind-preventiva') || {})[o.id]);
   }
-  if (pode('orcamentos')) L.orc = S.orcamentos.filter(o => o.status === 'aberto' && o.at && agora - o.at > 3 * 864e5 && !(o.validadeAte && o.validadeAte < h));
+  if (pode('orcamentos')) L.orc = S.orcamentos.filter(o => o.status === 'aberto' && o.at && agora - o.at > lemCfg().orcDias * 864e5 && !(o.validadeAte && o.validadeAte < h));
   return L;
 }
 const IND_AL = {
   atras: ['OS atrasadas', 'passaram da previsão de entrega', 'red', 'Ver'],
-  pronto: ['OS prontas sem retirada', 'há mais de 30 dias', 'amber', 'Avisar'],
-  orc: ['orçamentos sem resposta', 'enviados há mais de 3 dias', 'amber', 'Cobrar'],
-  prev: ['manutenções preventivas vencendo', 'atendidos há 4 a 6 meses', 'blue', 'Chamar']
+  pronto: ['OS prontas sem retirada', 'prontas há {ret} dias ou mais · lembra a cada {rep} dias', 'amber', 'Avisar'],
+  orc: ['orçamentos sem resposta', 'enviados há mais de {orc} dias', 'amber', 'Cobrar'],
+  prev: ['manutenções preventivas vencendo', 'prazo de preventiva vencido', 'blue', 'Chamar']
 };
 function indBlocoAlertas() {
   const A = indAlertas(), ks = Object.keys(IND_AL).filter(k => A[k] && A[k].length);
   if (!Object.keys(A).length) return '';
   const cor = { red: '--red-soft', amber: '--amber-soft', blue: '--blue-soft' };
-  return `<section class="panel"><div class="panel-head"><h2>Precisa de atenção hoje</h2></div>${ks.length ? `<div class="ind-al">${ks.map(k => { const [t, s, c, b] = IND_AL[k], n = A[k].length; return `<div class="ind-al-i" style="background:var(${cor[c]})" data-act="ind-lista" data-k="${k}" role="button"><b class="ind-al-n">${n}</b><span class="grow"><b>${(x => x[0].toUpperCase() + x.slice(1))(n === 1 ? t.replace('atrasadas', 'atrasada').replace('prontas', 'pronta').replace('orçamentos', 'orçamento').replace('manutenções preventivas vencendo', 'manutenção preventiva vencendo') : t)}</b><br><small class="muted">${n === 1 ? s.replace('passaram', 'passou').replace('enviados', 'enviado').replace('atendidos', 'atendido') : s}</small></span><span class="btn sm">${b} ›</span></div>`; }).join('')}</div>` : `<p class="muted" style="margin:0">✅ Nada pendente agora: nenhuma OS atrasada, nenhuma pronta esquecida, nenhum orçamento parado.</p>`}</section>`;
+  return `<section class="panel"><div class="panel-head"><h2>Precisa de atenção hoje</h2></div>${ks.length ? `<div class="ind-al">${ks.map(k => { const [t, s, c, b] = IND_AL[k], n = A[k].length; return `<div class="ind-al-i" style="background:var(${cor[c]})" data-act="ind-lista" data-k="${k}" role="button"><b class="ind-al-n">${n}</b><span class="grow"><b>${(x => x[0].toUpperCase() + x.slice(1))(n === 1 ? t.replace('atrasadas', 'atrasada').replace('prontas', 'pronta').replace('orçamentos', 'orçamento').replace('manutenções preventivas vencendo', 'manutenção preventiva vencendo') : t)}</b><br><small class="muted">${(z => n === 1 ? z.replace('passaram', 'passou').replace('enviados', 'enviado').replace('atendidos', 'atendido') : z)(s.replace('{ret}', lemCfg().retiradaDias).replace('{rep}', lemCfg().retiradaRepete || 3).replace('{orc}', lemCfg().orcDias))}</small></span><span class="btn sm">${b} ›</span></div>`; }).join('')}</div>` : `<p class="muted" style="margin:0">✅ Nada pendente agora: nenhuma OS atrasada, nenhuma pronta esquecida, nenhum orçamento parado.</p>`}</section>`;
 }
 function indBlocoStatus() {
   if (!pode('os')) return '';
@@ -13542,9 +13595,9 @@ function indListaHTML(k) {
   const A = indAlertas(), wa = (tipo, id, extra) => `<button type="button" class="btn sm" data-act="ind-wa" data-tipo="${tipo}" data-id="${id}"${extra || ''}>WhatsApp</button>`;
   const osRow = (o, tipo, mais) => `<div class="row"><div class="grow click" data-act="os-view" data-id="${o.id}" role="button" style="cursor:pointer"><b>OS ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">${esc(osEquip(o))} · ${esc(osSt(o).t)}${o.previsao ? ' · previsão ' + dBR(o.previsao) : ''}</div></div>${tipo ? wa(tipo, o.id) : ''}${mais || ''}</div>`;
   if (k === 'atras') return ['OS atrasadas', A.atras.map(o => osRow(o, indTipoOS(o, true)))];
-  if (k === 'pronto') return ['OS prontas sem retirada (mais de 30 dias)', A.pronto.map(o => osRow(o, 'os-retirada'))];
+  if (k === 'pronto') return ['OS prontas sem retirada (há ' + lemCfg().retiradaDias + ' dias ou mais)', A.pronto.map(o => osRow(o, 'os-retirada'))];
   if (k === 'prev') return ['Manutenção preventiva vencendo', A.prev.map(o => osRow(o, 'os-preventiva', `<button type="button" class="btn sm ghost" data-act="ind-prev-ok" data-id="${o.id}" title="Tira este cliente da lista (já foi chamado)">Já chamei</button>`))];
-  if (k === 'orc') return ['Orçamentos sem resposta (mais de 3 dias)', A.orc.map(o => `<div class="row"><div class="grow click" data-act="orc-open" data-id="${o.id}" role="button" style="cursor:pointer"><b>Orçamento ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">enviado em ${dBR(dayISO(o.at))}${o.validadeAte ? ' · válido até ' + dBR(o.validadeAte) : ''}</div></div>${wa('orc-cobranca', o.id)}</div>`)];
+  if (k === 'orc') return ['Orçamentos sem resposta (mais de ' + lemCfg().orcDias + ' dias)', A.orc.map(o => `<div class="row"><div class="grow click" data-act="orc-open" data-id="${o.id}" role="button" style="cursor:pointer"><b>Orçamento ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">enviado em ${dBR(dayISO(o.at))}${o.validadeAte ? ' · válido até ' + dBR(o.validadeAte) : ''}</div></div>${wa('orc-cobranca', o.id)}</div>`)];
   if (k === 'ent') { const C = indCfg(), P = indPeriodo(C.per); return ['OS entregues: ' + P.nome, relCalc(P.de, P.ate).osEnt.map(o => osRow(o, ''))]; }
   if (k.startsWith('st:')) { const s = k.slice(3), t = (OS_ST.find(x => x[0] === s) || [])[1] || s; return ['OS: ' + t, S.os.filter(o => osAberta(o) && (o.status || 'recebido') === s).map(o => osRow(o, indTipoOS(o)))]; }
   return ['', []];
@@ -13580,6 +13633,7 @@ Object.assign(ACT, {
     if (w.prazo) { const d = ($('#iw-data') || {}).value || ''; if (!d || d < today()) { toast('Escolha a nova previsão (hoje ou depois).'); $('#iw-data') && $('#iw-data').focus(); return; }
       const ok = await save('os', x.id, { ...x, previsao: d, previsoes: [...(x.previsoes || []), { de: x.previsao || '', para: d, at: Date.now(), por: OPID(), motivo: w.tipo === 'os-peca' ? 'Aguardando peça' : 'Atraso' }] }); if (!ok) return;
       if (w.linha && d >= today()) { try { w.linha.remove(); } catch { } } }
+    if (!w.orc && ['os-retirada', 'st-pronto', 'st-cancelada'].includes(w.tipo)) { const x2 = get('os', x.id); if (x2) await save('os', x.id, { ...x2, lembRetiradaEm: Date.now() }); if (w.linha) { try { w.linha.remove(); } catch { } } }
     const tel = cliTelWa(cliente(x.clienteId)); closeModal(); IND_WA = null;
     if (!tel) { try { await navigator.clipboard.writeText(txt); } catch { } toast((w.prazo ? 'Nova previsão gravada. ' : '') + 'O cliente não tem WhatsApp cadastrado: a mensagem foi copiada.', 6000); return; }
     abrirExterno(waUrl(tel, txt)); if (w.prazo) toastOk('Nova previsão gravada na OS.');
@@ -13595,6 +13649,346 @@ Object.assign(ACT, {
 function indPersPinta() { const L = $('#ind-pers-l'); if (!L || !M.ind) return; const o = M.ind.ordem; L.innerHTML = o.map((k, i) => `<div class="row"><label class="grow" style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" data-ind-k="${k}"${M.ind.ocultos.includes(k) ? '' : ' checked'}> ${esc(IND_BLOCOS[k])}</label><button type="button" class="btn sm" data-act="ind-pers-mov" data-i="${i}" data-d="-1" aria-label="Subir"${i ? '' : ' disabled'}>▲</button><button type="button" class="btn sm" data-act="ind-pers-mov" data-i="${i}" data-d="1" aria-label="Descer"${i < o.length - 1 ? '' : ' disabled'}>▼</button></div>`).join(''); }
 document.addEventListener('change', e => { const t = e.target; if (t && t.dataset && t.dataset.indK && M.ind) { const k = t.dataset.indK; M.ind.ocultos = M.ind.ocultos.filter(x => x !== k); if (!t.checked) M.ind.ocultos.push(k); } });
 setTimeout(() => { try { Object.assign(ACT_PERM, { 'ind-wa': '', 'ind-wa-env': '', 'ind-olho': '', 'ind-lista': '', 'ind-prev-ok': '', 'ind-pers': '', 'ind-pers-mov': '', 'ind-pers-pad': '', 'ind-pers-ok': '' }); Object.assign(AJUDA, { 'ind-wa': 'Abre a mensagem certa para a situação (ex.: lembrete de aprovação, atraso com novo prazo) para enviar pelo WhatsApp.', 'ind-wa-env': 'Grava o novo prazo na OS (quando pedido) e abre o WhatsApp com a mensagem.', 'ind-olho': 'Mostra os valores em R$ por 1 minuto; toque de novo para esconder.', 'ind-lista': 'Abre a lista deste indicador. Ex.: as OS atrasadas, com botão para avisar o cliente pelo WhatsApp.', 'ind-prev-ok': 'Tira este cliente da lista de preventivas (ele já foi chamado).', 'ind-pers': 'Escolhe e ordena os blocos desta tela. Ex.: esconder “Mais vendidos”.', 'ind-pers-mov': 'Muda a posição do bloco.', 'ind-pers-pad': 'Volta a ordem e os blocos ao padrão: alertas, OS abertas, números, faturamento, mais vendidos.', 'ind-pers-ok': 'Grava a sua escolha.' }); } catch { } }, 0);
+/* b394: o que foi marcado na ENTRADA (liga / não liga, puxa papel, atola papel…) já vem marcado nos testes do laudo; dá para alterar.
+   Só itens de funcionamento (estado físico como tela trincada ou carcaça riscada não vira teste). Item negativo (“Não liga”, “Atola papel”) = Com falha; positivo = OK. */
+const LT_FISICO = /trincad|riscad|amassad|parafus|teclas faltando|l[ií]quido|dobradi|terceiros|faltando|carca[cç]a|acompanha|com chip|cart[aã]o de mem|capa|pel[ií]cula|lacre|resetad|sem bateria|estufad|antenas|suja|lubrifica/i;
+const LT_NEG = /^n[aã]o\s|atola|falha|mancha|erro|piscando|vazando|bipando|superaquece|n[aã]o funciona/i;
+const LT_SIN = [[/imprime|manchas?/i, /cabe[cç]a de impress|teste de jatos/i], [/erro|luzes piscando/i, /status|p[aá]gina de teste/i], [/atola|puxa papel/i, /puxa papel|alimenta/i], [/touch/i, /touch|tela/i], [/carrega/i, /carreg|bateria/i], [/l[eê] disco/i, /disco|leitor/i], [/hdmi|v[ií]deo/i, /hdmi|v[ií]deo|tela/i]];
+const ltBase = t => norm(String(t || '')).replace(/^nao\s+/, '').replace(/\b(normalmente|com falhas?)\b/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const ltPal = t => ltBase(t).split(' ').filter(w => w.length >= 4 && !['funcionando', 'funciona'].includes(w));
+function ltEntrada(o, testes) {
+  try {
+    const itens = (o.estadoChk || []).map(x => String(x || '').trim()).filter(x => x && !/:\s/.test(x));
+    itens.forEach(raw => {
+      const m = raw.match(/^(.*?)(?:\s*\((.*)\))?$/), txt = (m[1] || raw).trim(), obs = (m[2] || '').trim();
+      if (LT_FISICO.test(txt)) return;
+      const neg = LT_NEG.test(txt), liga = LIGA_RE.test(txt) || /^liga\b/i.test(txt), pal = ltPal(txt);
+      const sin = LT_SIN.find(([r]) => r.test(txt)); let t = liga ? testes.find(x => /^liga\b/i.test(x.nome)) : sin ? testes.find(x => sin[1].test(x.nome)) : null; if (!t && !liga) t = testes.find(x => { const q = ltPal(x.nome); return pal.some(w => q.some(z => z.startsWith(w.slice(0, 5)) || w.startsWith(z.slice(0, 5)))); });
+      if (!t) { const nome = liga ? 'Liga / inicializa' : (b => b.charAt(0).toUpperCase() + b.slice(1))(txt.replace(/^n[aã]o\s+/i, '').replace(/^atola papel$/i, 'Puxa papel')); t = testes.find(x => norm(x.nome) === norm(nome)); if (!t) { t = { nome, res: '', obs: '', novo: true }; testes.push(t); } }
+      if (t.daEntrada && t.res === 'falha') return; /* falha já marcada vence */
+      t.res = neg ? 'falha' : 'ok'; t.on = true; t.daEntrada = true;
+      const det = [norm(txt) !== norm(t.nome) && (neg || !liga) ? txt : '', obs].filter(Boolean).join(' · '); t.obs = det ? 'Na entrada: ' + det : 'Conforme a entrada';
+    });
+  } catch { }
+  return testes;
+}
+/* b394: “＋” nas perguntas de escolha (Tensão, Tipo de impressora…): adiciona outra opção ao checklist e já deixa marcada */
+ACT['chq-op-add'] = el => {
+  const k = el.dataset.k, t = el.dataset.t || 'Pergunta';
+  openModal('Nova opção: ' + t, `${field('Opção *', '<input id="cq-novo" autocomplete="off" placeholder="Ex.: Fonte 12V">')}<p class="muted" style="font-size:.82rem;margin:6px 0 0">Fica salva no checklist e aparece nas próximas entradas.</p>`, `<button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="chq-op-ok" data-k="${esc(k)}">Adicionar</button>`);
+  setTimeout(() => { const i = $('#cq-novo'); if (i) i.focus(); }, 60);
+};
+ACT['chq-op-ok'] = async el => {
+  const k = el.dataset.k, v = (($('#cq-novo') || {}).value || '').trim(); if (!v) { toast('Escreva a opção.'); return; }
+  const [pid, qid] = k.split(':'), P = JSON.parse(JSON.stringify(chkCfg().perfis)), pf = P.find(p => p.id === pid), q = pf && pf.perguntas.find(x => x.id === qid);
+  if (!q) { toast('Não encontrei esta pergunta no checklist.'); return; }
+  if (!(q.opcoes || []).some(o => norm(o) === norm(v))) { q.opcoes = [...(q.opcoes || []), v]; if (!(await chkSalvarCfg(P))) return; }
+  closeModal();
+  const box = $('#os-chkbox'), f = box && box.closest('form'), tipo = ($('#os-tipo') || {}).value || 'Outro';
+  if (box && f) { const r = chkColetar(f).resp; r[k] = (q.opcoes.find(o => norm(o) === norm(v)) || v); box.innerHTML = chkHTML(tipo, r); try { chkGrpAplicar(box); } catch { } }
+  toastOk('Opção adicionada.');
+};
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'chq-op-add': '', 'chq-op-ok': '', 'cam-girar': '' }); AJUDA['cam-girar'] = 'Gira o quadro verde entre deitado e em pé, sem virar o celular. Ex.: código de barras em pé numa caixa.'; Object.assign(AJUDA, { 'chq-op-add': 'Adiciona outra opção a esta pergunta do checklist. Ex.: Fonte 12V na Tensão.', 'chq-op-ok': 'Salva a nova opção no checklist e deixa marcada.' }); } catch { } }, 0);
+/* v17 b394: FILA DO WHATSAPP DA EMPRESA — quem não tem a permissão “WhatsApp próprio” não abre o WhatsApp do próprio celular:
+   a mensagem (com o link do PDF) vai para a fila; o aparelho marcado como “WhatsApp da empresa” mostra um aviso discreto e envia dali. */
+PERMS.splice(PERMS.findIndex(p => p[0] === 'exportar') + 1, 0, ['whatsapp', 'Enviar WhatsApp pelo próprio celular (sem esta permissão, o envio vai para a fila do WhatsApp da empresa)']);
+const WAQ_DEV_K = 'bancada-wa-dev', WAQ_SNOOZE_K = 'bancada-waq-depois', WAQ_VISTO_K = 'bancada-waq-visto';
+const waqLs = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { return null; } };
+const waqDev = () => { let d = waqLs(WAQ_DEV_K); if (!d) { d = 'd' + Math.random().toString(36).slice(2, 10); waqLs(WAQ_DEV_K, d); } return d; };
+const waqCfg = () => get('ajustes', 'wa-empresa') || {};
+const waqSouEmpresa = () => !!(waqCfg().aparelhos || {})[waqDev()];
+const waqTemAparelho = () => Object.keys(waqCfg().aparelhos || {}).length > 0;
+const waProprioOk = () => { try { return waqSouEmpresa() || pode('whatsapp'); } catch { return true; } };
+const waqEhUrl = u => /^(https?:\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)\/|whatsapp:\/\/)/i.test(String(u || ''));
+function waqLer(u) { try { const x = new URL(String(u).replace(/^whatsapp:\/\//i, 'https://x.local/')); const tel = (x.searchParams.get('phone') || (x.hostname === 'wa.me' ? x.pathname.replace(/\D/g, '') : '') || '').replace(/\D/g, ''); return { tel, txt: x.searchParams.get('text') || '' }; } catch { return { tel: '', txt: '' }; } }
+const waqCliPorTel = tel => { const t8 = String(tel || '').replace(/\D/g, '').slice(-8); if (t8.length < 8) return null; return (S.clientes || []).find(c => [c.whatsapp, c.telefone, c.telFixo, c.tel2].some(x => String(x || '').replace(/\D/g, '').slice(-8) === t8)) || null; };
+async function waqAdd(url) {
+  const { tel, txt } = waqLer(url); if (!txt && !tel) return;
+  const c = waqCliPorTel(tel), id = uid(), d = { tel, txt, cliente: c ? c.nome : '', clienteId: c ? c.id : '', por: OPID(), porNome: (typeof quem === 'function' ? quem(OPID()) : '') || '', at: Date.now(), status: 'fila' };
+  const ok = await save('envios', id, d); if (ok === false) return;
+  openModal('Enviado para a fila do WhatsApp da empresa', `<p style="margin-top:0">A mensagem${c ? ' para <b>' + esc(c.nome) + '</b>' : ''} foi para a <b>fila do WhatsApp da empresa</b>. Ela sai pelo número da empresa, não pelo seu WhatsApp.</p>${waqTemAparelho() ? '<p class="muted" style="font-size:.85rem">O aparelho do WhatsApp da empresa vai mostrar o aviso para enviar. Você acompanha em Mais → Fila do WhatsApp.</p>' : '<p class="banner" style="font-size:.85rem">⚠️ Ainda não há aparelho marcado como WhatsApp da empresa. Peça ao responsável para marcar em Configurações → Mensagens do WhatsApp.</p>'}`, `<button type="button" class="btn primary" data-act="close">Fechar</button>`);
+}
+/* intercepta TODA abertura de WhatsApp (botões, links e “abrir conversa”) */
+const _waqAbrir = abrirExterno;
+abrirExterno = function (url) { if (waqEhUrl(url) && !waProprioOk()) { waqAdd(url); return; } return _waqAbrir(url); };
+document.addEventListener('click', e => { const a = e.target && e.target.closest && e.target.closest('a[href]'); if (!a || !waqEhUrl(a.getAttribute('href')) || waProprioOk()) return; e.preventDefault(); e.stopPropagation(); waqAdd(a.getAttribute('href')); }, true);
+/* PDF sem telefone do cliente: também vai pela fila (com o link do PDF), em vez de compartilhar pelo celular do funcionário */
+const _waqDoc = waEnviarDoc;
+waEnviarDoc = function (D, url, el) { if (D && !D.tel && !waProprioOk()) D = { ...D, tel: ' ' }; return _waqDoc(D, url, el); };
+/* aviso discreto no aparelho da empresa */
+const waqPend = () => (S.envios || []).filter(x => x.status === 'fila').sort((a, b) => (a.at || 0) - (b.at || 0));
+function waqPill() {
+  let p = document.getElementById('waq-pill'); const n = waqSouEmpresa() ? waqPend().length : 0, adiado = (+waqLs(WAQ_SNOOZE_K) || 0) > Date.now();
+  if (!n || adiado || !S.loaded || document.querySelector('#modals .ov')) { if (p) p.remove(); return; }
+  if (!p) { p = document.createElement('button'); p.type = 'button'; p.id = 'waq-pill'; p.className = 'waq-pill'; p.dataset.act = 'waq-abrir'; p.title = 'Mensagens esperando para sair pelo WhatsApp da empresa'; document.body.appendChild(p); }
+  const t = `📨 ${n} ${n === 1 ? 'envio pendente' : 'envios pendentes'}`; if (p.textContent !== t) p.textContent = t;
+}
+/* quem pediu fica sabendo quando não foi enviado */
+function waqAvisos() {
+  if (!S.loaded) return; let visto = {}; try { visto = JSON.parse(waqLs(WAQ_VISTO_K) || '{}'); } catch { }
+  const meus = (S.envios || []).filter(x => x.por === OPID() && x.status === 'cancelado' && !visto[x.id]);
+  meus.forEach(x => { visto[x.id] = 1; toast(`O envio para ${x.cliente || x.tel || 'o cliente'} não foi feito pelo WhatsApp da empresa${x.motivo ? ': ' + x.motivo : ''}.`, 7000); });
+  if (meus.length) waqLs(WAQ_VISTO_K, JSON.stringify(visto));
+}
+setInterval(() => { try { waqPill(); waqAvisos(); } catch { } }, 2500);
+const waqQuando = t => { const d = dayISO(t); return (d === today() ? 'hoje' : dBR(d)) + ' às ' + new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); };
+function waqListaHTML() {
+  const eu = waqSouEmpresa(), L = eu ? waqPend() : (S.envios || []).filter(x => x.por === OPID() && x.at > Date.now() - 7 * 864e5).sort((a, b) => b.at - a.at);
+  const st = x => x.status === 'fila' ? '<span class="pill">na fila</span>' : x.status === 'enviado' ? `<span class="pill ok">enviado ${x.enviadoEm ? waqQuando(x.enviadoEm) : ''}</span>` : `<span class="pill" style="color:var(--red)">não enviado${x.motivo ? ': ' + esc(x.motivo) : ''}</span>`;
+  const linhas = L.map(x => `<div class="row" style="align-items:flex-start"><div class="grow" style="min-width:0"><b>${esc(x.cliente || (x.tel ? '+' + x.tel : 'Sem telefone (escolher o contato)'))}</b><div class="muted" style="font-size:.82rem">pedido por ${esc(x.porNome || quem(x.por) || '—')} · ${waqQuando(x.at)} ${eu ? '' : st(x)}</div><div class="waq-txt">${esc((x.txt || '').slice(0, 220))}${(x.txt || '').length > 220 ? '…' : ''}</div></div>${eu ? `<div class="waq-acoes"><button type="button" class="btn sm primary" data-act="waq-enviar" data-id="${x.id}">Enviar</button><button type="button" class="btn sm" data-act="waq-nao" data-id="${x.id}">Não enviar</button></div>` : ''}</div>`).join('');
+  return `${eu ? '<p class="muted" style="margin-top:0">Toque em <b>Enviar</b>: o WhatsApp da empresa abre na conversa do cliente com a mensagem pronta. Depois é só tocar em enviar lá.</p>' : '<p class="muted" style="margin-top:0">Seus envios dos últimos 7 dias pela fila do WhatsApp da empresa.</p>'}<div class="list">${linhas || emptyBox('Fila vazia', eu ? 'Nenhuma mensagem esperando.' : 'Você não pediu nenhum envio nos últimos 7 dias.')}</div>`;
+}
+Object.assign(ACT, {
+  'waq-abrir': () => { document.getElementById('waq-pill')?.remove(); const eu = waqSouEmpresa(); openModal(eu ? 'Fila do WhatsApp da empresa' : 'Meus envios pelo WhatsApp da empresa', `<div id="waq-l">${waqListaHTML()}</div>`, `${eu && waqPend().length ? '<button type="button" class="btn" data-act="waq-depois">Lembrar depois</button>' : ''}<button type="button" class="btn primary" data-act="close">Fechar</button>`); },
+  'waq-enviar': async el => { const x = get('envios', el.dataset.id); if (!x) return; _waqAbrir(waUrl(x.tel || '', x.txt || '')); await save('envios', x.id, { ...x, status: 'enviado', enviadoEm: Date.now(), enviadoPor: OPID() }); const l = $('#waq-l'); if (l) l.innerHTML = waqListaHTML(); },
+  'waq-nao': el => { const id = el.dataset.id; openModal('Não enviar esta mensagem', `${field('Motivo (quem pediu vai ver)', '<input id="waq-mot" placeholder="Ex.: cliente já foi avisado por telefone">')}`, `<button type="button" class="btn" data-act="close">Voltar</button><button type="button" class="btn danger" data-act="waq-nao-ok" data-id="${id}">Não enviar</button>`); },
+  'waq-nao-ok': async el => { const x = get('envios', el.dataset.id); if (!x) return; await save('envios', x.id, { ...x, status: 'cancelado', motivo: (($('#waq-mot') || {}).value || '').trim(), canceladoEm: Date.now(), canceladoPor: OPID() }); closeModal(); const l = $('#waq-l'); if (l) l.innerHTML = waqListaHTML(); },
+  'waq-depois': () => openModal('Lembrar depois', '<p style="margin-top:0">O aviso some deste aparelho e volta depois. A fila continua guardada.</p><div class="actions" style="justify-content:flex-start"><button type="button" class="btn" data-act="waq-adiar" data-m="15">15 minutos</button><button type="button" class="btn" data-act="waq-adiar" data-m="60">1 hora</button><button type="button" class="btn" data-act="waq-adiar" data-m="amanha">Amanhã cedo</button></div>', '<button type="button" class="btn" data-act="close">Voltar</button>'),
+  'waq-adiar': el => { const m = el.dataset.m; let t = Date.now() + (+m || 0) * 60000; if (m === 'amanha') { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(8, 0, 0, 0); t = d.getTime(); } waqLs(WAQ_SNOOZE_K, String(t)); closeAll(); waqPill(); toast('Aviso adiado. A fila continua guardada.'); },
+  'waq-marcar': el => { const ligar = el.dataset.v === '1'; pedirSenha('empresa', 'Marcar o aparelho do WhatsApp da empresa', async () => { const c = { ...waqCfg() }; delete c.id; const ap = { ...(c.aparelhos || {}) }; if (ligar) ap[waqDev()] = { nome: (navigator.userAgentData && navigator.userAgentData.platform) || (/android/i.test(navigator.userAgent) ? 'Celular Android' : /iphone|ipad/i.test(navigator.userAgent) ? 'iPhone' : 'Computador'), por: OPID(), at: Date.now() }; else delete ap[waqDev()]; c.aparelhos = ap; await save('ajustes', 'wa-empresa', c); render(); toastOk(ligar ? 'Este aparelho agora recebe a fila do WhatsApp da empresa.' : 'Este aparelho não recebe mais a fila.'); }); }
+});
+INI_ATALHOS['ir-wa-fila'] = ['Fila do WhatsApp', () => `<button class="btn" data-act="waq-abrir">${ic('chat')}Fila do WhatsApp</button>`];
+function waqCfgHTML() {
+  const eu = waqSouEmpresa(), ap = waqCfg().aparelhos || {}, n = Object.keys(ap).length;
+  return `<section class="panel"><div class="panel-head"><h2>WhatsApp da empresa</h2></div><p class="muted" style="margin-top:0">Quem <b>não</b> tem a permissão “Enviar WhatsApp pelo próprio celular” não abre o WhatsApp dele: a mensagem vai para a <b>fila</b> e sai pelo aparelho marcado aqui (celular com o WhatsApp da empresa ou computador com o WhatsApp Web/Desktop da empresa).</p>
+  <div class="row"><div class="grow"><b>Este aparelho</b><div class="muted" style="font-size:.85rem">${eu ? '✅ recebe a fila do WhatsApp da empresa' : 'não recebe a fila'}${n ? ` · aparelhos marcados: ${n}` : ' · nenhum aparelho marcado ainda'}</div></div><button type="button" class="btn sm${eu ? '' : ' primary'}" data-act="waq-marcar" data-v="${eu ? '0' : '1'}">${eu ? 'Desmarcar' : 'Marcar este aparelho'}</button></div>
+  <div class="actions" style="justify-content:flex-start;margin-top:8px"><button type="button" class="btn sm" data-act="waq-abrir">Ver a fila</button><button type="button" class="btn sm" data-act="resp-conferir" title="Busca agora as respostas dos clientes pelos links">📩 Buscar respostas dos clientes</button></div></section>`;
+}
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'waq-abrir': '', 'waq-enviar': '', 'waq-nao': '', 'waq-nao-ok': '', 'waq-depois': '', 'waq-adiar': '', 'waq-marcar': '' }); Object.assign(AJUDA, { 'waq-abrir': 'Mostra a fila de mensagens que saem pelo WhatsApp da empresa.', 'waq-enviar': 'Abre o WhatsApp da empresa na conversa do cliente com a mensagem pronta.', 'waq-nao': 'Tira a mensagem da fila sem enviar; quem pediu é avisado.', 'waq-depois': 'Esconde o aviso por um tempo (15 min, 1 hora ou até amanhã).', 'waq-marcar': 'Marca (ou desmarca) este aparelho como o WhatsApp da empresa. Ex.: o celular do balcão.' }); } catch { } }, 0);
+/* v17 b394: VOLTA DA AGENDA GOOGLE → BANCADA. O app guarda como o contato estava na última sincronização (c.agG).
+   Se o contato mudou SÓ no Google, mostra a mudança para aceitar; se mudou nos dois lados, mostra os dois para escolher.
+   Nada muda sem alguém aceitar; telefone pede autorização (permissão “agendaTel”). Ponte 7.5 traz também endereço e aniversário. */
+const agvTel8s = L => [...new Set((L || []).map(x => String(x || '').replace(/\D/g, '').slice(-8)).filter(x => x.length === 8))].sort().join(',');
+const agvEnd = e => e ? norm([e.rua, e.bairro, e.cidade, e.uf, String(e.cep || '').replace(/\D/g, '')].join('|')).replace(/\s+/g, ' ').trim() : undefined;
+function agSnapG(g) { const o = { nome: agNomeK(g.nome), tels: agvTel8s(g.tels), email: String(g.email || '').toLowerCase().trim() }; if (g.end !== undefined) o.end = g.end ? agvEnd(g.end) : ''; if (g.nasc !== undefined) o.nasc = g.nasc || ''; return o; }
+function agSnapB(c) { const d = agDadosCli(c, null); return { nome: agNomeK(c.nome), tels: agvTel8s(agTelsCli(c)), email: String(c.email || '').toLowerCase().trim(), end: (d.endereco.rua || d.endereco.cidade) ? agvEnd(d.endereco) : '', nasc: c.nascimento || '' }; }
+const AGV_ROT = { nome: 'Nome', tels: 'Telefones', email: 'E-mail', end: 'Endereço', nasc: 'Aniversário' };
+const agvLeg = (k, x, ehG) => { if (k === 'nome') return ehG ? x.nome : x.nome; if (k === 'tels') return (ehG ? x.tels : agTelsCli(x)).join(' · ') || '(sem telefone)'; if (k === 'email') return x.email || '(sem e-mail)'; if (k === 'nasc') return (ehG ? x.nasc : x.nascimento) ? dBR(ehG ? x.nasc : x.nascimento) : '(sem data)';
+  if (k === 'end') { if (ehG) { const e = x.end || {}; return [e.rua, e.bairro, e.cidade && e.cidade + (e.uf ? '/' + e.uf : ''), e.cep].filter(Boolean).join(' · ') || '(sem endereço)'; } const d = agDadosCli(x, null).endereco; return [d.rua, d.bairro, d.cidade && d.cidade + (d.uf ? '/' + d.uf : ''), d.cep].filter(Boolean).join(' · ') || '(sem endereço)'; } return ''; };
+let AGV = { props: [], t: 0 };
+async function agVolta(manual) {
+  if (!agDisponivel() || !pode('agenda')) { if (manual) toast('A agenda do Google não está disponível aqui ou você não tem permissão de Agenda.'); return; }
+  let L; try { L = await agListar(true); } catch (e) { if (manual) toast('Não consegui ler a agenda do Google agora. Tente de novo.'); return; } if (!Array.isArray(L)) return;
+  const byId = new Map(L.map(g => [g.id, g])), props = [];
+  for (const c of (S.clientes || []).filter(c => c.googleId && !c.exemplo)) {
+    const g = byId.get(c.googleId); if (!g) continue;
+    const G = agSnapG(g), B = agSnapB(c), A = c.agG;
+    if (!A) { if (Object.keys(G).every(k => G[k] === B[k])) await save('clientes', c.id, { ...c, agG: G, _agSync: 1 }); continue; } /* primeira vez: só guarda a base quando os dois estão iguais */
+    const mud = Object.keys(G).filter(k => A[k] !== undefined && G[k] !== A[k] && G[k] !== B[k]).map(k => ({ k, conflito: B[k] !== A[k] }));
+    if (mud.length) props.push({ id: c.id, gid: g.id, g, G, mud });
+  }
+  AGV = { props, t: Date.now() }; try { localStorage.setItem('bancada-agv-dia', today()); } catch { }
+  agvPill(); if (manual) { if (props.length) ACT['agv-abrir'](); else toast('Nenhuma mudança vinda da agenda do Google.'); }
+}
+function agvPill() {
+  let p = document.getElementById('agv-pill'); const n = (AGV.props || []).filter(x => get('clientes', x.id)).length;
+  if (!n || document.querySelector('#modals .ov')) { if (p) p.remove(); return; }
+  if (!p) { p = document.createElement('button'); p.type = 'button'; p.id = 'agv-pill'; p.className = 'waq-pill agv-pill'; p.dataset.act = 'agv-abrir'; p.title = 'Contatos que foram mudados direto na agenda do Google'; document.body.appendChild(p); }
+  const t = `🔄 ${n} ${n === 1 ? 'mudança' : 'mudanças'} da agenda Google`; if (p.textContent !== t) p.textContent = t;
+}
+setInterval(() => { try { agvPill(); } catch { } }, 3000);
+setInterval(() => { try { if (S.loaded && typeof agDisponivel === 'function' && agDisponivel() && pode('agenda') && (agCfg().auto !== false) && localStorage.getItem('bancada-agv-dia') !== today() && !AGV.rodando) { AGV.rodando = true; agVolta(false).finally(() => { AGV.rodando = false; }); } } catch { } }, 60000);
+function agvAplicarCampos(c, g, ks) {
+  const n = { ...c };
+  if (ks.includes('nome')) n.nome = agNomeLimpo(g.nome) || c.nome;
+  if (ks.includes('email')) n.email = g.email || '';
+  if (ks.includes('nasc')) n.nascimento = g.nasc || '';
+  if (ks.includes('end')) { const e = g.end || {}, [ln, comp] = String(e.rua || '').split(/\s+-\s+/), m = String(ln || '').match(/^(.*?)(?:,\s*([^,]+))?$/); n.logradouro = (m && m[1] || '').trim(); n.numero = (m && m[2] || '').trim(); n.complemento = (comp || '').trim(); n.bairro = e.bairro || ''; n.cidade = e.cidade || ''; n.uf = e.uf || ''; n.cep = e.cep || ''; }
+  if (ks.includes('tels')) { const gt = (g.tels || []).map(t => String(t).replace(/^\+?55\s*/, '').trim()); const fixo = gt.find(t => t.replace(/\D/g, '').length === 10); const cel = gt.filter(t => t !== fixo); n.whatsapp = cel[0] || ''; n.telefone = cel[1] || ''; n.tel2 = cel[2] || ''; n.telFixo = fixo || ''; }
+  return n;
+}
+Object.assign(ACT, {
+  'agv-conferir': () => agVolta(true),
+  'agv-abrir': () => { document.getElementById('agv-pill')?.remove();
+    const P = (AGV.props || []).filter(x => get('clientes', x.id));
+    openModal('Mudanças vindas da agenda do Google', `<p class="muted" style="margin-top:0">Estes contatos foram mudados <b>direto na agenda do Google</b> (no celular ou no Gmail). Marque o que deve passar para o Bancada. O que não for marcado continua como está no Bancada.</p><div class="list">${P.map(x => { const c = get('clientes', x.id); return `<div class="row" style="display:block"><b>${esc(c.nome)}</b>${x.mud.map(m => `<label class="rf-chk" style="display:flex;gap:8px;align-items:flex-start;margin:6px 0"><input type="checkbox" style="flex:none;width:20px;height:20px;margin-top:2px" data-agv="${x.id}" data-k="${m.k}"${m.conflito ? '' : ' checked'}><span><b>${AGV_ROT[m.k]}</b>${m.k === 'tels' ? ' 🔒' : ''}: ${esc(agvLeg(m.k, c, false))} → <b>${esc(agvLeg(m.k, x.g, true))}</b>${m.conflito ? '<br><small style="color:var(--red)">⚠ mudou nos dois lados: marque só se o do Google é o certo</small>' : ''}</span></label>`).join('')}</div>`; }).join('') || emptyBox('Nada para conferir', 'Nenhuma mudança vinda da agenda do Google.')}</div><p class="muted" style="font-size:.8rem">🔒 Telefone pede autorização de quem pode trocar telefone na agenda.</p>`,
+      `<button type="button" class="btn" data-act="close">Agora não</button><button type="button" class="btn" data-act="agv-ignorar" title="Não pergunta de novo sobre estas mudanças; o Bancada fica como está">Ignorar estas</button><button type="button" class="btn primary" data-act="agv-ok">Aplicar marcados</button>`);
+  },
+  'agv-ok': () => {
+    const sel = {}; document.querySelectorAll('input[data-agv]:checked').forEach(i => { (sel[i.dataset.agv] = sel[i.dataset.agv] || []).push(i.dataset.k); });
+    const ids = Object.keys(sel); if (!ids.length) { toast('Marque pelo menos uma mudança, ou toque em Agora não.'); return; }
+    const aplicar = async () => { let n = 0; for (const id of ids) { const x = AGV.props.find(p => p.id === id), c = get('clientes', id); if (!x || !c) continue; const novo = agvAplicarCampos(c, x.g, sel[id]); const A = { ...(c.agG || {}) }; Object.keys(x.G).forEach(k => { A[k] = x.G[k]; }); await save('clientes', id, { ...novo, agG: A, agAssin: null, _agSync: 1 }); n++; }
+      AGV.props = AGV.props.filter(p => !ids.includes(p.id)); closeModal(); agvPill(); toastOk(`${n} ${n === 1 ? 'cliente atualizado' : 'clientes atualizados'} com os dados da agenda do Google.`); };
+    if (ids.some(id => sel[id].includes('tels'))) pedirSenha('agendaTel', 'Trazer telefones da agenda do Google', aplicar); else aplicar();
+  },
+  'agv-ignorar': async () => { for (const x of AGV.props || []) { const c = get('clientes', x.id); if (c) await save('clientes', x.id, { ...c, agG: { ...(c.agG || {}), ...x.G }, _agSync: 1 }); } AGV.props = []; closeModal(); agvPill(); toast('Mudanças ignoradas. O Bancada ficou como estava.'); }
+});
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'agv-conferir': 'agenda', 'agv-abrir': 'agenda', 'agv-ok': 'agenda', 'agv-ignorar': 'agenda' }); Object.assign(AJUDA, { 'agv-conferir': 'Procura agora contatos que foram mudados direto na agenda do Google (nome, telefone, e-mail, endereço, aniversário).', 'agv-abrir': 'Mostra as mudanças feitas direto na agenda do Google para trazer ao Bancada.', 'agv-ok': 'Passa para o Bancada o que foi marcado. Telefone pede autorização.', 'agv-ignorar': 'Não pergunta de novo sobre estas mudanças; o Bancada fica como está.' }); } catch { } }, 0);
+/* v17 b394: SITUAÇÕES DA OS — nova situação “Aprovado — aguardando início”; aviso ao cliente a cada mudança (liga/desliga por situação);
+   pendências na agenda (aprovado sem começar, cliente aprovou pelo link, cliente vem buscar); link de resposta do cliente (ponte 7.5). */
+OS_ST.splice(OS_ST.findIndex(s => s[0] === 'orcamento') + 1, 0, ['aprovado', 'Aprovado — aguardando início', 'info']);
+/* --- prazo para começar o serviço aprovado (Configurações → Prazos e lembretes) --- */
+LEM_PAD.inicioDias = 2;
+const stxAprovEm = o => { if (o.aprovadoEm) return o.aprovadoEm; const h = (o.historico || []).filter(x => x.st === 'aprovado').pop(); return h ? h.at : o.at; };
+const stxInicioPrazo = o => isoOf(new Date(stxAprovEm(o) + (+lemCfg().inicioDias || 2) * 864e5));
+/* --- mensagens por situação --- */
+const ST_MSG = { analise: 'Em análise', orcamento: 'Aguardando aprovação', aprovado: 'Aprovado', peca: 'Aguardando peça', execucao: 'Em execução', pronto: 'Pronto para retirada', entregue: 'Entregue', cancelada: 'Devolvido sem reparo' };
+const ST_PAD_ON = { analise: false, orcamento: true, aprovado: true, peca: true, execucao: true, pronto: true, entregue: false, cancelada: true };
+const stAvisoCfg = () => ({ ...ST_PAD_ON, ...(((S.ajustes || []).find(x => x.id === 'avisos-status') || {}).liga || {}) });
+setTimeout(() => {
+  try {
+    Object.keys(ST_MSG).forEach(k => { MSG_TIPOS['st-' + k] = 'Mudou para: ' + ST_MSG[k]; MSG_VAR_TIPO['st-' + k] = ['equipamento', 'situacao_os', 'previsao', 'valor', 'link_resposta'].concat(k === 'peca' ? ['nova_previsao'] : []); });
+    ['os-aprov', 'os-retirada', 'os-preventiva', 'orc-cobranca'].forEach(t => { if (MSG_VAR_TIPO[t] && !MSG_VAR_TIPO[t].includes('link_resposta')) MSG_VAR_TIPO[t].push('link_resposta'); });
+    MSG_VARS.link_resposta = 'Link para o cliente responder (data de retirada, aprovação…)';
+    const T = (k, nome, texto) => MSG_PADRAO.push({ id: 'p-st-' + k, tipo: 'st-' + k, nome, texto });
+    T('analise', 'Em análise', 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) já está em análise pela nossa equipe técnica.\n• Previsão: {previsao}\n\nAvisaremos sobre cada etapa.');
+    T('orcamento', 'Orçamento pronto — aguardando aprovação', 'Olá, {cliente}! Aqui é da *{empresa}*.\nO orçamento do seu equipamento *{equipamento}* (OS nº {numero}) está pronto e aguarda a sua aprovação.\n• Valor: {valor}\n\nPara responder, toque aqui: {link_resposta}');
+    T('aprovado', 'Serviço aprovado', 'Olá, {cliente}! Aqui é da *{empresa}*.\nRecebemos a sua aprovação para o serviço no seu equipamento *{equipamento}* (OS nº {numero}). Obrigado!\n• Previsão de entrega: {previsao}\n\nAvisaremos quando começar e quando ficar pronto.');
+    T('peca', 'Aguardando peça', 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está aguardando a chegada de uma peça.\n• Nova previsão de entrega: *{nova_previsao}*\n\nAvisaremos assim que a peça chegar.');
+    T('execucao', 'Serviço em execução', 'Olá, {cliente}! Aqui é da *{empresa}*.\nO serviço no seu equipamento *{equipamento}* (OS nº {numero}) começou.\n• Previsão de entrega: {previsao}\n\nAvisaremos quando ficar pronto.');
+    T('pronto', 'Pronto para retirada', 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está *pronto para retirada*.\n• Valor: {valor}\n\nQuando você vem buscar? Toque aqui e escolha o dia: {link_resposta}');
+    T('entregue', 'Entregue', 'Olá, {cliente}! Aqui é da *{empresa}*.\nObrigado por confiar o seu equipamento *{equipamento}* (OS nº {numero}) à nossa equipe. Qualquer dúvida, é só chamar.');
+    T('cancelada', 'Devolvido sem reparo', 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está disponível para retirada, sem reparo.\n\nQuando você vem buscar? Toque aqui e escolha o dia: {link_resposta}');
+    MSG_PADRAO.forEach(m => { if (m.id === 'p-os-retirada' && !/link_resposta/.test(m.texto)) m.texto = m.texto.replace('\n\nPodemos aguardar você?', '\n\nQuando você vem buscar? Toque aqui e escolha o dia: {link_resposta}\n\nPodemos aguardar você?'); if (m.id === 'p-os-aprov' && !/link_resposta/.test(m.texto)) m.texto += '\n\nPara responder, toque aqui: {link_resposta}'; if (m.id === 'p-os-preventiva' && !/link_resposta/.test(m.texto)) m.texto = m.texto.replace('Quer agendar? É só responder esta mensagem.', 'Quer agendar? Toque aqui e escolha o dia: {link_resposta}'); if (m.id === 'p-orc-cobranca' && !/link_resposta/.test(m.texto)) m.texto += '\n\nPara responder, toque aqui: {link_resposta}'; });
+    MSG_TIPOS_B393.push(...Object.keys(ST_MSG).map(k => 'st-' + k));
+    IND_PEDE_PRAZO.push('st-peca');
+    Object.assign(ACT_PERM, { 'st-aviso-liga': 'config', 'st-aviso-pad': 'config', 'resp-conferir': '' });
+    Object.assign(AJUDA, { 'st-aviso-liga': 'Liga ou desliga o aviso ao cliente quando a OS muda para esta situação.', 'st-aviso-pad': 'Volta os avisos ao padrão.', 'resp-conferir': 'Busca agora as respostas dos clientes pelos links (data de retirada, aprovação, preventiva).' });
+  } catch (e) { console.warn('stx', e); }
+}, 0);
+/* tipo de mensagem → que link de resposta vai junto */
+const RESP_TIPO = { 'os-aprov': 'aprovacao', 'st-orcamento': 'aprovacao', 'orc-cobranca': 'aprovacao', 'os-retirada': 'retirada', 'st-pronto': 'retirada', 'st-cancelada': 'retirada', 'os-preventiva': 'preventiva' };
+async function respCriar(tipo, col, x) {
+  if (typeof agDisponivel !== 'function' || !agDisponivel()) return '';
+  try {
+    const idToken = await firebase.auth().currentUser.getIdToken();
+    const titulo = col === 'orcamentos' ? `Orçamento nº ${pad(x.numero)}${x.equipamento ? ' · ' + x.equipamento : ''}` : `OS nº ${pad(x.numero)} · ${osEquip(x)}`;
+    const r = await fetchT(agPonte() + '/resp/criar?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken, tipo, col, ref: x.id, titulo, cliente: cliNome(x.clienteId), empNome: S.empresa.fantasia || S.empresa.nome || '', empTel: S.empresa.whatsapp || S.empresa.telefone || '' }) }, 15000);
+    const j = await r.json().catch(() => null); if (!r.ok || !j || !j.url) return '';
+    const atual = get(col, x.id); if (atual) await save(col, x.id, { ...atual, respLinks: [...(atual.respLinks || []).filter(l => l.at > Date.now() - 40 * 864e5), { id: j.id, tipo, at: Date.now() }] });
+    return j.url;
+  } catch { return ''; }
+}
+const respTiraLinhaVazia = t => String(t || '').split('\n').filter(l => !/:\s*$/.test(l) || !/toque aqui/i.test(l)).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+/* a janela de mensagem (indWaAbrir) passa a: criar o link de resposta quando o texto tem {link_resposta} */
+const _stxTexto = indWaTexto;
+indWaTexto = function () {
+  const w = IND_WA; if (!w) return _stxTexto();
+  const L = msgDoTipo(w.tipo), sel = $('#iw-m'), m = (sel && L.find(z => z.id === sel.value)) || msgPrincipal(w.tipo);
+  if (m && /\{link_resposta\}/.test(m.texto) && RESP_TIPO[w.tipo] && w.link === undefined) {
+    w.link = null; const t = $('#iw-txt'); if (t) t.value = 'Preparando o link de resposta do cliente…';
+    const x = w.orc ? get('orcamentos', w.id) : get('os', w.id);
+    respCriar(RESP_TIPO[w.tipo], w.orc ? 'orcamentos' : 'os', x).then(u => { if (IND_WA === w) { w.link = u || ''; indWaTexto(); } });
+    return;
+  }
+  if (w.link === null) return;
+  _stxTexto();
+  const t = $('#iw-txt'); if (t && m) { t.value = w.link ? t.value.replace(/\{link_resposta\}/g, w.link) : respTiraLinhaVazia(t.value.replace(/\{link_resposta\}/g, '')); }
+};
+/* --- aviso ao mudar a situação --- */
+const _stxOsSt = ACT['os-st'];
+ACT['os-st'] = async el => {
+  const id = el.dataset.id, antes = (get('os', id) || {}).status, novo = ($('#osv-st') || {}).value;
+  await _stxOsSt(el);
+  const o = get('os', id); if (!o || o.status === antes || o.status !== novo) return;
+  if (novo === 'aprovado' && !o.aprovadoEm) await save('os', id, { ...o, aprovadoEm: Date.now() });
+  if (stAvisoCfg()[novo] && msgDoTipo('st-' + novo).length) setTimeout(() => indWaAbrir('st-' + novo, id), 250);
+};
+/* configurações: liga/desliga por situação */
+function stAvisoCfgHTML() {
+  const c = stAvisoCfg();
+  return `<section class="panel"><div class="panel-head"><div><h2>Avisar o cliente quando a OS muda de situação</h2><p class="muted" style="font-size:.85rem">Ligado: ao mudar a situação, abre a mensagem pronta para mandar pelo WhatsApp (dá para mexer ou não enviar). Desligado: não pergunta. Os textos estão logo abaixo, nos grupos “Mudou para: …”.</p></div></div>
+    <div class="list">${Object.keys(ST_MSG).map(k => `<label class="row" style="cursor:pointer"><span class="grow">${esc(ST_MSG[k])}</span><input type="checkbox" style="width:22px;height:22px;flex:none" data-act="st-aviso-liga" data-k="${k}"${c[k] ? ' checked' : ''}></label>`).join('')}</div>
+    <div class="actions" style="justify-content:flex-start;margin-top:8px"><button type="button" class="btn sm" data-act="st-aviso-pad">↺ Restaurar o padrão</button></div></section>`;
+}
+ACT['st-aviso-liga'] = async el => { const d = { ...(((S.ajustes || []).find(x => x.id === 'avisos-status') || {}).liga || {}) }; d[el.dataset.k] = !!el.checked; await save('ajustes', 'avisos-status', { liga: d }); toast(`Aviso “${ST_MSG[el.dataset.k]}” ${el.checked ? 'ligado' : 'desligado'}.`); };
+ACT['st-aviso-pad'] = async () => { await save('ajustes', 'avisos-status', { liga: { ...ST_PAD_ON } }); render(); toast('Avisos de situação no padrão.'); };
+/* --- respostas dos clientes: busca na ponte (só quando há link esperando resposta) --- */
+let RESP_ULT = 0;
+async function respConferir(manual) {
+  if (typeof agDisponivel !== 'function' || !agDisponivel() || !S.loaded) return;
+  const esperando = ['os', 'orcamentos'].some(c => (S[c] || []).some(x => (x.respLinks || []).some(l => l.at > Date.now() - 30 * 864e5)));
+  if (!esperando && !manual) return; RESP_ULT = Date.now();
+  let j; try { const idToken = await firebase.auth().currentUser.getIdToken(); const r = await fetchT(agPonte() + '/resp/novas?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken }) }, 15000); j = await r.json().catch(() => null); if (!r.ok || !j) return; } catch { return; }
+  const lidas = [];
+  for (const a of j.respostas || []) {
+    const col = a.col === 'orcamentos' ? 'orcamentos' : 'os', x = get(col, a.ref); lidas.push(a.chave); if (!x) continue;
+    const R = { ...a.resposta, tipo: a.tipo, link: a.id }, n = { ...x, respostas: [...(x.respostas || []).filter(z => z.link !== a.id || z.em !== R.em), R].slice(-20) };
+    if (a.tipo === 'retirada') { if (R.escolha === 'data') n.retiradaCombinada = R.data; }
+    if (a.tipo === 'aprovacao') n.respAprov = R;
+    if (a.tipo === 'preventiva' && col === 'os') { const d = { ...((S.ajustes || []).find(z => z.id === 'ind-preventiva') || {}) }; delete d.id; d[x.id] = Date.now(); await save('ajustes', 'ind-preventiva', d); if (R.escolha === 'data') await save('agenda', uid(), { titulo: `Manutenção preventiva · ${cliNome(x.clienteId)}`, data: R.data, clienteId: x.clienteId, obs: `Agendada pelo cliente pelo link (OS ${pad(x.numero)} · ${osEquip(x)})${R.texto ? ' — ' + R.texto : ''}`, por: OPID(), at: Date.now() }); }
+    await save(col, x.id, n);
+    const nome = cliNome(x.clienteId).split(' ')[0], o = { retirada: R.escolha === 'data' ? `vem buscar em ${dBR(R.data)}` : R.escolha === 'ja' ? 'diz que já buscou' : 'quer falar com vocês', aprovacao: R.escolha === 'aprova' ? 'APROVOU o serviço — confirme na OS' : R.escolha === 'nao' ? 'não aprovou' : 'tem uma dúvida', preventiva: R.escolha === 'data' ? `agendou a preventiva para ${dBR(R.data)}` : R.escolha === 'nao' ? 'não quer agora' : 'quer falar com vocês' }[a.tipo] || 'respondeu';
+    toast(`📩 ${nome} ${o}${R.texto ? ': “' + R.texto.slice(0, 80) + '”' : ''}`, 9000);
+  }
+  if (lidas.length) { try { const idToken = await firebase.auth().currentUser.getIdToken(); await fetchT(agPonte() + '/resp/lidas?empresa=' + encodeURIComponent(EMP_COD), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sistema: (EMP_CFG || {}).sistema || 'informatica', idToken, chaves: lidas }) }, 15000); } catch { } }
+  if (manual) toast(lidas.length ? `${lidas.length} ${lidas.length === 1 ? 'resposta recebida' : 'respostas recebidas'}.` : 'Nenhuma resposta nova dos clientes.');
+}
+ACT['resp-conferir'] = () => respConferir(true);
+setInterval(() => { try { if (document.visibilityState === 'visible' && Date.now() - RESP_ULT > 10 * 60000 && (pode('os') || pode('orcamentos'))) respConferir(false); } catch { } }, 60000);
+/* --- pendências na agenda (ficam lembrando até alguém agir) --- */
+const _stxAgEv = agEventos;
+agEventos = function (de, ate) {
+  const E = _stxAgEv(de, ate), h = today(), dentro = d => d && d >= de && d <= ate, vis = new Set(agTiposVis().map(x => x[0])), add = (d, x) => { if (dentro(d) && vis.has('os') && !S.agOff.has('os')) E.push({ d, tipo: 'os', ord: 0, act: 'os-view', ...x }); };
+  for (const o of S.os || []) {
+    const nm = `OS ${pad(o.numero)} · ${osEquip(o)}`, cli = cliNome(o.clienteId);
+    if (o.status === 'aprovado') { const p = stxInicioPrazo(o), late = p < h; add(late ? h : p, { cli, id: o.id, t: `⏳ Começar serviço aprovado · ${nm}`, s: `${cli} · começar até ${dBR(p)}${late ? ' — prazo vencido' : ''}`, late }); if (!late && p !== h) add(h, { cli, id: o.id, t: `⏳ Serviço aprovado esperando começar · ${nm}`, s: `${cli} · prazo até ${dBR(p)}` }); }
+    if (o.status === 'orcamento' && o.respAprov && o.respAprov.escolha === 'aprova') add(h, { cli, id: o.id, t: `📩 Cliente aprovou pelo link · ${nm}`, s: `${cli} · confirme mudando a situação para “Aprovado”${o.respAprov.texto ? ' · “' + o.respAprov.texto.slice(0, 60) + '”' : ''}`, late: Date.now() - o.respAprov.em > 864e5 });
+    if (['pronto', 'cancelada'].includes(o.status) && o.retiradaCombinada && o.status !== 'entregue') { const late = o.retiradaCombinada < h; add(o.retiradaCombinada, { cli, id: o.id, t: `🤝 Cliente vem buscar · ${nm}`, s: `${cli} · combinado pelo link${late ? ' — não veio na data' : ''}`, late }); if (late) add(h, { cli, id: o.id, t: `🤝 Não veio buscar na data combinada · ${nm}`, s: `${cli} · combinado para ${dBR(o.retiradaCombinada)}`, late: true }); }
+  }
+  for (const o of S.orcamentos || []) if (o.status === 'aberto' && o.respAprov && o.respAprov.escolha === 'aprova') add(h, { cli: cliNome(o.clienteId), id: o.id, act: 'orc-open', tipo: 'orc', t: `📩 Cliente aprovou o orçamento nº ${pad(o.numero)} pelo link`, s: `${cliNome(o.clienteId)} · confirme a aprovação`, late: Date.now() - o.respAprov.em > 864e5 });
+  return E.sort((a, b) => a.d.localeCompare(b.d) || (a.hora || '99').localeCompare(b.hora || '99') || (a.ord || 0) - (b.ord || 0));
+};
+/* --- alertas nos Indicadores --- */
+const _stxAl = indAlertas;
+indAlertas = function () {
+  const L = _stxAl(), h = today();
+  if (pode('os')) {
+    L.inicio = S.os.filter(o => o.status === 'aprovado' && stxInicioPrazo(o) <= h);
+    L.aprovLink = S.os.filter(o => o.status === 'orcamento' && o.respAprov && o.respAprov.escolha === 'aprova');
+    L.retComb = S.os.filter(o => ['pronto', 'cancelada'].includes(o.status) && o.retiradaCombinada && o.retiradaCombinada < h);
+    if (L.pronto) L.pronto = L.pronto.filter(o => !(o.retiradaCombinada && o.retiradaCombinada >= h)); /* combinou uma data que ainda não chegou: não insiste */
+  }
+  return L;
+};
+Object.assign(IND_AL, { aprovLink: ['clientes aprovaram pelo link', 'confirme mudando para “Aprovado”', 'blue', 'Ver'], inicio: ['serviços aprovados sem começar', 'passou o prazo para começar', 'red', 'Ver'], retComb: ['clientes não vieram buscar na data combinada', 'combinado pelo link', 'amber', 'Avisar'] });
+const _stxLista = indListaHTML;
+indListaHTML = function (k) {
+  const osRow = (o, tipo) => `<div class="row"><div class="grow click" data-act="os-view" data-id="${o.id}" role="button" style="cursor:pointer"><b>OS ${pad(o.numero)} · ${esc(cliNome(o.clienteId))}</b><div class="muted" style="font-size:.85rem">${esc(osEquip(o))} · ${esc(osSt(o).t)}${o.retiradaCombinada ? ' · combinado ' + dBR(o.retiradaCombinada) : ''}${o.status === 'aprovado' ? ' · começar até ' + dBR(stxInicioPrazo(o)) : ''}${o.respAprov && o.respAprov.texto ? ' · “' + esc(o.respAprov.texto.slice(0, 80)) + '”' : ''}</div></div>${tipo ? `<button type="button" class="btn sm" data-act="ind-wa" data-tipo="${tipo}" data-id="${o.id}">WhatsApp</button>` : ''}</div>`;
+  const A = indAlertas();
+  if (k === 'aprovLink') return ['Clientes que aprovaram pelo link', (A.aprovLink || []).map(o => osRow(o, ''))];
+  if (k === 'inicio') return ['Serviços aprovados sem começar', (A.inicio || []).map(o => osRow(o, ''))];
+  if (k === 'retComb') return ['Não vieram buscar na data combinada', (A.retComb || []).map(o => osRow(o, 'os-retirada'))];
+  return _stxLista(k);
+};
+/* b394: preventiva conta por EQUIPAMENTO (nº de série; sem série, tipo+marca+modelo do mesmo cliente). OS nova do MESMO equipamento tira da lista;
+   de OUTRO equipamento não tira — e, ao abrir a OS nova, o app lembra: “aproveite para trazer junto / agendar para quando vier buscar”. */
+const prvKey = o => { const s = String(o.serie || '').replace(/[^a-z0-9]/gi, '').toUpperCase(); return s.length >= 4 ? 'S:' + s : 'M:' + (o.clienteId || '') + ':' + norm([o.tipoEquip, o.marca, o.modelo].filter(Boolean).join(' ')); };
+function prvUltimas() { const u = {}; (S.os || []).forEach(o => { if (!o.clienteId) return; const k = prvKey(o); if (!u[k] || (o.at || 0) > (u[k].at || 0)) u[k] = o; }); return u; }
+/* do cliente: equipamentos com preventiva vencida ou vencendo nos próximos 30 dias (fora o que já foi chamado) */
+function prvDoCliente(cid, exceto) {
+  const agora = Date.now(), cham = (S.ajustes || []).find(x => x.id === 'ind-preventiva') || {}, LC = lemCfg();
+  return Object.values(prvUltimas()).filter(o => o.clienteId === cid && o.status === 'entregue' && (!exceto || prvKey(o) !== exceto) && !cham[o.id]).map(o => ({ o, v: lemPrevVence(o) })).filter(x => x.v && x.v <= agora + 30 * 864e5 && agora <= x.v + LC.prevJanela * 864e5);
+}
+function prvAvisoOS() {
+  const f = $('#os-cli'); if (!f) return; const box0 = f.closest('label'); let b = document.getElementById('os-prv'); const cid = f.value;
+  const atual = { clienteId: cid, serie: ($('[name="serie"]') || {}).value || '', tipoEquip: ($('#os-tipo') || {}).value || '', marca: ($('#os-marca') || {}).value || '', modelo: ($('#os-modelo') || {}).value || '' };
+  const L = cid ? prvDoCliente(cid, (atual.serie || atual.modelo) ? prvKey(atual) : '') : [];
+  if (!L.length) { if (b) b.remove(); return; }
+  if (!b) { b = document.createElement('div'); b.id = 'os-prv'; b.className = 'banner info'; b.style.cssText = 'grid-column:1/-1;display:block;margin:4px 0 8px'; (box0 || f).insertAdjacentElement('afterend', b); }
+  b.innerHTML = `<b>🔧 Aproveite: ${L.length === 1 ? 'outro equipamento deste cliente está' : L.length + ' equipamentos deste cliente estão'} com a manutenção preventiva ${L.every(x => x.v <= Date.now()) ? 'vencida' : 'vencendo'}.</b>${L.map(x => `<div class="row" style="padding:6px 0;gap:8px;flex-wrap:wrap"><span class="grow" style="min-width:0">${esc(osEquip(x.o))}${x.o.serie ? ' · nº série ' + esc(x.o.serie) : ''}<br><small class="muted">último serviço ${dBR(dayISO(x.o.entregueEm))} · preventiva ${x.v <= Date.now() ? 'desde' : 'em'} ${dBR(dayISO(x.v))}</small></span><button type="button" class="btn sm" data-act="ind-wa" data-tipo="os-preventiva" data-id="${x.o.id}">WhatsApp</button><button type="button" class="btn sm" data-act="prv-retirada" data-id="${x.o.id}" title="Marca na agenda para fazer junto quando o cliente vier buscar esta OS">Agendar para a retirada</button><button type="button" class="btn sm ghost" data-act="ind-prev-ok" data-id="${x.o.id}">Já avisei</button></div>`).join('')}<small class="muted">Peça para trazer junto, ou agende para quando ele vier buscar este.</small>`;
+}
+document.addEventListener('change', e => { const t = e.target; if (t && (t.id === 'os-cli' || t.id === 'os-tipo' || t.id === 'os-marca' || t.id === 'os-modelo' || t.name === 'serie')) setTimeout(prvAvisoOS, 50); });
+ACT['prv-retirada'] = async el => { const o = get('os', el.dataset.id); if (!o) return; const d = ($('#os-prev') || {}).value || previsaoPara(($('#os-tipo') || {}).value || o.tipoEquip); await save('agenda', uid(), { titulo: `Manutenção preventiva · ${cliNome(o.clienteId)}`, data: d, clienteId: o.clienteId, obs: `Fazer junto quando vier buscar a OS nova: ${osEquip(o)}${o.serie ? ' (nº série ' + o.serie + ')' : ''}`, por: OPID(), at: Date.now() }); const c = { ...((S.ajustes || []).find(x => x.id === 'ind-preventiva') || {}) }; delete c.id; c[o.id] = Date.now(); await save('ajustes', 'ind-preventiva', c); toastOk(`Preventiva marcada na agenda para ${dBR(d)}.`); prvAvisoOS(); };
+const _prvOsForm = osForm; osForm = function (...a) { const r = _prvOsForm.apply(this, a); setTimeout(prvAvisoOS, 80); return r; };
+setTimeout(() => { try { ACT_PERM['prv-retirada'] = 'os'; AJUDA['prv-retirada'] = 'Marca a preventiva deste outro equipamento na agenda, para o dia em que o cliente vier buscar a OS nova.'; } catch { } }, 0);
+/* b394: exemplos das funções novas (versão 17): situação “Aprovado — aguardando início”, cliente que aprovou e que combinou a retirada pelo link,
+   preventiva por equipamento, laudo com testes da entrada e informações internas, novo prazo avisado ao cliente, envio na fila do WhatsApp da empresa e base própria */
+setTimeout(() => { try { REG_TESTES.push({ id: 'ex-recursos-v17b394', titulo: 'Exemplos da versão 17: OS aprovada aguardando início, respostas do cliente pelo link (aprovação e data de retirada), preventiva por equipamento, laudo com testes da entrada e informações internas, novo prazo, fila do WhatsApp da empresa e base própria', fn: async () => {
+  const D = 864e5, at = Date.now(), por = OPID(), X = { exemplo: true, por };
+  let cli = S.clientes.find(c => c.exemplo && /Lucia|Lúcia/.test(c.nome)); if (!cli) { cli = { id: uid(), nome: 'Lúcia Andrade (exemplo)', tipo: 'PF', doc: '529.982.247-25', whatsapp: '(81) 99876-5432', cidade: 'Recife', uf: 'PE', ...X, at }; await save('clientes', cli.id, cli); }
+  const os = async (d) => { const id = uid(); await save('os', id, { numero: nextNum('os'), clienteId: cli.id, itens: [], subtotal: 0, desconto: 0, total: 0, ...X, ...d }); return id; };
+  const h = (st, dias, obs) => ({ st, at: at - dias * D, por, obs: obs || '' });
+  await os({ at: at - 6 * D, tipoEquip: 'Impressora', marca: 'Epson', modelo: 'L3250 (exemplo)', serie: 'X8EX000001', defeito: 'Não puxa papel', status: 'aprovado', aprovadoEm: at - 1 * D, previsao: addDays(today(), 3), total: 180, historico: [h('recebido', 6, 'Entrada do equipamento'), h('orcamento', 4, 'Orçamento enviado'), h('aprovado', 1, 'EXEMPLO: aprovado — fica na agenda como “Começar serviço aprovado” até mudar para Em execução')] });
+  await os({ at: at - 5 * D, tipoEquip: 'Notebook', marca: 'Dell', modelo: 'Inspiron 15 (exemplo)', serie: 'DLEX000002', defeito: 'Tela piscando', status: 'orcamento', total: 420, historico: [h('recebido', 5), h('orcamento', 2)], respAprov: { tipo: 'aprovacao', escolha: 'aprova', texto: 'Pode fazer, obrigado! (exemplo)', em: at - 3 * 3600e3 }, respostas: [{ tipo: 'aprovacao', escolha: 'aprova', texto: 'Pode fazer, obrigado! (exemplo)', em: at - 3 * 3600e3 }] });
+  await os({ at: at - 12 * D, tipoEquip: 'Impressora', marca: 'HP', modelo: 'DeskJet 2774 (exemplo)', serie: 'CNEX000003', defeito: 'Manchas na impressão', status: 'pronto', total: 150, previsao: addDays(today(), -4), historico: [h('recebido', 12), h('execucao', 8), h('pronto', 5)], retiradaCombinada: addDays(today(), 1), respostas: [{ tipo: 'retirada', escolha: 'data', data: addDays(today(), 1), texto: 'Passo depois das 15h (exemplo)', em: at - 5 * 3600e3 }],
+    estadoChk: ['Liga normalmente', 'Imprime com falhas ou manchas', 'Tensão: Bivolt (automático)'],
+    laudo: { diagnostico: 'Cabeça de impressão entupida (exemplo)', solucao: 'Limpeza da cabeça e troca das almofadas', conclusao: 'Equipamento funcionando', interno: 'EXEMPLO de informação interna: almofada comprada no fornecedor X por R$ 45; não sai no laudo do cliente.', testes: [{ nome: 'Liga / inicializa', res: 'ok', obs: 'Conforme a entrada', daEntrada: true }, { nome: 'Cabeça de impressão (teste de jatos)', res: 'falha', obs: 'Na entrada: Imprime com falhas ou manchas', daEntrada: true }], at: at - 5 * D, por } });
+  await os({ at: at - 9 * D, tipoEquip: 'Impressora', marca: 'Canon', modelo: 'G3110 (exemplo)', serie: 'CAEX000004', defeito: 'Erro de tinta', status: 'peca', total: 260, previsao: addDays(today(), 5), historico: [h('recebido', 9), h('peca', 2, 'Aguardando a peça')], previsoes: [{ de: addDays(today(), -1), para: addDays(today(), 5), at: at - 2 * D, por, motivo: 'Aguardando peça' }] });
+  await os({ at: at - 140 * D, tipoEquip: 'Impressora', marca: 'Epson', modelo: 'L4260 (exemplo)', serie: 'X8EX000005', defeito: 'Limpeza', status: 'entregue', entregueEm: at - 130 * D, total: 120, historico: [h('recebido', 140), h('pronto', 132), h('entregue', 130, 'EXEMPLO: entregue há mais de 4 meses — aparece em “Manutenção preventiva” e no aviso da OS nova deste cliente')] });
+  if (!(S.envios || []).some(e => e.exemplo)) await save('envios', uid(), { tel: '5581998765432', txt: 'Olá, Lúcia! Aqui é da *Bancada Informática*. O orçamento do seu notebook (exemplo) está pronto. (EXEMPLO de mensagem na fila do WhatsApp da empresa, pedida por um funcionário sem WhatsApp próprio)', cliente: cli.nome, clienteId: cli.id, porNome: 'Funcionário (exemplo)', status: 'fila', ...X, at: at - 20 * 60e3 });
+  try { bkGuardar({ codigo: '7896541200017' }, { nome: 'Impressora Epson L3250 (exemplo)', marca: 'Epson', modelo: 'L3250', tipo: 'Impressora', categoria: 'Impressoras' }); } catch { }
+} }); } catch (e) { console.warn('ex17', e); } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -13690,7 +14084,7 @@ function cliLimiteCheck(cid, novo) {
 }
 
 /* ======================= checklists de entrada por tipo de equipamento ======================= */
-const TENSOES = ['110V', '220V', 'Bivolt (automático)', 'Só bateria / USB'];
+const TENSOES = ['110V', '220V', 'Bivolt (automático)', 'Fonte externa', 'Só bateria / USB'];
 const CHK_PADRAO = { perfis: [
   { id: 'todos', nome: 'Todos os equipamentos', tipos: ['*'], perguntas: [
     { id: 'tensao', texto: 'Tensão', tipo: 'opcoes', opcoes: TENSOES, obrig: true }] },
@@ -13717,14 +14111,18 @@ const LIGA_RE = /^(liga normalmente|n[aã]o liga|liga com falhas?|liga,? (e|mas)
 /* v357: pedaços soltos que surgiam quando a vírgula dividia a frase (“Liga, mas não inicializa” virava “Liga” + “Mas não inicializa”) */
 const CHK_SOLTOS = /^(liga|mas n[aã]o inicializa|e n[aã]o inicializa)$/i;
 const chkAjusteLiga = perfis => perfis.map(pf => { if (!Array.isArray(pf.perguntas)) return pf; const q = pf.perguntas.filter(x => !CHK_SOLTOS.test(String(x.texto || '').trim())); pf = { ...pf, perguntas: q }; const iN = q.findIndex(x => /^n[aã]o liga$/i.test(String(x.texto || '').trim())), iL = q.findIndex(x => /^liga normalmente$/i.test(String(x.texto || '').trim())); if ((iN < 0 && iL < 0) || q.some(x => /^liga com falhas?$/i.test(String(x.texto || '').trim()))) return pf; q.splice(Math.max(iN, iL) + 1, 0, { id: 'lfal', texto: 'Liga com falha', tipo: 'marcar' }); return { ...pf, perguntas: q }; });
-const chkCfg = () => { const a = (S.ajustes || []).find(x => x.id === 'checklists'); return a && Array.isArray(a.perfis) ? { ...a, perfis: chkAjusteLiga(chkAjusteImpr(a.perfis)) } : { ...CHK_PADRAO, perfis: chkAjusteLiga(CHK_PADRAO.perfis) }; };
+/* b394: “Fonte externa” na Tensão (vale também para checklists já salvos) */
+const chkAjusteTensao = perfis => perfis.map(pf => !Array.isArray(pf.perguntas) ? pf : { ...pf, perguntas: pf.perguntas.map(q => q.id === 'tensao' && Array.isArray(q.opcoes) && !q.opcoes.some(o => /fonte externa/i.test(o)) && !q.semFonteExt ? { ...q, opcoes: (i => { const o = [...q.opcoes]; o.splice(i < 0 ? o.length : i, 0, 'Fonte externa'); return o; })(q.opcoes.findIndex(o => /bateria/i.test(o))) } : q) });
+const chkCfg = () => { const a = (S.ajustes || []).find(x => x.id === 'checklists'); return a && Array.isArray(a.perfis) ? { ...a, perfis: chkAjusteTensao(chkAjusteLiga(chkAjusteImpr(a.perfis))) } : { ...CHK_PADRAO, perfis: chkAjusteLiga(CHK_PADRAO.perfis) }; };
 /* itens que se excluem (Liga normalmente / Não liga / Liga com falha; “X” e “Não X”): marcou um, os outros do grupo somem; desmarcou, voltam */
 const chkGrupo = (txt, todos) => { const t = norm(String(txt || '').trim()); if (LIGA_RE.test(String(txt || '').trim())) return 'liga'; const base = t.replace(/^nao\s+/, ''); const par = todos.some(o => { const u = norm(String(o || '').trim()); return u !== t && u.replace(/^nao\s+/, '') === base; }); return par ? 'g-' + base : ''; };
 function chkGrpAplicar(root) { (root || document).querySelectorAll('.chks').forEach(box => { const G = {}; box.querySelectorAll('.chq[data-grp]').forEach(l => { (G[l.dataset.grp] = G[l.dataset.grp] || []).push(l); }); Object.values(G).forEach(L => { const algum = L.some(l => l.querySelector('input').checked); L.forEach(l => l.classList.toggle('chq-oculta', algum && !l.querySelector('input').checked)); }); }); }
 document.addEventListener('change', e => { const t = e.target; if (t && t.type === 'checkbox' && t.closest('.chq[data-grp]')) chkGrpAplicar(t.closest('.chk-perfil') || document); }, true);
 /* perguntas de escolha (Sim / Não, etc.): escolheu, as outras opções somem; tocar de novo na escolhida desmarca e mostra todas */
 document.addEventListener('pointerdown', e => { const l = e.target.closest && e.target.closest('.chq-ops label'); if (!l) return; const r = l.querySelector('input[type=radio]'); l.dataset.era = r && r.checked ? '1' : ''; }, true);
-document.addEventListener('click', e => { const l = e.target.closest && e.target.closest('.chq-ops label'); if (!l || l.dataset.era !== '1') return; const r = l.querySelector('input[type=radio]'); if (!r) return; e.preventDefault(); r.checked = false; l.dataset.era = ''; l.classList.remove('on'); }, true);
+document.addEventListener('click', e => { const l = e.target.closest && e.target.closest('.chq-ops label'); if (!l || l.dataset.era !== '1') return; const r = l.querySelector('input[type=radio]'); if (!r) return; e.preventDefault(); r.checked = false; l.dataset.era = ''; l.classList.remove('on'); r.dispatchEvent(new Event('change', { bubbles: true })); }, true);
+/* b394: com uma opção escolhida, tocar em qualquer ponto da caixa (fora da opção) também reabre as opções */
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.chq-ops'); if (!b || e.target.closest('label, button')) return; const r = b.querySelector('input[type=radio]:checked'); if (!r) return; r.checked = false; b.querySelectorAll('label').forEach(l => l.classList.remove('on')); r.dispatchEvent(new Event('change', { bubbles: true })); });
 setTimeout(() => { try { const m = document.getElementById('modals'); if (m) new MutationObserver(ms => { if (ms.some(x => [...x.addedNodes].some(n => n.nodeType === 1 && (n.matches('.chks, .chk-perfil, .ov') || (n.querySelector && n.querySelector('.chks')))))) chkGrpAplicar(m); }).observe(m, { childList: true, subtree: true }); } catch { } }, 0);
 function chkPerfis(tipo) {
   const P = chkCfg().perfis, n = norm(tipo || '');
@@ -13741,7 +14139,7 @@ function chkHTML(tipo, resp, legado) {
     const marc = p.perguntas.filter(q => q.tipo === 'marcar'), outras = p.perguntas.filter(q => q.tipo !== 'marcar'), txts = marc.map(q => q.texto);
     return `<div class="chk-perfil" data-perfil="${esc(p.id)}">${P.length > 1 ? `<p class="chk-tit">${esc(p.nome)}</p>` : ''}
       ${outras.map(q => { const k = esc(p.id + ':' + q.id), v = val(p, q); return q.tipo === 'opcoes'
-        ? `<div class="chq" data-k="${k}" data-t="${esc(q.texto)}" data-obr="${q.obrig ? 1 : ''}"><span class="chq-l">${esc(q.texto)}${q.obrig ? ' *' : ''}</span><div class="seg chq-ops">${(q.opcoes || []).map(op => `<label class="${v === op ? 'on' : ''}"><input type="radio" name="chq-${k}" value="${esc(op)}"${v === op ? ' checked' : ''}>${esc(op)}</label>`).join('')}</div></div>`
+        ? `<div class="chq" data-k="${k}" data-t="${esc(q.texto)}" data-obr="${q.obrig ? 1 : ''}"><span class="chq-l">${esc(q.texto)}${q.obrig ? ' *' : ''}</span><div class="seg chq-ops">${(q.opcoes || []).map(op => `<label class="${v === op ? 'on' : ''}"><input type="radio" name="chq-${k}" value="${esc(op)}"${v === op ? ' checked' : ''}>${esc(op)}</label>`).join('')}<button type="button" class="chq-op-mais" data-act="chq-op-add" data-k="${k}" data-t="${esc(q.texto)}" title="Adicionar outra opção. Ex.: Fonte 12V" aria-label="Adicionar outra opção">＋</button></div></div>`
         : `<div class="chq" data-k="${k}" data-t="${esc(q.texto)}" data-obr="${q.obrig ? 1 : ''}"><label class="chq-l" for="chq-${k}">${esc(q.texto)}${q.obrig ? ' *' : ''}</label><input id="chq-${k}" name="chq-${k}" value="${esc(v || '')}" autocomplete="off"></div>`; }).join('')}
       ${marc.length ? `<div class="chks">${marc.map(q => { const k = esc(p.id + ':' + q.id); const gr = chkGrupo(q.texto, txts); return `<label class="chq" data-k="${k}" data-t="${esc(q.texto)}"${gr ? ` data-grp="${esc(gr)}"` : ''}><input type="checkbox" name="chk" value="${esc(q.texto)}" data-obs="${esc(resp[p.id + ':' + q.id + ':obs'] || '')}"${val(p, q) === true || val(p, q) === 'sim' ? ' checked' : ''}>${esc(q.texto)}</label>`; }).join('')}</div>` : ''}</div>`;
   }).join('');
@@ -14205,7 +14603,7 @@ ACT['fn-c-add'] = () => { fnContLer(); M.fnCont.push({ nome: '', tel: '' }); $('
 ACT['fn-c-main'] = el => { fnContLer(); const i = +el.dataset.i, c = M.fnCont.splice(i, 1)[0]; M.fnCont.unshift(c); $('#fn-cont').innerHTML = fnContHTML(); const a = $('#f-cont') || $('#c-contato'), b = $('#f-ctel') || $('#c-contel'); if (a) a.value = c.nome || ''; if (b) b.value = c.tel || ''; toast(`${c.nome || 'Esta pessoa'} agora é o contato principal. Salve o cadastro para gravar.`); };
 ACT['fn-c-del'] = el => { fnContLer(); M.fnCont.splice(+el.dataset.i, 1); $('#fn-cont').innerHTML = fnContHTML(); };
 /* abre o editor antes de usar a foto (recortar, girar, brilho...); "Usar esta foto" continua com a foto ajustada */
-function fotoAntes(file, titulo, fn) { try { fotoEditor(URL.createObjectURL(file), { titulo, max: 1600, salvarTxt: 'Usar esta foto', onSave: async cv => { let g = file; try { const b = await toBlob(cv, .9); g = new File([b], file.name || 'foto.jpg', { type: 'image/jpeg' }); } catch { } setTimeout(() => fn(g), 120); } }); } catch { fn(file); } }
+function fotoAntes(file, titulo, fn) { try { fotoEditor(URL.createObjectURL(file), { titulo, max: 1600, descartar: true, salvarTxt: 'Usar esta foto', onSave: async cv => { let g = file; try { const b = await toBlob(cv, .9); g = new File([b], file.name || 'foto.jpg', { type: 'image/jpeg' }); } catch { } setTimeout(() => fn(g), 120); } }); } catch { fn(file); } }
 function fnFotoEditar(i, src) { const c = M.fnCont && M.fnCont[i]; if (!c) return; fotoEditor(src || c.foto, { titulo: 'Foto de ' + (c.nome || 'contato'), max: 320, prop: 1, saida: { w: 320, h: 320 }, salvarTxt: 'Usar esta foto', onSave: cv => { fnContLer(); M.fnCont[i].foto = cv.toDataURL('image/jpeg', .82); $('#fn-cont').innerHTML = fnContHTML(); } }); }
 ACT['fn-c-edfoto'] = el => fnFotoEditar(+el.dataset.i);
 ACT['fn-c-semfoto'] = el => { fnContLer(); delete M.fnCont[+el.dataset.i].foto; $('#fn-cont').innerHTML = fnContHTML(); };
@@ -19047,7 +19445,7 @@ const agMarcarCliente = async (c, g) => { if (!g || (c.googleId === g.id)) retur
 /* v356: todos os dados do cliente que vão para a agenda do Google */
 function agDadosCli(c, tels) {
   const rua = [[c.logradouro, c.numero].filter(Boolean).join(', '), c.complemento].filter(Boolean).join(' - ');
-  const nota = [c.doc ? (c.tipo === 'PJ' ? 'CNPJ ' : 'CPF ') + c.doc : '', c.rg ? (c.tipo === 'PJ' ? 'IE ' : 'RG ') + c.rg : '', c.contato ? 'Contato: ' + c.contato + (c.contatoTel ? ' ' + c.contatoTel : '') : '', 'Cliente ' + (S.empresa.fantasia || '')].filter(Boolean).join(' · ');
+  const nota = [c.doc ? (c.tipo === 'PJ' ? 'CNPJ ' : 'CPF ') + c.doc : '', c.rg ? (c.tipo === 'PJ' ? 'IE ' : 'RG ') + c.rg : '', c.contato ? 'Contato: ' + c.contato + (c.contatoTel ? ' ' + c.contatoTel : '') : '', c.referencia ? 'Ref.: ' + c.referencia : '', 'Cliente ' + (S.empresa.fantasia || '')].filter(Boolean).join(' · ');
   const o = { nome: c.nome, email: c.email || '', endereco: { rua, bairro: c.bairro || '', cidade: c.cidade || '', uf: c.uf || '', cep: c.cep || '' }, nota, empresa: c.tipo === 'PJ' ? c.nome : '', nasc: c.nascimento || '' };
   if (tels) o.tels = tels; return o;
 }
@@ -19058,18 +19456,22 @@ async function agAoSalvar(id, novo, ant) {
     const tels = agTelsCli(c); if (!tels.length) return;
     const L = await agListar(); const gi = c.googleId ? L.find(x => x.id === c.googleId) : null;
     if (c.googleId && !gi) return; /* foi apagado por fora: aparece em Comparar para recriar com autorização */
-    const g = (gi && agNomeK(gi.nome) === agNomeK(c.nome) ? gi : null) || agPorTel(L, tels, c.nome) || gi;
+    /* b394: nome ou telefone trocado no Bancada: acha o contato também pelo nome/telefones ANTIGOS (antes criava um contato novo duplicado) */
+    const g = (gi && agNomeK(gi.nome) === agNomeK(c.nome) ? gi : null) || agPorTel(L, tels, c.nome) || gi || (ant ? agPorTel(L, agTelsCli(ant), ant.nome) : null);
     if (!g) { const j = await agChamar('criar', agDadosCli(c, tels)); if (j && j.contato) { AG.lista = [...(AG.lista || []), j.contato]; await agMarcarCliente(c, j.contato); toast(`“${c.nome}” foi para a agenda do Google da empresa (aparece no celular e no WhatsApp).`, 5000); } return; }
     await agMarcarCliente(c, g);
-    if (agNomeK(g.nome) !== agNomeK(c.nome) && c.agNomeAceito !== agNomeK(g.nome)) agAvisoDiv();
+    /* b394: o nome foi mudado AGORA no Bancada → a agenda do Google acompanha (antes só avisava a diferença para acertar à mão) */
+    const mudouNome = ant && agNomeK(ant.nome) !== agNomeK(c.nome);
+    if (agNomeK(g.nome) !== agNomeK(c.nome)) { if (mudouNome) { const nome = agNomeLimpo(c.nome); const j = await agChamar('nome', { id: g.id, nome }); const gn = (j && j.contato && j.contato.nome) || nome; g.nome = gn; AG.lista = (AG.lista || []).map(x => x.id === g.id ? { ...x, nome: gn } : x); const c2 = get('clientes', c.id); if (c2 && c2.agNomeAceito) await save('clientes', c.id, { ...c2, agNomeAceito: null, _agSync: 1 }); toast(`Nome atualizado também na agenda do Google: “${gn}”.`, 4000); } else if (c.agNomeAceito !== agNomeK(g.nome)) agAvisoDiv(); }
     /* v356: contato já existe: manda as alterações (e-mail, endereço, empresa, observação, aniversário) e os telefones novos;
        telefone tirado no Bancada (troca já autorizada no cadastro) também sai da agenda; telefones que só existem na agenda ficam */
     const tirados = ant ? agTelsCli(ant).filter(t => !tels.some(x => agTel8(x) === agTel8(t))).map(agTel8) : [];
     const finais = [...tels, ...(g.tels || []).filter(t => !tels.some(x => agTel8(x) === agTel8(t)) && !tirados.includes(agTel8(t)))];
     const mudouTel = finais.length !== (g.tels || []).length || finais.some(t => !(g.tels || []).some(x => agTel8(x) === agTel8(t)));
     const dados = agDadosCli(c, mudouTel ? finais : null); delete dados.nome; dados.id = g.id;
-    const assin = JSON.stringify([c.email, c.logradouro, c.numero, c.bairro, c.cidade, c.uf, c.cep, c.doc, c.nascimento, finais.map(agTel8).sort()]);
-    if (mudouTel || c.agAssin !== assin) { try { await agChamar('atualizar', dados); const c2 = get('clientes', c.id); if (c2) await save('clientes', c.id, { ...c2, agAssin: assin, _agSync: 1 }); } catch (e) { if (!/desconhecida/.test(e.message || '')) throw e; } }
+    /* b394: qualquer dado do cadastro que vai para a agenda (e-mail, endereço completo, CPF/CNPJ, RG/IE, contato, referência, PF/PJ, aniversário, telefones) dispara a atualização */
+    const assin = JSON.stringify([(({ nome, tels, ...r }) => r)(agDadosCli(c, null)), finais.map(agTel8).sort()]);
+    if (mudouTel || c.agAssin !== assin) { try { await agChamar('atualizar', dados); if (mudouTel && ant) toast('Telefone atualizado também na agenda do Google.', 4000); const c2 = get('clientes', c.id); if (c2) await save('clientes', c.id, { ...c2, agAssin: assin, agG: agSnapB(c2), _agSync: 1 }); } catch (e) { if (!/desconhecida/.test(e.message || '')) throw e; } }
     agPend(id, false);
   } catch (e) { if (e && e.code !== 'sem-nuvem') { console.warn('[agenda]', e); const c = get('clientes', id), ja = agPend(id, true);
     /* v17: antes a falha era silenciosa (o cliente simplesmente não aparecia no WhatsApp); agora avisa e tenta de novo sozinho */
@@ -19092,7 +19494,7 @@ function cfgAgenda() {
   setTimeout(async () => { if (!AG.est || Date.now() - AG.est.t > 60e3) { await agEstado(true); if (S.route === 'config' && S.cfgTab === 'agenda') scheduleRender(true); } }, 0);
   const st = !E ? '<span class="chip">Conferindo…</span>' : E.ligado ? `<span class="chip ok">Ligada</span> <span class="muted">${esc(E.email || '')}</span>` : E.code === 'sem-google' ? '<span class="chip warn">Falta configurar a ponte (Google)</span>' : `<span class="chip warn">Desligada</span>`;
   return `<section class="panel"><div class="panel-head"><div><h2>Agenda Google da empresa</h2><p class="muted" style="font-size:.85rem">Os clientes viram contatos no Gmail da empresa e aparecem sozinhos no celular e no WhatsApp da empresa. Nada é apagado da agenda sem a senha de quem tem permissão.</p></div>
-    <div class="actions">${E && E.ligado ? `<button type="button" class="btn sm primary" data-act="ag-comparar" title="Compara os clientes do Bancada com a agenda do Google">${ic('search')}Comparar com a agenda</button><button type="button" class="btn sm ghost" data-act="ag-desligar" title="Desliga a agenda do Google (pede senha)">Desligar</button>` : `<button type="button" class="btn sm primary" data-act="ag-ligar" title="Entrar com o Gmail da empresa e autorizar a agenda">${ic('lock')}Ligar agenda do Google</button>`}</div></div>
+    <div class="actions">${E && E.ligado ? `<button type="button" class="btn sm primary" data-act="ag-comparar" title="Compara os clientes do Bancada com a agenda do Google">${ic('search')}Comparar com a agenda</button><button type="button" class="btn sm" data-act="agv-conferir" title="Procura contatos que foram mudados direto na agenda do Google">🔄 Mudanças feitas no Google</button><button type="button" class="btn sm ghost" data-act="ag-desligar" title="Desliga a agenda do Google (pede senha)">Desligar</button>` : `<button type="button" class="btn sm primary" data-act="ag-ligar" title="Entrar com o Gmail da empresa e autorizar a agenda">${ic('lock')}Ligar agenda do Google</button>`}</div></div>
     <p>Situação: ${st}</p>${E && E.erro && !E.ligado && E.code !== 'desligada' ? `<p class="banner" style="font-size:.85rem"><span class="grow">${esc(E.erro)}</span></p>` : ''}
     <label class="rf-chk" style="margin:8px 0"><input type="checkbox" data-act="ag-auto"${C.auto !== false ? ' checked' : ''}${E && E.ligado ? '' : ' disabled'}> Enviar sozinho para a agenda cada cliente novo ou alterado (número que ainda não está lá)</label>
     <div class="banner info" style="font-size:.85rem;margin-top:8px"><span class="grow"><b>Segurança:</b> trocar ou apagar o telefone de um cliente que já está na agenda, apagar contato da agenda e desligar a agenda pedem a senha de quem tem a permissão <b>Agenda Google: trocar ou apagar telefone</b>. Contatos apagados por fora (direto no celular ou no Gmail) aparecem em <b>Comparar</b> para recriar. O Google também guarda as alterações da agenda por 30 dias (contacts.google.com → Desfazer alterações).</span></div>
