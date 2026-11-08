@@ -5,6 +5,8 @@
 .net-pill{position:fixed;top:calc(env(safe-area-inset-top,0px) + 62px);left:10px;z-index:900;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:600 .82rem/1.25 var(--f-body,system-ui);box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 20px);text-align:left;white-space:normal}.net-off{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}.net-fraca{background:var(--amber-soft);color:var(--amber)}.net-ok{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 .ir-cp{grid-column:1/-1;font-size:.78rem;margin:-2px 0 2px}.ir-cp-tot{color:var(--muted)}
 .ir-cpw{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ir-cpw .ir-cpi{width:110px;flex:0 0 110px}.ir-cpw small{flex:1 1 auto}
+/* b401: parceira — nome da empresa com mais espaço, nº da OS estreito */.terc-box .terc-l1:has(>.terc-rec:not([hidden])),.terc-box .terc-l1:has(>.terc-env:not([hidden])){grid-template-columns:minmax(0,1fr) 104px!important}.terc-box .terc-l1>.terc-rec,.terc-box .terc-l1>.terc-env{min-width:0}
+.ss-in{text-overflow:ellipsis}
 </style></head><body>
 <script>/* b399: tema já no primeiro instante (sem clarão branco) */try{var tc=localStorage.getItem('bancada-tema-cedo');if(tc)document.documentElement.setAttribute('data-theme',tc);}catch(e){}</script>
 <div id="boot-tela" role="status" aria-live="polite"><div class="bt-c"><div class="bt-logo" aria-hidden="true"><svg viewBox="0 0 64 64" width="56" height="56"><rect width="64" height="64" rx="14" fill="#0C7356"/><rect x="14" y="14" width="36" height="24" rx="3" fill="none" stroke="#fff" stroke-width="4"/><path d="M10 46h44M24 38v8M40 38v8" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div><b id="boot-t">Abrindo o Bancada…</b><small id="boot-m">Só um instante.</small><div class="bt-bar"><i></i></div><button type="button" id="boot-r" hidden onclick="location.reload()">Tentar de novo</button></div></div>
@@ -2112,7 +2114,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 400;
+const APP_VER = 17, APP_BUILD = 401;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -4299,7 +4301,7 @@ const TH_TOM = [['clara', 'Clara'], ['normal', 'Normal'], ['escura', 'Escura'], 
 const thTom = () => { const v = lsGet('bancada-th-tom'); return TH_TOM.some(x => x[0] === v) ? v : 'normal'; };
 function thTomAplicar() { const h = document.documentElement; TH_TOM.forEach(([k]) => h.classList.toggle('th-tom-' + k, thTom() === k)); }
 try { thTomAplicar(); } catch { }
-const fmtSeg = () => `<div class="prev-fmt" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;flex:none"><span class="muted" style="font-size:.85rem;font-weight:600">Impressora:</span><div class="seg">${Object.entries(PFMT).map(([k, v]) => `<button type="button" data-act="pfmt" data-v="${k}" class="${S.pfmt === k ? 'on' : ''}" title="${v.nome}">${v.curto}</button>`).join('')}</div>${S.pfmt !== 'a4' ? `<span class="muted" style="font-size:.85rem;font-weight:600">Margem:</span><div class="seg">${Object.entries(TH_MARG).map(([k, v]) => `<button type="button" data-act="th-marg" data-v="${k}" class="${thMargK() === k ? 'on' : ''}">${v[0]}</button>`).join('')}</div><span class="muted" style="font-size:.85rem;font-weight:600">Impressão:</span><div class="seg" title="Escurece ou clareia o texto na impressora térmica">${TH_TOM.map(([k, l]) => `<button type="button" data-act="th-tom" data-v="${k}" class="${thTom() === k ? 'on' : ''}">${l}</button>`).join('')}</div>` : ''}${btLiberado() ? `<button type="button" class="btn sm" data-act="bt-print" title="Imprimir direto na impressora térmica Bluetooth, sem aplicativo">${ic('print')}Bluetooth${btImpPadrao() ? ' · ' + esc(btImpPadrao().nome || '') : ''}</button><div class="seg seg-acoes"><button type="button" class="on" data-act="bt-imps" title="Impressoras Bluetooth cadastradas: adicionar, escolher a padrão, ajustar e testar">🖨 Impressoras</button><button type="button" class="on" data-act="bt-ajustes-img" title="Ajustes da impressão Bluetooth: avanço do papel, largura, escurecer, negrito e ajuste fino">⚙ Ajustes da impressão</button></div>` : `${ehCelular ? '' : '<span class="chip ok" style="font-size:.78rem">No computador: aperte <b>Ctrl + P</b></span>'}<button type="button" class="btn sm ghost" data-act="th-guia">${ic('print')}Como configurar a impressora</button>`}</div>`;
+const fmtSeg = () => `<div class="prev-fmt" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;flex:none"><span class="muted" style="font-size:.85rem;font-weight:600">Impressora:</span><div class="seg">${Object.entries(PFMT).map(([k, v]) => `<button type="button" data-act="pfmt" data-v="${k}" class="${S.pfmt === k ? 'on' : ''}" title="${v.nome}">${v.curto}</button>`).join('')}</div>${S.pfmt !== 'a4' ? `<span class="muted" style="font-size:.85rem;font-weight:600">Margem:</span><div class="seg">${Object.entries(TH_MARG).map(([k, v]) => `<button type="button" data-act="th-marg" data-v="${k}" class="${thMargK() === k ? 'on' : ''}">${v[0]}</button>`).join('')}</div><span class="muted" style="font-size:.85rem;font-weight:600">Impressão:</span><div class="seg" title="Escurece ou clareia o texto na impressora térmica">${TH_TOM.map(([k, l]) => `<button type="button" data-act="th-tom" data-v="${k}" class="${thTom() === k ? 'on' : ''}">${l}</button>`).join('')}</div>` : ''}${btLiberado() ? `<button type="button" class="btn sm" data-act="bt-print" title="Imprimir direto na impressora térmica (Bluetooth ou cabo USB), sem aplicativo">${ic('print')}${btImpPadrao() && btImpPadrao().via === 'usb' ? 'USB' : 'Bluetooth'}${btImpPadrao() ? ' · ' + esc(btImpPadrao().nome || '') : ''}</button><div class="seg seg-acoes"><button type="button" class="on" data-act="bt-imps" title="Impressoras Bluetooth cadastradas: adicionar, escolher a padrão, ajustar e testar">🖨 Impressoras</button><button type="button" class="on" data-act="bt-ajustes-img" title="Ajustes da impressão Bluetooth: avanço do papel, largura, escurecer, negrito e ajuste fino">⚙ Ajustes da impressão</button></div>` : `${ehCelular ? '' : '<span class="chip ok" style="font-size:.78rem">No computador: aperte <b>Ctrl + P</b></span>'}<button type="button" class="btn sm ghost" data-act="th-guia">${ic('print')}Como configurar a impressora</button>`}</div>`;
 const paperAttr = () => S.pfmt === 'a4' ? 'class="prev-paper pg-doc"' : `class="prev-paper th${S.pfmt === 't58' ? ' th58' : ''}" style="width:${PFMT[S.pfmt].pw || PFMT[S.pfmt].w}mm;padding:${PFMT[S.pfmt].m}mm ${PFMT[S.pfmt].m}mm 3mm"`;
 /* ajusta o tamanho da prévia para caber na tela, sem cortar nem rolar para os lados */
 /* térmica: células curtas (hora, nº, valores) nunca quebram no meio */
@@ -10079,12 +10081,12 @@ async function btImprimir(job, escolher, impId) {
 async function btImprimir0(job, escolher, impId) {
   let imp = (impId && btImps().find(x => x.id === impId)) || btImpPadrao();
   if (!imp || escolher) { ACT['bt-imps'](); return; }
-  if (imp.via === 'rawbt' || imp.via === 'serial') {
+  if (imp.via === 'rawbt' || imp.via === 'serial' || imp.via === 'usb') {
     btEnvioIni(imp.nome); btEnvioMsg(`Preparando o documento para ${imp.nome || 'a impressora'}…`); await new Promise(r => setTimeout(r, 30));
     let bytes; try { bytes = await btBytesDoc(job, imp); } catch (e) { btEnvioFim(); console.error('[bt] preparar', e); toast('Não foi possível preparar o documento para a impressora' + (e && e.message ? ' (' + e.message + ')' : '') + '. Tente o Modo “Texto” em Configurações → Impressoras.', 8000); return; }
     btEnvioIni(imp.nome);
     try { await btEnviarVia(imp, bytes); btEnvioFim(); toast(`Enviado para ${imp.nome || 'a impressora'}.`, 5000); }
-    catch (e) { btEnvioFim(); if (e && e.code === 'cancelado') { toast('Impressão cancelada. O que já estava na memória da impressora pode sair (alguns centímetros).', 6000); return; } if (e && e.code === 'parcial') { toast('A impressora desligou no meio da impressão. Ligue de novo e toque em Bluetooth para imprimir outra vez.', 8000); return; } if (e && e.name === 'NotFoundError') { if (imp.via === 'serial') btSemImpressora(imp, job); return; } toast(e && e.code === 'sem-serial' ? 'Este navegador não acessa impressoras pareadas. Use o Google Chrome atualizado (celular) ou o Chrome/Edge (computador).' : 'Não foi possível enviar. Confira se a impressora está ligada, perto e pareada no Bluetooth do aparelho.', 6000); SER.port = null; }
+    catch (e) { btEnvioFim(); if (e && e.code === 'cancelado') { toast('Impressão cancelada. O que já estava na memória da impressora pode sair (alguns centímetros).', 6000); return; } if (e && e.usb) { if (e.name !== 'NotFoundError') btErroConexao(e); return; } if (e && e.code === 'parcial') { toast('A impressora desligou no meio da impressão. Ligue de novo e toque em Bluetooth para imprimir outra vez.', 8000); return; } if (e && e.name === 'NotFoundError') { if (imp.via === 'serial') btSemImpressora(imp, job); return; } toast(e && e.code === 'sem-serial' ? 'Este navegador não acessa impressoras pareadas. Use o Google Chrome atualizado (celular) ou o Chrome/Edge (computador).' : 'Não foi possível enviar. Confira se a impressora está ligada, perto e pareada no Bluetooth do aparelho.', 6000); SER.port = null; }
     return;
   }
   toast('Preparando a impressão…');
@@ -10119,7 +10121,7 @@ async function btTeste(id) {
   out.push(...btQuebraPal('Tudo legível? Então a comunicação está perfeita.', cols).flatMap(t => [...btCod(t, BT_CP[imp.acentos] || BT_CP.cp850), 0x0a]), ...btFim(C, imp));
   toast('Enviando o teste…'); const t0 = Date.now();
   try { if (con) await btEnviar(con.ch, new Uint8Array(out), imp); else await btEnviarVia(imp, new Uint8Array(out)); }
-  catch (e) { BT.ch = null; toast('O teste foi interrompido. Escolha a velocidade “Segura” e tente de novo.', 6000); return; }
+  catch (e) { BT.ch = null; if (e && e.usb) { btErroConexao(e); return; } toast('O teste foi interrompido. Escolha a velocidade “Segura” e tente de novo.', 6000); return; }
   const seg = Math.max(1, Math.round((Date.now() - t0) / 1000));
   openModal('Como saiu o teste?', `<p>O teste foi enviado para <b>${esc(imp.nome || 'a impressora')}</b> em ${seg} s.</p>
     <ul class="bt-dicas"><li><b>Saiu tudo certo:</b> a comunicação está perfeita. Toque em “Saiu certo”.</li>
@@ -10206,7 +10208,7 @@ function btImpsHTML() {
 }
 ACT['bt-imps'] = () => {
   btFecharJanelas();
-  openModal('Impressoras Bluetooth', `<div id="bt-imps">${btImpsHTML()}</div>`,
+  openModal('Impressoras (Bluetooth e USB)', `<div id="bt-imps">${btImpsHTML()}</div>`,
     `<button type="button" class="btn" data-act="bt-ajustes-img" title="Largura útil, tamanho da letra, escurecer e avanço do papel">Ajustes da impressão</button><button type="button" class="btn" data-act="close">Fechar</button><button type="button" class="btn primary" data-act="bt-add">${ic('plus')}Adicionar impressora</button>`, { wide: true });
   btMarca();
 };
@@ -10253,7 +10255,7 @@ ACT['bt-print'] = () => {
   if (!L.length) { ACT['bt-imps'](); return; }
   BT_JOB = job;
   const via = x => (BT_VIAS.find(v => v[0] === (x.via || 'ble')) || BT_VIAS[1])[1].replace(/ \(.*\)$/, '');
-  openModal('Imprimir no Bluetooth', `<p class="muted" style="margin-top:0">Em qual impressora?</p><div class="more-grid" style="grid-template-columns:1fr">${L.map((x, i) => `<button type="button" data-act="bt-print-em" data-id="${esc(x.id)}"${i === 0 ? ' data-foco="1"' : ''}>${ic('print')}<span style="flex:1"><b>${esc(x.nome || 'Impressora')}</b><br><small class="muted">${x.papel === 't58' ? '58 mm' : '80 mm'} · ${x.modo === 'texto' ? 'texto' : 'imagem'} · ${esc(via(x))}</small></span>${x.padrao || L.length === 1 ? '<span class="chip ok">Padrão</span>' : ''}</button>`).join('')}</div>`,
+  openModal('Imprimir na impressora térmica', `<p class="muted" style="margin-top:0">Em qual impressora?</p><div class="more-grid" style="grid-template-columns:1fr">${L.map((x, i) => `<button type="button" data-act="bt-print-em" data-id="${esc(x.id)}"${i === 0 ? ' data-foco="1"' : ''}>${ic('print')}<span style="flex:1"><b>${esc(x.nome || 'Impressora')}</b><br><small class="muted">${x.papel === 't58' ? '58 mm' : '80 mm'} · ${x.modo === 'texto' ? 'texto' : 'imagem'} · ${esc(via(x))}</small></span>${x.padrao || L.length === 1 ? '<span class="chip ok">Padrão</span>' : ''}</button>`).join('')}</div>`,
     `<button type="button" class="btn" data-act="bt-imps" style="margin-right:auto">Gerenciar impressoras</button><button type="button" class="btn" data-act="close">Cancelar</button>`);
   setTimeout(() => { try { $('#modals').lastElementChild.querySelector('[data-foco]').focus(); } catch { } }, 60);
 };
@@ -14058,8 +14060,8 @@ const tercTxtBusca = x => { const t = tercDe(x), e = envDe(x); return norm([t &&
 function tercBlocoHTML(x, col) {
   const t = (x && x.terc) || {}, e = (x && x.env) || {}, P = parceiras(), op = (sel, ph) => `<option value="">${ph}</option>${P.map(p => `<option value="${p.id}"${p.id === sel ? ' selected' : ''}>${esc(p.nome)}</option>`).join('')}`;
   return `<fieldset class="terc-box" style="grid-column:1/-1"><legend>Empresa parceira (terceirizada)</legend>
-    <div class="fg">${field('Veio da empresa parceira', `<select name="tercId" id="terc-id" class="terc-sel">${op(t.id, 'Nenhuma — cliente direto')}</select>`)}<div class="terc-rec"${t.id ? '' : ' hidden'}>${field('Nº da OS na parceira', `<input name="tercOs" value="${esc(t.os || '')}" placeholder="Ex.: 4587" autocomplete="off">`)}</div></div></div>
-    ${col === 'os' ? `<div class="fg">${field('Enviado para conserto na parceira', `<select name="envId" id="env-id" class="terc-sel">${op(e.id, 'Não enviado')}</select>`)}<div class="terc-env"${e.id ? '' : ' hidden'}>${field('Nº da OS na parceira', `<input name="envOs" value="${esc(e.os || '')}" placeholder="Ex.: 1290" autocomplete="off">`)}</div></div>
+    <div class="fg terc-l1">${field('Veio da empresa parceira', `<select name="tercId" id="terc-id" class="terc-sel">${op(t.id, 'Nenhuma — cliente direto')}</select>`)}<div class="terc-rec"${t.id ? '' : ' hidden'}>${field('Nº da OS',  `<input name="tercOs" value="${esc(t.os || '')}" placeholder="Ex.: 4587" autocomplete="off">`)}</div></div></div>
+    ${col === 'os' ? `<div class="fg terc-l1">${field('Enviado para conserto na parceira', `<select name="envId" id="env-id" class="terc-sel">${op(e.id, 'Não enviado')}</select>`)}<div class="terc-env"${e.id ? '' : ' hidden'}>${field('Nº da OS',  `<input name="envOs" value="${esc(e.os || '')}" placeholder="Ex.: 1290" autocomplete="off">`)}</div></div>
     <div class="fg terc-env"${e.id ? '' : ' hidden'}>${field('Enviado em', `<input type="date" name="envData" value="${esc(e.data || today())}">`)}${field('Previsão de volta', `<input type="date" name="envPrev" value="${esc(e.prev || '')}">`)}${field('Custo combinado (R$)', `<input name="envCusto" inputmode="decimal" value="${esc(e.custo != null ? String(e.custo).replace('.', ',') : '')}" placeholder="Ex.: 150,00">`)}${field('Voltou em', `<input type="date" name="envVolta" value="${esc(e.volta || '')}">`)}</div>` : ''}
     <small class="muted">Toque na setinha ▾ para ver as parceiras, ou digite/fale o nome; o × deixa em branco. Escolhendo a parceira primeiro, a lista de clientes mostra só os clientes dela.</small></fieldset>`;
 }
@@ -14348,7 +14350,7 @@ addEventListener('beforeunload', e => { if (window.FS_SEM_PERSIST && netQtd()) {
    Vale para qualquer fileira de abas (.seg, .tabs, role=tablist) da janela que está na frente. */
 let ABA_TROCA = 0, ABA_OV = null;
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.seg [data-act], .tabs [data-act], [role=tablist] [data-act], [role=tab][data-act]'); const ov = b && b.closest('#modals > .ov'); if (ov && ov === $('#modals').lastElementChild) { ABA_TROCA = Date.now(); ABA_OV = ov; } else ABA_OV = null; }, true);
-{ const _abaOM = openModal; openModal = function () { const v = ABA_OV; ABA_OV = null; if (v && Date.now() - ABA_TROCA < 400 && v.isConnected && v === $('#modals').lastElementChild) v.remove(); return _abaOM.apply(this, arguments); }; }
+{ const _abaOM = openModal; openModal = function () { const v = ABA_OV; ABA_OV = null; if (v && Date.now() - ABA_TROCA < 400 && v.isConnected && v === $('#modals').lastElementChild) v.remove(); const r = _abaOM.apply(this, arguments); [450, 1200].forEach(ms => setTimeout(() => { try { const ov = $('#modals').lastElementChild; if (ov) caberCampos(ov); } catch { } }, ms)); return r; }; }
 /* b400: LAUDO PELA EMPRESA PARCEIRA (equipamento ENVIADO para conserto): link para quem conserta preencher diagnóstico, solução, peças/serviços com os valores dela e o prazo.
    A página da parceira mostra só o equipamento e o nº da nossa OS — nada do cliente. O laudo dela chega na OS; “Usar no meu laudo” leva tudo para o laudo,
    com o custo da parceira em cada item, e a empresa preenche o SEU valor para o cliente final. Precisa da ponte 7.6. */
@@ -14461,6 +14463,55 @@ setTimeout(() => { try { ACT_PERM['parc-val-imp'] = ''; AJUDA['parc-val-imp'] = 
   const tabs = f.querySelector('.fn-tabs'); if (tabs) tabs.insertAdjacentHTML('beforeend', `<button type="button" data-act="fn-tab" data-t="valores">Valores cobrados</button>`);
   const pane = document.createElement('div'); pane.className = 'fn-pane'; pane.dataset.p = 'valores'; pane.hidden = true; pane.innerHTML = `<p class="muted" style="margin:0 0 8px;font-size:.85rem">Último valor que esta parceira cobrou de cada serviço (dos laudos que ela mandou pelo link e dos custos das OS que voltaram).</p>${parcValoresHTML(id)}<div class="actions" style="justify-content:flex-start;margin-top:10px"><button type="button" class="btn" data-act="parc-val-imp" data-id="${esc(id)}">${ic('print')}Imprimir relatório</button></div>`;
   const ult = [...f.querySelectorAll('.fn-pane')].pop(); (ult || tabs).insertAdjacentElement('afterend', pane); }, 60); return out; }; }
+/* b401: IMPRESSORA TÉRMICA POR CABO USB (OTG no celular) — ex.: Bematech MP-4200 TH. Usa o WebUSB do Chrome; manda os mesmos comandos da impressão Bluetooth. */
+const usbOk = () => { try { if (!navigator.usb) return false; const fp = document.permissionsPolicy || document.featurePolicy; if (fp && fp.allowsFeature && !fp.allowsFeature('usb')) return false; return true; } catch { return false; } };
+let USB = { dev: null };
+try { if (navigator.usb) navigator.usb.addEventListener('disconnect', e => { if (USB.dev && e.device === USB.dev) USB = { dev: null }; }); } catch { }
+function usbSaida(dev) { let best = null; /* prefere a interface de impressora (classe 7); depois dados de porta serial (10); depois qualquer uma com saída */
+  for (const itf of dev.configuration.interfaces) for (const alt of itf.alternates) { const out = alt.endpoints.find(e => e.direction === 'out' && e.type === 'bulk'); if (!out) continue; const sc = alt.interfaceClass === 7 ? 0 : alt.interfaceClass === 10 ? 1 : 2; if (!best || sc < best.sc) best = { itf: itf.interfaceNumber, alt: alt.alternateSetting, ep: out.endpointNumber, sc }; }
+  return best; }
+async function usbAbrir(imp, escolher) {
+  if (!usbOk()) throw Object.assign(new Error('sem-usb'), { code: 'sem-usb' });
+  const igual = d => d && imp && d.vendorId === imp.vendorId && d.productId === imp.productId && (!imp.serie || !d.serialNumber || d.serialNumber === imp.serie);
+  let dev = !escolher && USB.dev && igual(USB.dev) && USB.dev.opened ? USB.dev : null;
+  if (!dev && !escolher && imp) { try { const L = await navigator.usb.getDevices(); dev = L.find(igual) || L.find(d => d.vendorId === imp.vendorId && d.productId === imp.productId) || null; } catch { } }
+  if (!dev) dev = await navigator.usb.requestDevice({ filters: !escolher && imp && imp.vendorId ? [{ vendorId: imp.vendorId, productId: imp.productId }] : [] });
+  if (!dev.opened) await dev.open();
+  if (!dev.configuration) await dev.selectConfiguration(1);
+  const b = usbSaida(dev); if (!b) throw Object.assign(new Error('sem-saida'), { code: 'sem-canal' });
+  const itf = dev.configuration.interfaces.find(i => i.interfaceNumber === b.itf);
+  if (!itf.claimed) await dev.claimInterface(b.itf);
+  if (b.alt) { try { await dev.selectAlternateInterface(b.itf, b.alt); } catch { } }
+  if (b.sc === 1) { try { const com = dev.configuration.interfaces.find(i => i.alternates.some(a => a.interfaceClass === 2)); if (com) await dev.controlTransferOut({ requestType: 'class', recipient: 'interface', request: 0x22, value: 0x03, index: com.interfaceNumber }); } catch { } } /* porta serial USB: liga DTR/RTS */
+  USB = { dev, ep: b.ep }; return USB;
+}
+async function btEnviarUSB(imp, bytes, prog) { try { return await btEnviarUSB0(imp, bytes, prog); } catch (e) { const x = e instanceof Error ? e : new Error(String(e)); x.usb = true; throw x; } }
+async function btEnviarUSB0(imp, bytes, prog) {
+  const u = await btPrazo(usbAbrir(imp), 15000), tam = 4096;
+  for (let i = 0; i < bytes.length; i += tam) { const r = await btPrazo(u.dev.transferOut(u.ep, bytes.subarray(i, i + tam)), 20000); if (r.status !== 'ok') throw Object.assign(new Error('usb-' + r.status), { code: 'usb-falha' }); if (prog) prog(Math.min(1, (i + tam) / bytes.length)); }
+}
+{ const _usbEV = btEnviarVia; btEnviarVia = async function (imp, bytes, prog) { if (imp && imp.via === 'usb') return btEnviarUSB(imp, bytes, prog); return _usbEV.apply(this, arguments); }; }
+BT_VIAS.push(['usb', 'Cabo USB (OTG)']);
+{ const _usbLib = btLiberado; btLiberado = function () { return _usbLib.apply(this, arguments) || usbOk(); }; }
+/* erro de conexão USB: explica o que fazer */
+{ const _usbErr = btErroConexao; btErroConexao = function (e) { if (!(e && (e.usb || e.code === 'sem-usb' || e.code === 'usb-falha'))) return _usbErr.apply(this, arguments);
+  const neg = e && (e.name === 'SecurityError' || e.name === 'NetworkError' || /Access denied|claim/i.test(String(e.message || '')));
+  openModal('Impressora USB', e && e.code === 'sem-usb' ? `<p><b>Este navegador não libera o USB.</b></p><p>Use o <b>Google Chrome</b> no celular Android (ou Chrome/Edge no computador). Dentro do Claude o acesso pode estar bloqueado: abra o aplicativo pelo ícone instalado ou pelo endereço do Bancada no Chrome.</p>`
+    : neg ? `<p><b>O aparelho não deixou usar a impressora pelo USB.</b></p><ul style="padding-left:18px;line-height:1.6"><li>No <b>celular</b>: desligue e ligue o cabo OTG, e quando o Android perguntar, toque em <b>Permitir</b>. Feche outros aplicativos de impressão que possam estar usando a impressora.</li><li>No <b>computador Windows</b>: a impressora com driver instalado fica presa ao Windows. Use o botão <b>Imprimir</b> normal (Ctrl + P), ou remova o driver para usar pelo USB direto.</li></ul>`
+    : `<p><b>Não consegui imprimir pelo USB.</b></p><ul style="padding-left:18px;line-height:1.6"><li>Confira se a impressora está <b>ligada</b>, com papel e com a tampa fechada.</li><li>Use um <b>adaptador OTG</b> (USB-C ou micro-USB para USB fêmea) e o cabo USB da impressora.</li><li>Tire e coloque o cabo de novo e toque em <b>Testar</b>.</li><li>Se sair texto estranho, troque em Impressoras: <b>Formato da imagem → Compatível (ESC *)</b> ou <b>Modo → Texto</b>. Na Bematech, a impressora precisa estar no modo <b>ESC/POS</b> (configurável no utilitário da Bematech).</li></ul>`,
+    `<button type="button" class="btn" data-act="close">Fechar</button>`); }; }
+async function usbCadastrar() {
+  let dev;
+  try { dev = (await usbAbrir(null, true)).dev; } catch (e) { if (e) e.usb = true; if (e && e.name === 'NotFoundError') { toast('Nenhuma impressora escolhida. Ligue o cabo OTG, ligue a impressora e tente de novo.', 7000); return; } btErroConexao(e); return; }
+  const L = btImps(), id = 'usb-' + dev.vendorId.toString(16) + '-' + dev.productId.toString(16) + (dev.serialNumber ? '-' + dev.serialNumber : ''), i = L.findIndex(x => x.id === id);
+  const nova = { ...BT_PAD, via: 'usb', papel: S.pfmt === 't58' ? 't58' : 't80', id, nome: [dev.manufacturerName, dev.productName].filter(Boolean).join(' ').trim() || 'Impressora USB', vendorId: dev.vendorId, productId: dev.productId, serie: dev.serialNumber || '', criadaEm: Date.now() };
+  if (i >= 0) L[i] = { ...L[i], ...nova, padrao: L[i].padrao }; else { if (!L.length) nova.padrao = true; L.push(nova); }
+  btImpsSalvar(L); btImpsRedesenha(); toast(`${nova.nome} cadastrada pelo cabo USB. Enviando a página de teste…`); btTeste(id);
+}
+{ const _usbAdd = ACT['bt-add']; ACT['bt-add'] = el => { _usbAdd(el); if (!usbOk()) return; setTimeout(() => { const g = document.querySelector('#modals .ov:last-child .more-grid'); if (!g || g.querySelector('[data-v="usb"]')) return;
+    g.insertAdjacentHTML('beforeend', `<button type="button" data-act="bt-add-via" data-v="usb" style="text-align:left;align-items:flex-start;flex-direction:column;gap:2px"><b>Cabo USB (OTG)</b><small class="muted" style="font-weight:400">${ehCelular ? 'Ligue a impressora no celular com um adaptador OTG (USB-C ou micro-USB para USB fêmea) e o cabo USB dela. Ex.: Bematech MP-4200 TH, Elgin i9 com USB. Quando o Android perguntar, toque em Permitir.' : 'Impressora ligada no cabo USB do computador. No Windows só funciona se ela estiver sem driver instalado; com driver, use Ctrl + P.'}</small></button>`); }, 0); }; }
+{ const _usbVia = ACT['bt-add-via']; ACT['bt-add-via'] = async el => { if (el.dataset.v === 'usb') { closeModal(); BT_T = Date.now(); return usbCadastrar(); } return _usbVia(el); }; }
+setTimeout(() => { try { AJUDA['bt-add'] = (AJUDA['bt-add'] || '') + ' Também dá para ligar por cabo USB (OTG no celular).'; } catch { } }, 0);
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -14546,9 +14597,10 @@ function caberCampo(c) {
   const avail = c.clientWidth - (parseFloat(st.paddingLeft) || 0) - (parseFloat(st.paddingRight) || 0) - 2 - (c.tagName === 'SELECT' && st.appearance !== 'none' ? 21 : 0); /* lista nativa: a setinha ocupa ~20px */
   if (avail <= 0) return;
   CAB_CV.font = `${st.fontWeight} ${fs0}px ${st.fontFamily}`; const w = CAB_CV.measureText(txt).width; if (w <= avail) { tira(); return; }
-  const nf = Math.max(11, Math.floor(fs0 * avail / w * 10) / 10);
+  const minF = c.classList.contains('ss-in') ? Math.min(fs0, 13.5) : 11; /* b401: lista com pesquisa não encolhe até ficar ilegível: o que não couber termina em “…” */
+  const nf = Math.max(minF, Math.floor(fs0 * avail / w * 10) / 10);
   if (!tem || Math.abs(nf - atual) >= 0.3) { if (!tem) c.dataset.cabFs0 = String(fs0); c.style.fontSize = nf + 'px'; c.dataset.cabFs = '1'; } c.dataset.cabK = chave;
-  if (nf === 11) { CAB_CV.font = `${st.fontWeight} 11px ${st.fontFamily}`; if (CAB_CV.measureText(txt).width > avail) { const l = c.closest('label.f, .field'); if (l && !l.classList.contains('f-larga') && l.parentElement && /grid/.test(getComputedStyle(l.parentElement).display)) { l.classList.add('f-larga'); setTimeout(() => caberCampo(c), 0); return; } if (!c.title) c.title = txt; } }
+  if (nf === minF && !c.closest('.terc-l1')) { CAB_CV.font = `${st.fontWeight} ${minF}px ${st.fontFamily}`; if (CAB_CV.measureText(txt).width > avail) { const l = c.closest('label.f, .field'); if (l && !l.classList.contains('f-larga') && l.parentElement && /grid/.test(getComputedStyle(l.parentElement).display)) { l.classList.add('f-larga'); setTimeout(() => caberCampo(c), 0); return; } if (!c.title) c.title = txt; } }
 }
 function caberCampos(raiz) { try { (raiz || document).querySelectorAll('#view select, #view input, #modals select, #modals input').forEach(caberCampo); } catch { } }
 { let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(() => caberCampos(), 120); }).observe(document.body, { childList: true, subtree: true });
