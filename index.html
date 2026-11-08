@@ -7,6 +7,9 @@
 .ir-cpw{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ir-cpw .ir-cpi{width:110px;flex:0 0 110px}.ir-cpw small{flex:1 1 auto}
 /* b401: parceira — nome da empresa com mais espaço, nº da OS estreito */.terc-box .terc-l1:has(>.terc-rec:not([hidden])),.terc-box .terc-l1:has(>.terc-env:not([hidden])){grid-template-columns:minmax(0,1fr) 104px!important}.terc-box .terc-l1>.terc-rec,.terc-box .terc-l1>.terc-env{min-width:0}
 .ss-in{text-overflow:ellipsis}
+/* b403 */.stat{min-width:0}.stat .v{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.osv-steps .ap-cli{outline:2px dashed var(--accent);outline-offset:2px}.ap-tag{font-size:.72rem;font-weight:700;color:var(--accent);margin-left:4px}.osv-steps .now .ap-tag{color:inherit}
+/* b403: nada sai da caixa */.msg-g,.mdl-g{grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))!important}.msg-it{max-width:100%}.per-bar .seg>*{flex:0 0 auto;white-space:nowrap;width:auto!important;min-width:max-content!important;max-width:none!important}.stat .eyebrow{max-width:100%;overflow-wrap:normal}
 </style></head><body>
 <script>/* b399: tema já no primeiro instante (sem clarão branco) */try{var tc=localStorage.getItem('bancada-tema-cedo');if(tc)document.documentElement.setAttribute('data-theme',tc);}catch(e){}</script>
 <div id="boot-tela" role="status" aria-live="polite"><div class="bt-c"><div class="bt-logo" aria-hidden="true"><svg viewBox="0 0 64 64" width="56" height="56"><rect width="64" height="64" rx="14" fill="#0C7356"/><rect x="14" y="14" width="36" height="24" rx="3" fill="none" stroke="#fff" stroke-width="4"/><path d="M10 46h44M24 38v8M40 38v8" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div><b id="boot-t">Abrindo o Bancada…</b><small id="boot-m">Só um instante.</small><div class="bt-bar"><i></i></div><button type="button" id="boot-r" hidden onclick="location.reload()">Tentar de novo</button></div></div>
@@ -2114,7 +2117,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 402;
+const APP_VER = 17, APP_BUILD = 403;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -6243,7 +6246,7 @@ function osFoot(o) {
     <button type="button" class="btn" data-act="os-etq" data-id="${o.id}">${ic('tag')}Etiqueta</button>
     <button type="button" class="btn danger" data-act="os-del" data-id="${o.id}">Excluir OS</button>`;
 }
-function osBody(o) {
+function osBody(o) { /* b403: faixa “cliente aprovou pelo link” é inserida pelo wrapper abaixo */
   const st = osSt(o), c = cliente(o.clienteId), fs = fotosDe(o.id), L = o.laudo, it = o.itens || [];
   const idx = OS_ST.findIndex(x => x[0] === o.status);
   const steps = o.status === 'cancelada' ? `<div class="steps"><span class="now">Devolvido sem reparo</span></div>` : `<div class="steps">${OS_ST.slice(0, 7).map((s, i) => `<span class="${i === idx ? 'now' : i < idx ? 'done' : ''}">${s[1]}</span>`).join('')}</div>`;
@@ -14524,6 +14527,18 @@ async function usbCadastrar() {
     g.insertAdjacentHTML('beforeend', `<button type="button" data-act="bt-add-via" data-v="usb" style="text-align:left;align-items:flex-start;flex-direction:column;gap:2px"><b>Cabo USB (OTG)</b><small class="muted" style="font-weight:400">${ehCelular ? 'Ligue a impressora no celular com um adaptador OTG (USB-C ou micro-USB para USB fêmea) e o cabo USB dela. Ex.: Bematech MP-4200 TH, Elgin i9 com USB. Quando o Android perguntar, toque em Permitir.' : 'Impressora ligada no cabo USB do computador. No Windows só funciona se ela estiver sem driver instalado; com driver, use Ctrl + P.'}</small></button>`); }, 0); }; }
 { const _usbVia = ACT['bt-add-via']; ACT['bt-add-via'] = async el => { if (el.dataset.v === 'usb') { closeModal(); BT_T = Date.now(); return usbCadastrar(); } return _usbVia(el); }; }
 setTimeout(() => { try { AJUDA['bt-add'] = (AJUDA['bt-add'] || '') + ' Também dá para ligar por cabo USB (OTG no celular).'; } catch { } }, 0);
+/* b403: cliente aprovou pelo link → a OS mostra isso no topo e confirma com um toque; a opção “Aprovado — aguardando início” fica destacada */
+{ const _apOB = osBody; osBody = function (o) { const h = _apOB.apply(this, arguments); try { const r = o && o.status === 'orcamento' && o.respAprov; if (!r) return h;
+    const quando = r.em ? new Date(r.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+    const fx = r.escolha === 'aprova' ? `<div class="banner ok ap-link" style="margin:0 0 10px;flex-wrap:wrap"><span class="grow" style="min-width:0">✅ <b>O cliente aprovou pelo link</b>${quando ? ' em ' + quando : ''}.${r.texto ? ` Recado: “${esc(r.texto)}”` : ''}</span><button type="button" class="btn sm primary" data-act="os-ap-link" data-id="${o.id}">Confirmar: Aprovado — aguardando início</button></div>`
+      : r.escolha === 'nao' ? `<div class="banner warn" style="margin:0 0 10px"><span class="grow">❌ <b>O cliente respondeu pelo link que não aprova</b>${quando ? ' (' + quando + ')' : ''}.${r.texto ? ` Recado: “${esc(r.texto)}”` : ''}</span></div>`
+      : `<div class="banner info" style="margin:0 0 10px"><span class="grow">❓ <b>O cliente tem uma dúvida</b> sobre o orçamento${quando ? ' (' + quando + ')' : ''}.${r.texto ? ` Recado: “${esc(r.texto)}”` : ''} Fale com ele pelo WhatsApp.</span></div>`;
+    return fx + h; } catch { return h; } }; }
+ACT['os-ap-link'] = async el => { const o = get('os', el.dataset.id); if (!o) return; const b = document.querySelector(`#modals [data-act="os-st"][data-st="aprovado"], #modals .osv-steps [data-st="aprovado"]`); if (b) { b.click(); return; }
+  if (await save('os', o.id, { ...o, status: 'aprovado', historico: [...(o.historico || []), { st: 'aprovado', at: Date.now(), por: OPID(), obs: 'Cliente aprovou pelo link' }] })) { toastOk('OS marcada como Aprovado — aguardando início.'); try { refreshOsView(); } catch { } } };
+setTimeout(() => { try { ACT_PERM['os-ap-link'] = 'os'; AJUDA['os-ap-link'] = 'O cliente aprovou pelo link: muda a OS para “Aprovado — aguardando início” com um toque.'; } catch { } }, 0);
+/* marca a opção “Aprovado — aguardando início” quando o cliente já aprovou pelo link */
+new MutationObserver(() => { try { document.querySelectorAll('#modals .osv-steps [data-st="aprovado"]:not([data-ap])').forEach(b => { const ov = b.closest('.ov'), id = (ov && ov.querySelector('[data-act="os-ap-link"]') || {}).dataset?.id; if (!id) return; b.dataset.ap = '1'; b.classList.add('ap-cli'); b.insertAdjacentHTML('beforeend', ' <small class="ap-tag">cliente aprovou</small>'); }); } catch { } }).observe(document.body, { childList: true, subtree: true });
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
@@ -14614,7 +14629,13 @@ function caberCampo(c) {
   if (!tem || Math.abs(nf - atual) >= 0.3) { if (!tem) c.dataset.cabFs0 = String(fs0); c.style.fontSize = nf + 'px'; c.dataset.cabFs = '1'; } c.dataset.cabK = chave;
   if (nf === minF && !c.closest('.terc-l1')) { CAB_CV.font = `${st.fontWeight} ${minF}px ${st.fontFamily}`; if (CAB_CV.measureText(txt).width > avail) { const l = c.closest('label.f, .field'); if (l && !l.classList.contains('f-larga') && l.parentElement && /grid/.test(getComputedStyle(l.parentElement).display)) { l.classList.add('f-larga'); setTimeout(() => caberCampo(c), 0); return; } if (!c.title) c.title = txt; } }
 }
-function caberCampos(raiz) { try { (raiz || document).querySelectorAll('#view select, #view input, #modals select, #modals input').forEach(caberCampo); } catch { } }
+function caberCampos(raiz) { try { (raiz || document).querySelectorAll('#view select, #view input, #modals select, #modals input').forEach(caberCampo); } catch { } try { (raiz || document).querySelectorAll(FIT_SEL).forEach(caberTexto); } catch { } }
+/* b403: números grandes nos cartões (ex.: R$ 3.752,00 no Faturamento) diminuem a letra até caber na caixa; só escreve quando muda (sem piscar) */
+const FIT_SEL = '.stat .v, .kpi .v, .ind-v, .tot-v, .stat .eyebrow';
+function caberTexto(el) { if (!el || !el.offsetParent) return; const txt = el.textContent, k = txt + '|' + el.clientWidth + '|' + innerWidth + '|' + getComputedStyle(document.documentElement).fontSize; if (el.dataset.fitK === k) return;
+  const ant = el.style.fontSize; el.style.fontSize = ''; const fs0 = parseFloat(getComputedStyle(el).fontSize) || 16, cw = el.clientWidth, sw = el.scrollWidth;
+  let nf = ''; if (cw > 0 && sw > cw + 1) nf = Math.max(11, Math.floor(fs0 * cw / sw * 0.97 * 10) / 10) + 'px';
+  el.style.fontSize = nf; if (nf !== ant) { /* mudou de verdade */ } el.dataset.fitK = k; }
 { let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(() => caberCampos(), 120); }).observe(document.body, { childList: true, subtree: true });
   document.addEventListener('change', e => { if (e.target && e.target.matches && e.target.matches('select, input')) setTimeout(() => caberCampo(e.target), 0); }, true);
   document.addEventListener('input', e => { if (e.target && e.target.matches && e.target.matches('input')) caberCampo(e.target); });
