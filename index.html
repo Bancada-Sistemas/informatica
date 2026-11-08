@@ -1,4 +1,7 @@
-<!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:only light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:only light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.irow.pc{grid-template-columns:minmax(0,1fr) 62px 100px 112px 88px 32px}.ir-pc-w{display:block;margin:0}.ir-pc-w .ir-pc{width:100%}.ir-pc-l{display:none}.ir-pc-nota{font-size:.82rem;margin:0 0 4px}.ir-pc-tot{color:var(--accent,#1d4ed8)}
+@media (max-width:640px){.irow.pc{grid-template-columns:64px minmax(0,1fr) minmax(0,auto) 38px}.irow.pc>.ir-pc-w{grid-column:1/-1;display:flex;align-items:center;gap:8px}.irow.pc>.ir-pc-w .ir-pc-l{display:block;font-size:.8rem;flex:1 1 auto;min-width:0}.irow.pc>.ir-pc-w .ir-pc{flex:0 0 120px;width:120px}}
+.sheet.xl .irow.pc>.ir-pc-w{grid-column:1/-1!important;display:flex;align-items:center;gap:8px}.sheet.xl .irow.pc>.ir-pc-w .ir-pc-l{display:block}
+</style></head><body>
 <title>Bancada Assistência Técnica de Informática</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230C7356'/%3E%3Crect x='14' y='14' width='36' height='36' rx='9' fill='none' stroke='white' stroke-width='6'/%3E%3Cline x1='25' y1='39' x2='40' y2='24' stroke='white' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -871,6 +874,7 @@ body.sem-op #side nav,body.sem-op #bottom,body.sem-op .side-foot{display:none!im
 .msg-vars{display:flex;flex-wrap:wrap;gap:6px}.msg-var{cursor:pointer;font-family:var(--f-mono);text-transform:none;letter-spacing:0}
 .lnk{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font:inherit}
 .ind{display:flex;flex-direction:column;gap:14px}.ind-al{display:flex;flex-direction:column;gap:8px}.ind-al-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);cursor:pointer;min-width:0}.ind-al-i .grow{flex:1;min-width:0;overflow-wrap:anywhere}.ind-al-n{font-size:1.5rem;min-width:1.6em;text-align:center}.ind-al-i .btn{flex:none;pointer-events:none}.ind .ind-stats{grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))}.ind-li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);min-width:0}.ind-li>span:first-child{min-width:0;overflow-wrap:anywhere}.ind-li>span:last-child{flex:none;text-align:right}.ind-h3{font-size:.95rem;margin:10px 0 2px}#ind-per{min-width:150px}
+.ss-x[hidden],.terc-rec[hidden],.terc-env[hidden]{display:none!important}.cb>.ss-x{position:absolute;top:4px;bottom:4px;right:36px;width:30px;border:0;background:transparent;color:var(--muted);font-size:1.2rem;font-weight:700;line-height:1;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0}.cb>.ss-x:hover{color:var(--red)}.cb:has(>.cb-b:not(.cb-seta))>.ss-x{right:84px}.cb:has(>.ss-x:not([hidden]))>.ss-in{padding-right:70px!important}
 .jun{display:flex;flex-direction:column;gap:6px}.jun-cs{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0}.jun-c{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 4px 3px 8px;border:1px solid var(--line,#2a3140);border-radius:999px;font-size:.85rem;background:rgba(128,128,128,.12);overflow-wrap:anywhere}.jun-c img{width:28px;height:28px;object-fit:cover;border-radius:6px}.jun-x{border:0;background:rgba(128,128,128,.25);color:var(--ink);width:24px;height:24px;border-radius:50%;font:700 15px/24px Arial;cursor:pointer;flex:none}.jun-dig{display:flex;gap:6px}.jun-dig[hidden]{display:none!important}
 .lnk svg{width:1.1em;height:1.1em;flex:none;vertical-align:-.2em;margin-right:3px}.ir-prod .lnk{display:inline-flex;align-items:center;gap:3px}
 /* v17 b389: ícone dentro de link (ex.: Editar o produto no cadastro) fica do tamanho da letra */
@@ -2086,7 +2090,7 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 17, APP_BUILD = 395;
+const APP_VER = 17, APP_BUILD = 396;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0;
@@ -3028,14 +3032,15 @@ V.caixa = () => {
 
 /* ---------- Orçamentos ---------- */
 V.orcamentos = () => `<div class="page-head"><div><p class="eyebrow">Propostas para clientes</p><h1>Orçamentos</h1></div><div class="actions"><button class="btn" data-act="rel-filtro" data-t="orc">${ic('print')}Imprimir relatório</button><button class="btn primary" data-act="orc-new">${ic('plus')}Novo orçamento</button></div></div>
-  <div class="toolbar"><div class="search">${ic('search')}<input id="q-orc" data-q="orcamentos" placeholder="Buscar por cliente, número ou equipamento" value="${esc(S.q.orcamentos || '')}"></div>${ordSel('orcamentos')}
+  <div class="toolbar"><div class="search">${ic('search')}<input id="q-orc" data-q="orcamentos" placeholder="Buscar por cliente, número ou equipamento" value="${esc(S.q.orcamentos || '')}"></div>${ordSel('orcamentos')}${tercSelHTML('orcamentos')}
   <div class="seg">${[['aberto', 'Em aberto'], ['aprovado', 'Aprovados'], ['convertido', 'Vendidos'], ['recusado', 'Recusados'], ['todos', 'Todos']].map(([k, l]) => `<button data-act="filt" data-k="orcamentos" data-v="${k}" class="${S.filt.orcamentos === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
   <div id="list">${orcList()}</div>`;
 function orcList() {
   const f = S.filt.orcamentos, q = norm(S.q.orcamentos || '');
   let os = [...S.orcamentos];
   if (f !== 'todos') os = os.filter(o => o.status === f);
-  if (q) os = os.filter(o => norm(cliNome(o.clienteId)).includes(q) || String(o.numero).includes(q) || norm(o.equipamento).includes(q) || (o.itens || []).some(i => norm(i.nome).includes(q)));
+  if (q) os = os.filter(o => norm(cliNome(o.clienteId)).includes(q) || String(o.numero).includes(q) || norm(o.equipamento).includes(q) || (o.itens || []).some(i => norm(i.nome).includes(q)) || tercTxtBusca(o).includes(q));
+  os = tercFiltra('orcamentos', os);
   os = ordenar('orcamentos', os, o => cliNome(o.clienteId));
   if (!os.length) return emptyBox(S.orcamentos.length ? 'Nada neste filtro' : 'Nenhum orçamento ainda', 'Monte orçamentos com peças e mão de obra, envie ao cliente e transforme em venda quando aprovar.', `<button class="btn sm" data-act="orc-new">Novo orçamento</button>`);
   return `<div class="list">${os.map(o => { const st = orcStatus(o); return `<div class="card click" data-act="orc-open" data-id="${o.id}"><div class="card-top"><span class="n">ORÇ ${pad(o.numero)}</span>${osDoOrc(o) ? `<button type="button" class="chip info chip-link" data-act="os-view" data-id="${osDoOrc(o).id}" title="Gerado a partir da OS ${pad(osDoOrc(o).numero)}: toque para abrir a OS">OS ${pad(osDoOrc(o).numero)}</button>` : ''}<span class="chip ${st.c}">${st.t}</span>${exChip(o)}<span class="muted" style="font-size:.85rem">${dBR(dayISO(o.at))} · válido até ${dBR(o.validadeAte)}</span><span class="r">${brl(o.total)}</span></div>
@@ -3051,7 +3056,7 @@ function orcList() {
 
 /* ---------- Aluguéis ---------- */
 V.alugueis = () => `<div class="page-head"><div><p class="eyebrow">Locação de equipamentos</p><h1>Aluguéis</h1></div><div class="actions"><button class="btn" data-act="rel-filtro" data-t="alug">${ic('print')}Imprimir relatório</button><button class="btn" data-act="go" data-r="agenda">${ic('agenda')}Agenda</button><button class="btn" data-act="alug-agendar">${ic('alugueis')}Agendar aluguel</button><button class="btn primary" data-act="alug-new">${ic('plus')}Novo aluguel</button></div></div>
-  <div class="toolbar"><div class="search">${ic('search')}<input id="q-alug" data-q="alugueis" placeholder="Buscar por cliente, número ou equipamento" value="${esc(S.q.alugueis || '')}"></div>${ordSel('alugueis', { fim: 'Data de devolução' })}
+  <div class="toolbar"><div class="search">${ic('search')}<input id="q-alug" data-q="alugueis" placeholder="Buscar por cliente, número ou equipamento" value="${esc(S.q.alugueis || '')}"></div>${ordSel('alugueis', { fim: 'Data de devolução' })}${tercSelHTML('alugueis')}
   <div class="seg">${[['ativos', 'Em andamento'], ['agendados', `Agendados${S.alugueis.filter(a => a.status === 'agendado').length ? ' (' + S.alugueis.filter(a => a.status === 'agendado').length + ')' : ''}`], ['atrasados', 'Atrasados'], ['devolvidos', 'Devolvidos'], ['todos', 'Todos']].map(([k, l]) => `<button data-act="filt" data-k="alugueis" data-v="${k}" class="${S.filt.alugueis === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
   <div id="list">${alugList()}</div>`;
 function alugList() {
@@ -3062,7 +3067,8 @@ function alugList() {
   if (f === 'atrasados') as = as.filter(a => a.status === 'ativo' && a.fim < h);
   if (f === 'devolvidos') as = as.filter(a => a.status === 'devolvido').sort((a, b) => (b.devolucao || '').localeCompare(a.devolucao || ''));
   as = (S.ord.alugueis || 'rec') === 'fim' ? as.sort((a, b) => (a.status === 'ativo' ? 0 : 1) - (b.status === 'ativo' ? 0 : 1) || String(a.fim || '').localeCompare(String(b.fim || ''))) : ordenar('alugueis', as, a => cliNome(a.clienteId));
-  if (q) as = as.filter(a => norm(cliNome(a.clienteId)).includes(q) || String(a.numero).includes(q) || (a.itens || []).some(i => norm(i.nome).includes(q) || norm(i.serie).includes(q)));
+  if (q) as = as.filter(a => norm(cliNome(a.clienteId)).includes(q) || String(a.numero).includes(q) || (a.itens || []).some(i => norm(i.nome).includes(q) || norm(i.serie).includes(q)) || tercTxtBusca(a).includes(q));
+  as = tercFiltra('alugueis', as);
   if (!as.length) return emptyBox(S.alugueis.length ? 'Nada neste filtro' : 'Nenhum aluguel ainda', 'Cadastre equipamentos de aluguel em Produtos e registre a locação com contrato pronto.', `<button class="btn sm" data-act="alug-new">Novo aluguel</button>`);
   return `<div class="list">${as.map(alugCard).join('')}</div>`;
 }
@@ -4044,8 +4050,9 @@ function docFile(title, inner) {
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Figtree:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap"><style>${DOC_CSS}body{background:#e8ebea;margin:0;padding:24px 12px;font-family:Arial,sans-serif}.tip{max-width:800px;margin:0 auto 12px;background:#fff8e0;border:1px solid #e8d48a;padding:8px 12px;border-radius:6px;font-size:13px}@media print{body{background:#fff;padding:0}.tip{display:none}.doc{box-shadow:none;max-width:none;padding:0}}@page{size:A4;margin:14mm}</style></head><body><p class="tip">Para imprimir ou salvar em PDF, abra o menu do navegador e escolha Imprimir (Ctrl+P).</p>${inner}</body></html>`;
 }
 function showDoc(kind, x) {
+  if (kind !== 'envparc' && typeof tercDe === 'function' && tercDe(x) && TERC_CLI.has(x.id)) { const v = tercVista(kind, x); if (!v) return; x = v; TERC_DOC_CLI = true; setTimeout(() => { TERC_DOC_CLI = false; }, 0); }
   let title, html, txt = '', fname, tel = '';
-  const c = cliente(x.clienteId); tel = cliTelWa(c);
+  const c = cliente(x.clienteId); tel = cliTelWa(c); const TD = tercDest(x); if (TD) tel = TD.tel; /* b396: serviço de empresa parceira vai para a parceira */
   if (kind === 'orc') { title = `Orçamento ${pad(x.numero)}`; html = docOrc(x); txt = txtOrc(x); fname = `Orcamento-${pad(x.numero)}.html`; }
   if (kind === 'venda') { title = `${x.correcao ? 'Correção de venda' : x.carneId ? 'Recibo de venda' : 'Comprovante'} ${pad(x.numero)}`; html = docVenda(x); fname = `Comprovante-venda-${pad(x.numero)}.html`; txt = `*Comprovante de venda nº ${pad(x.numero)} — ${S.empresa.fantasia || ''}*\n${(x.itens || []).map(i => `• ${fmtQ(i.qtd)}× ${i.nome} — ${brl(i.qtd * i.preco)}`).join('\n')}\n*Total: ${brl(x.total)}*`; }
   if (kind === 'contrato') { title = `Contrato de locação ${pad(x.numero)}`; html = docContrato(x); fname = `Contrato-locacao-${pad(x.numero)}.html`; }
@@ -4058,14 +4065,16 @@ function showDoc(kind, x) {
   if (kind === 'recibo') { title = `Recibo aluguel ${pad(x.numero)}`; html = docRecibo(x); fname = `Recibo-aluguel-${pad(x.numero)}.html`; txt = (() => { const PQ = alugParcRec(x); return `*Recibo — aluguel nº ${pad(x.numero)}*\nRecebemos ${brl(alugPago(x))} (${extenso(alugPago(x))})${PQ && PQ.ini ? `, referente ${PQ.ini === PQ.fim ? 'à parcela ' + PQ.ini : 'às parcelas ' + PQ.ini + ' a ' + PQ.fim} de ${PQ.N}` : ''}. Obrigado!`; })(); }
   if (kind === 'entrada') { title = `OS ${pad(x.numero)} — entrada`; html = docEntrada(x); fname = `OS-${pad(x.numero)}-entrada.html`; txt = msgDocEntrada(x); }
   if (kind === 'laudo') { title = `Laudo técnico — OS ${pad(x.numero)}`; html = docLaudo(x); fname = `Laudo-tecnico-OS-${pad(x.numero)}.html`; txt = msgDocLaudo(x); }
+  if (kind === 'envparc') { const ee = envDe(x) || {}; title = `Envio para conserto — OS ${pad(x.numero)}`; html = docEnvParc(x); fname = `Envio-parceira-OS-${pad(x.numero)}.html`; txt = txtEnvParc(x); tel = parcTel(ee.id); }
   if (MSG_TIPOS[kind] && kind !== 'assinatura') { try { const t2 = msgTexto(kind, x); if (t2) txt = t2; } catch { } }
+  if (tercDe(x) && kind !== 'envparc') { html = tercNoDoc(html, tercBoxDoc(x)); if (TD && txt) txt = tercTxt(x, txt); }
   html = quebraLongas(html);
   const D = M.doc = { title, html, txt, fname, tok: Date.now(), kind, ref: x, tel };
   M.job = { tipo: 'doc', title, html };
   const waTxt = txt || title + (S.empresa.fantasia ? ' — ' + S.empresa.fantasia : '');
   const wa = waUrl(tel, waTxt);
   D.wa = wa;
-  openModal(title, `${fmtSeg()}${docCompSeg(kind)}<p class="prev-hint">Escolha a impressora acima. A prévia mostra como o documento vai sair.</p><div ${paperAttr()}>${html}</div>${!S.empresa.fantasia ? `<p class="banner" style="font-size:.85rem">Cadastre os dados da empresa para o cabeçalho sair completo.</p>` : ''}`,
+  openModal(title, `${fmtSeg()}${docCompSeg(kind)}${tercAvisoDoc(kind, x)}<p class="prev-hint">Escolha a impressora acima. A prévia mostra como o documento vai sair.</p><div ${paperAttr()}>${html}</div>${!S.empresa.fantasia ? `<p class="banner" style="font-size:.85rem">Cadastre os dados da empresa para o cabeçalho sair completo.</p>` : ''}`,
     `${SIG_DOC[kind] && x.id ? sigDocBtns(kind, x) : ''}${txt ? `<button type="button" class="btn" data-act="doc-copy">${ic('copy')}Copiar texto</button>` : ''}<button type="button" class="btn" data-act="doc-wa" data-url="${esc(wa)}">${ic('chat')}<span class="wa-l">WhatsApp</span></button><button type="button" class="btn" data-act="doc-share" title="Abre a janela de compartilhar do aparelho com o PDF: WhatsApp, e-mail, Outlook, Bluetooth, Compartilhamento por proximidade, Meu Telefone…">${ic('share')}Compartilhar</button>${DL ? `<button type="button" class="btn" data-act="doc-dl-html" title="Arquivo para abrir no navegador">${ic('down')}HTML</button><button type="button" class="btn" data-act="doc-xlsx">${ic('down')}Excel</button><button type="button" class="btn" data-act="doc-dl">${ic('down')}PDF</button>` : ''}<button type="button" class="btn primary" data-act="prev-print">${ic('print')}Imprimir</button>`, { full: true });
   docPrewarm(D);
   prepararImpressao(M.job);
@@ -6000,7 +6009,7 @@ const FORMS = {
     if (await save('config', 'empresa', d)) { closeModal(); toast('Dados da empresa salvos.'); }
   },
   async orcamento(f, d) {
-    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco) }));
+    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
     if (!d.clienteId) { toast('Selecione o cliente do orçamento.'); return; }
     if (!itens.length) { toast('Adicione pelo menos um item.'); return; }
     const id = f.dataset.id || uid(), old = get('orcamentos', id) || {};
@@ -6009,7 +6018,7 @@ const FORMS = {
     if (await save('orcamentos', id, o)) { closeModal(); toast(`Orçamento ${pad(o.numero)} salvo.`); if (!f.dataset.id) showDoc('orc', { ...o, id }); }
   },
   async aluguel(f, d) {
-    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), serie: i.serie || '', qtd: num(i.qtd) || 1, preco: r2(i.preco) }));
+    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), serie: i.serie || '', qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
     if (!d.clienteId) { toast('Selecione o cliente (locatário).'); return; }
     if (!itens.length) { toast('Adicione pelo menos um equipamento.'); return; }
     { const z = itens.find(i => !(num(i.preco) > 0)); if (z) { toast(`Informe o valor por ${perNome[M.periodo][0]} de “${z.nome}”: está R$ 0,00.`); const k = M.itens.findIndex(i => i.nome.trim() === z.nome), el = $('#ir-v-' + k); if (el) { el.focus(); el.select && el.select(); } return; } }
@@ -6020,7 +6029,7 @@ const FORMS = {
     const porProd = {}; itens.forEach(it => { if (it.produtoId) porProd[it.produtoId] = (porProd[it.produtoId] || 0) + it.qtd; });
     for (const [pid, q] of Object.entries(porProd)) { const p = get('produtos', pid); if (!p) continue; const livres = totalEquip(p) - ocupadasMax(pid, d.inicio, d.fim, id); if (q > livres) { toast(`${p.nome}: só ${Math.max(0, livres)} unidade(s) livre(s) de ${dBR(d.inicio)} a ${dBR(d.fim)}. Veja a disponibilidade no formulário.`); return; } }
     const old = get('alugueis', id) || {};
-    const vendas = (M.vendas || []).filter(i => String(i.nome || '').trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco) }));
+    const vendas = (M.vendas || []).filter(i => String(i.nome || '').trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
     const n = periodos(M.periodo, d.inicio, d.fim), bruto = r2(sum(itens, i => i.qtd * i.preco) * n), desconto = num(d.desconto);
     const a = { ...old, numero: old.numero || nextNum('alugueis'), at: old.at || Date.now(), clienteId: d.clienteId, inicio: d.inicio, fim: d.fim, periodo: M.periodo, itens, desconto, caucao: num(d.caucao), total: r2(Math.max(0, bruto - desconto)), formaPagamento: d.formaPagamento, valorObs: (d.valorObs || '').trim(), obsGeral: (d.obsGeral || '').trim(), local: d.local, obs: d.obs, status: ag ? 'agendado' : (old.status && old.status !== 'agendado' ? old.status : 'ativo'), pagamentos: old.pagamentos || [], por: old.por || OPID(), vendas: old.vendaId && get('vendas', old.vendaId) ? (old.vendas || []) : vendas, vendaModo: old.vendaId && get('vendas', old.vendaId) ? 'fora' : (d.vendaModo === 'dentro' ? 'dentro' : 'fora') };
     Object.assign(a, { vendaModo: 'fora', totalVenda: 0, vendaBaixa: [], saldoVenc: d.saldoVenc || a.inicio, vendaMostrar: d.vendaMostrar || 'itens', vendaVenc: d.vendaVenc || old.vendaVenc || a.inicio, vendaForma: d.vendaForma ?? old.vendaForma ?? '' });
@@ -6162,7 +6171,7 @@ function osMsg(o) {
 }
 
 V.os = () => `<div class="page-head"><div><p class="eyebrow">Assistência técnica</p><h1>Ordens de serviço</h1></div><div class="actions"><button class="btn" data-act="rel-filtro" data-t="os">${ic('print')}Imprimir relatório</button><button class="btn primary" data-act="os-new">${ic('plus')}Nova OS</button></div></div>
-  <div class="toolbar"><div class="search">${ic('search')}<input id="q-os" data-q="os" placeholder="Buscar por cliente, nº, equipamento ou série" value="${esc(S.q.os || '')}"></div>${ordSel('os', { prio: 'Urgentes e previsão de entrega' })}<button class="btn" data-act="cam-scan" data-target="q-os" title="Ler o QR code da etiqueta da OS com a câmera">${ic('camera')}Ler QR code</button>
+  <div class="toolbar"><div class="search">${ic('search')}<input id="q-os" data-q="os" placeholder="Buscar por cliente, nº, equipamento ou série" value="${esc(S.q.os || '')}"></div>${ordSel('os', { prio: 'Urgentes e previsão de entrega' })}${tercSelHTML('os')}<button class="btn" data-act="cam-scan" data-target="q-os" title="Ler o QR code da etiqueta da OS com a câmera">${ic('camera')}Ler QR code</button>
   <div class="seg">${[['abertas', 'Na bancada'], ['pronto', 'Prontas'], ['entregue', 'Entregues'], ['todas', 'Todas']].map(([k, l]) => `<button data-act="filt" data-k="os" data-v="${k}" class="${S.filt.os === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
   <div id="list">${osList()}</div>`;
 function osList() {
@@ -6172,7 +6181,8 @@ function osList() {
   os = (S.ord.os || 'rec') === 'prio' ? os.sort((a, b) => (b.prioridade === 'urgente') - (a.prioridade === 'urgente') || (a.previsao || '9').localeCompare(b.previsao || '9')) : ordenar('os', os, o => cliNome(o.clienteId));
   if (f === 'pronto') os = os.filter(o => o.status === 'pronto');
   if (f === 'entregue') os = os.filter(o => !osAberta(o));
-  if (q) os = os.filter(o => norm(cliNome(o.clienteId)).includes(q) || String(o.numero).includes(q) || norm(osEquip(o)).includes(q) || norm(o.serie).includes(q) || norm(o.defeito).includes(q));
+  if (q) os = os.filter(o => norm(cliNome(o.clienteId)).includes(q) || String(o.numero).includes(q) || norm(osEquip(o)).includes(q) || norm(o.serie).includes(q) || norm(o.defeito).includes(q) || tercTxtBusca(o).includes(q));
+  os = tercFiltra('os', os);
   if (!os.length) return emptyBox(S.os.length ? 'Nada neste filtro' : 'Nenhuma ordem de serviço ainda', 'Registre a entrada do equipamento com fotos, faça o laudo técnico e acompanhe até a entrega.', `<button class="btn sm" data-act="os-new">Nova OS</button>`);
   return `<div class="list">${os.map(o => {
     const st = osSt(o), nf = S.fotos.filter(x => x.osId === o.id).length;
@@ -6469,7 +6479,7 @@ Object.assign(FORMS, {
   async laudo(f, d) {
     if (!d.diagnostico.trim()) { toast('Escreva o diagnóstico.'); return; }
     const o = get('os', f.dataset.id); if (!o) return;
-    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco) }));
+    const itens = M.itens.filter(i => i.nome.trim()).map(i => ({ produtoId: i.produtoId || null, nome: i.nome.trim(), qtd: num(i.qtd) || 1, preco: r2(i.preco), ...(pcTem(i) ? { precoCli: r2(num(i.precoCli)) } : {}) }));
     const subtotal = r2(sum(itens, i => i.qtd * i.preco)), desconto = descCalc(subtotal, d.descontoIn, d.descTipo), frete = num(d.frete), acrescimo = num(d.acrescimo), now = Date.now();
     const laudo = { diagnostico: d.diagnostico.trim(), causa: d.causa, solucao: d.solucao, conclusao: d.conclusao, tecnico: d.tecnico, garantia: d.garantia, obs: d.obs, interno: (d.interno || '').trim(), obsFim: (d.obsFim || '').trim(), testes: M.testes.filter(t => t.nome.trim() && (t.on || t.res || String(t.obs || '').trim())).map(({ on, novo, padrao, ...t }) => t), at: (o.laudo && o.laudo.at) || now, atualizado: now, por: (o.laudo && o.laudo.por) || S.me };
     let status = o.status, hist = [...(o.historico || [])];
@@ -7929,7 +7939,7 @@ Object.assign(FORMS, {
     if (await save('fornecedores', id, { ...old, ...d, nome: d.nome.trim(), at: old.at || Date.now(), por: old.por || OPID() })) {
       closeModal(); toast('Cadastro salvo.');
       const alvo = M.fornAlvo && document.getElementById(M.fornAlvo); M.fornAlvo = null;
-      if (alvo) setTimeout(() => { const fs = [...S.fornecedores].sort(byNome); const keep = alvo.options[0] ? alvo.options[0].outerHTML : ''; alvo.innerHTML = keep + fs.filter(x => alvo.id !== 'cp-forn' || fornTipos(x).includes('fornecedor')).map(x => `<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join(''); alvo.value = id; alvo.dispatchEvent(new Event('change', { bubbles: true })); }, 50);
+      if (alvo) setTimeout(() => { const fs = [...S.fornecedores].sort(byNome); const keep = alvo.options[0] ? alvo.options[0].outerHTML : ''; alvo.innerHTML = keep + fs.filter(x => (alvo.id !== 'cp-forn' || fornTipos(x).includes('fornecedor')) && (!alvo.classList.contains('terc-sel') || fornTipos(x).includes('parceira'))).map(x => `<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join(''); alvo.value = id; alvo.dispatchEvent(new Event('change', { bubbles: true })); }, 50);
     }
   },
   async formaPag(f, d) {
@@ -10847,6 +10857,7 @@ function bsPreparar(raiz) {
 function ssNovoPara(sel) {
   const id = sel.id, nm = sel.name, form = sel.closest('form');
   if (sel.classList.contains('cli-sel') || nm === 'clienteId') return { txt: 'Adicionar novo cliente', fn: () => { if (!sel.id) sel.id = 'ss' + uid().slice(-6); cliForm(null, sel.id === 'pdv-cli' ? 'pdv' : sel.id); } };
+  if (nm === 'tercId' || nm === 'envId') return { txt: 'Cadastrar empresa parceira', fn: () => { if (!sel.id) sel.id = 'ss' + uid().slice(-6); M.fornAlvo = sel.id; fornForm(null, ['parceira']); } };
   if (nm === 'fornecedorId') return { txt: 'Cadastrar novo fornecedor / favorecido', fn: () => { if (!sel.id) sel.id = 'ss' + uid().slice(-6); M.fornAlvo = sel.id; fornForm(null, sel.id === 'cp-forn' || sel.id === 'p-forn' ? ['fornecedor'] : ['favorecido']); } };
   if (id === 'dp-cat') return { txt: 'Adicionar nova categoria', fn: () => { M.catAlvo = 'dp-cat'; ACT['cat-new']({ dataset: { t: 'pagar' } }); } };
   if (form && form.dataset.form === 'recConta' && nm === 'categoria') return { txt: 'Adicionar nova categoria', fn: q => cbNovo({ el: sel, tipo: 'receber', tit: 'categoria de contas a receber' }, q) };
@@ -10855,7 +10866,7 @@ function ssNovoPara(sel) {
   if (nm === 'categoria') return { txt: 'Adicionar nova categoria', fn: q => cbNovo({ el: sel, tit: 'categoria' }, q) };
   return null;
 }
-const ssAlvo = sel => !sel.multiple && !sel.dataset.ss && ((sel.options.length >= 12 && !sel.closest('.prev-fmt, .seg, [data-noss]')) || sel.classList.contains('cli-sel') || ['clienteId', 'fornecedorId', 'categoria'].includes(sel.name) || ['os-tipo', 'o-tipo', 'pq-tipo', 'p-un-sel', 'dp-cat'].includes(sel.id));
+const ssAlvo = sel => !sel.multiple && !sel.dataset.ss && ((sel.options.length >= 12 && !sel.closest('.prev-fmt, .seg, [data-noss]')) || sel.classList.contains('cli-sel') || ['clienteId', 'fornecedorId', 'categoria', 'tercId', 'envId'].includes(sel.name) || ['os-tipo', 'o-tipo', 'pq-tipo', 'p-un-sel', 'dp-cat'].includes(sel.id));
 const ssPh = o => o && !o.value && /^(selecione|escolha)/i.test(o.text.trim());
 const ssTexto = sel => { const o = sel.options[sel.selectedIndex]; return o && !(o.value || '').startsWith('__') && !ssPh(o) ? o.text : ''; };
 function ssMelhorar(sel) {
@@ -10865,7 +10876,11 @@ function ssMelhorar(sel) {
   const ph = [...sel.options].find(ssPh); inp.placeholder = ph ? ph.text.replace(/…$/, '') : 'Digite para pesquisar';
   const lb = document.createElement('button'); lb.type = 'button'; lb.className = 'btn cb-b cb-seta'; lb.title = 'Ver todos'; lb.setAttribute('aria-label', 'Ver todas as opções'); lb.innerHTML = '<span aria-hidden="true">▾</span>';
   w.insertBefore(inp, sel); w.appendChild(lb);
-  const sync = () => { if (document.activeElement !== inp) inp.value = ssTexto(sel); };
+  /* b396 REGRA: toda escolha com busca tem o × para deixar em branco (quando a lista tem a opção em branco) */
+  const xb = document.createElement('button'); xb.type = 'button'; xb.className = 'ss-x'; xb.title = 'Limpar: deixar em branco'; xb.setAttribute('aria-label', 'Limpar'); xb.textContent = '×'; w.insertBefore(xb, lb);
+  const xs = () => { xb.hidden = !sel.value || ![...sel.options].some(o => o.value === ''); };
+  xb.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (![...sel.options].some(o => o.value === '')) return; sel.value = ''; inp.value = ''; sel.dispatchEvent(new Event('change', { bubbles: true })); sel.dispatchEvent(new Event('input', { bubbles: true })); xs(); });
+  const sync = () => { if (document.activeElement !== inp) inp.value = ssTexto(sel); xs(); };
   sync(); sel._ssSync = sync;
   const itens = () => [...sel.options].filter(o => !(o.value || '').startsWith('__') && !ssPh(o)).map(o => ({ t: o.text, v: o.value, on: o.value === sel.value && o.selected, fixo: true }));
   const nv = ssNovoPara(sel);
@@ -13634,7 +13649,7 @@ Object.assign(ACT, {
       const ok = await save('os', x.id, { ...x, previsao: d, previsoes: [...(x.previsoes || []), { de: x.previsao || '', para: d, at: Date.now(), por: OPID(), motivo: w.tipo === 'os-peca' ? 'Aguardando peça' : 'Atraso' }] }); if (!ok) return;
       if (w.linha && d >= today()) { try { w.linha.remove(); } catch { } } }
     if (!w.orc && ['os-retirada', 'os-retirada-tinta', 'st-pronto', 'st-cancelada'].includes(w.tipo)) { const x2 = get('os', x.id); if (x2) await save('os', x.id, { ...x2, lembRetiradaEm: Date.now() }); if (w.linha) { try { w.linha.remove(); } catch { } } }
-    const tel = cliTelWa(cliente(x.clienteId)); closeModal(); IND_WA = null;
+    const TD = tercDest(x), tel = TD ? TD.tel : cliTelWa(cliente(x.clienteId)); closeModal(); IND_WA = null;
     if (!tel) { try { await navigator.clipboard.writeText(txt); } catch { } toast((w.prazo ? 'Nova previsão gravada. ' : '') + 'O cliente não tem WhatsApp cadastrado: a mensagem foi copiada.', 6000); return; }
     abrirExterno(waUrl(tel, txt)); if (w.prazo) toastOk('Nova previsão gravada na OS.');
   },
@@ -13998,6 +14013,231 @@ setTimeout(() => { try {
   MSG_PADRAO.push({ id: 'p-os-retirada-tinta', tipo: 'os-retirada-tinta', nome: 'Retirada atrasada — risco de entupimento', texto: 'Olá, {cliente}! Aqui é da *{empresa}*.\nO seu equipamento *{equipamento}* (OS nº {numero}) está pronta para retirada desde {pronto_desde} e ainda não foi buscada.\n\n⚠️ *Importante:* impressora a jato de tinta parada por muitos dias corre o risco de *entupir de novo a cabeça de impressão ou o cartucho* por falta de uso. A *{empresa}* *não se responsabiliza* se a cabeça ou o cartucho voltar a entupir por causa desse tempo parado.\n\nQuando você vem buscar? Toque aqui e escolha o dia: {link_resposta}' });
   MSG_TIPOS_B393.push('os-retirada-tinta'); RESP_TIPO['os-retirada-tinta'] = 'retirada';
 } catch (e) { console.warn('tinta', e); } }, 0);
+/* v17 b396: EMPRESAS PARCEIRAS (assistências terceirizadas) — RECEBIMENTO: o equipamento veio de uma parceira (nome + nº da OS dela);
+   ENVIO: eu mando o equipamento para uma parceira consertar. Vale na OS, no orçamento e no aluguel; filtros nas listas; tela “Empresas parceiras”;
+   documentos de quem veio da parceira vão para a PARCEIRA (mandar ao cliente final pede autorização superior); de quem eu enviei, vão para o cliente. */
+FORN_TIPOS.push(['parceira', 'Empresa parceira (assistência terceirizada: recebo ou envio equipamentos)']);
+PERMS.splice(PERMS.findIndex(p => p[0] === 'whatsapp') + 1, 0, ['parceiraCliente', 'Mandar ao cliente final documentos e avisos de serviço que veio de empresa parceira (sempre com senha)']);
+const parceiras = () => (S.fornecedores || []).filter(f => fornTipos(f).includes('parceira')).sort((a, b) => String(a.nome).localeCompare(String(b.nome)));
+const parcNome = id => ((S.fornecedores || []).find(f => f.id === id) || {}).nome || '';
+const parcTel = id => { const f = (S.fornecedores || []).find(x => x.id === id) || {}; return String(f.whatsapp || f.telefone || f.contatoTel || '').replace(/\D/g, ''); };
+/* terc = veio da parceira; env = enviado para a parceira. Orçamento/venda ligados a uma OS herdam da OS */
+const tercDe = x => { if (!x) return null; if (x.terc && x.terc.id) return x.terc; const o = x.osId && get('os', x.osId); return o && o.terc && o.terc.id ? o.terc : null; };
+const envDe = x => x && x.env && x.env.id ? x.env : null;
+const tercTxtBusca = x => { const t = tercDe(x), e = envDe(x); return norm([t && parcNome(t.id), t && t.os, e && parcNome(e.id), e && e.os].filter(Boolean).join(' ')); };
+function tercBlocoHTML(x, col) {
+  const t = (x && x.terc) || {}, e = (x && x.env) || {}, P = parceiras(), op = (sel, ph) => `<option value="">${ph}</option>${P.map(p => `<option value="${p.id}"${p.id === sel ? ' selected' : ''}>${esc(p.nome)}</option>`).join('')}`;
+  return `<fieldset class="terc-box" style="grid-column:1/-1"><legend>Empresa parceira (terceirizada)</legend>
+    <div class="fg">${field('Veio da empresa parceira', `<select name="tercId" id="terc-id" class="terc-sel">${op(t.id, 'Nenhuma — cliente direto')}</select>`)}<div class="terc-rec"${t.id ? '' : ' hidden'}>${field('Nº da OS na parceira', `<input name="tercOs" value="${esc(t.os || '')}" placeholder="Ex.: 4587" autocomplete="off">`)}</div></div></div>
+    ${col === 'os' ? `<div class="fg">${field('Enviado para conserto na parceira', `<select name="envId" id="env-id" class="terc-sel">${op(e.id, 'Não enviado')}</select>`)}<div class="terc-env"${e.id ? '' : ' hidden'}>${field('Nº da OS na parceira', `<input name="envOs" value="${esc(e.os || '')}" placeholder="Ex.: 1290" autocomplete="off">`)}</div></div>
+    <div class="fg terc-env"${e.id ? '' : ' hidden'}>${field('Enviado em', `<input type="date" name="envData" value="${esc(e.data || today())}">`)}${field('Previsão de volta', `<input type="date" name="envPrev" value="${esc(e.prev || '')}">`)}${field('Custo combinado (R$)', `<input name="envCusto" inputmode="decimal" value="${esc(e.custo != null ? String(e.custo).replace('.', ',') : '')}" placeholder="Ex.: 150,00">`)}${field('Voltou em', `<input type="date" name="envVolta" value="${esc(e.volta || '')}">`)}</div>` : ''}
+    <small class="muted">Toque na setinha ▾ para ver as parceiras, ou digite/fale o nome; o × deixa em branco. Escolhendo a parceira primeiro, a lista de clientes mostra só os clientes dela.</small></fieldset>`;
+}
+function tercLer(f) {
+  if (!f.querySelector('.terc-box')) return null; const v = n => ((f.querySelector(`[name="${n}"]`) || {}).value || '').trim(), o = {};
+  o.terc = v('tercId') ? { id: v('tercId'), os: v('tercOs') } : null;
+  if (f.querySelector('[name="envId"]')) o.env = v('envId') ? { id: v('envId'), os: v('envOs'), data: v('envData'), prev: v('envPrev'), custo: v('envCusto') ? num(v('envCusto').replace(/\./g, '').replace(',', '.')) : null, volta: v('envVolta') } : null;
+  return o;
+}
+function tercPreencher(form, pid) { const s = form.querySelector('[name="tercId"]'); if (!s || s.value) return; s.value = pid; s.dispatchEvent(new Event('change', { bubbles: true })); }
+/* clientes da parceira: os marcados com ela ou que já vieram dela */
+const parcClientes = pid => new Set((S.clientes || []).filter(c => c.parceiraId === pid).map(c => c.id).concat(['os', 'orcamentos', 'alugueis'].flatMap(col => (S[col] || []).filter(x => x.terc && x.terc.id === pid).map(x => x.clienteId))));
+function tercFiltraClientes(form) {
+  const cs = form.querySelector('select[name="clienteId"]'), pid = ((form.querySelector('[name="tercId"]') || {}).value || ''); if (!cs) return;
+  const atual = cs.value; let nota = form.querySelector('.terc-cli-nota');
+  const todos = cliOpts(atual, 'Selecione o cliente');
+  if (!pid) { if (cs.dataset.tercF) { cs.innerHTML = todos; cs.value = atual; delete cs.dataset.tercF; } if (nota) nota.remove(); return; }
+  const ok = parcClientes(pid), t = document.createElement('select'); t.innerHTML = todos; [...t.options].forEach(o => { if (o.value && !ok.has(o.value) && o.value !== atual) o.remove(); });
+  cs.innerHTML = t.innerHTML; cs.value = atual; cs.dataset.tercF = pid;
+  const n = [...cs.options].filter(o => o.value).length, lab = cs.closest('label');
+  if (!nota && lab) { nota = document.createElement('small'); nota.className = 'muted terc-cli-nota'; nota.style.cssText = 'display:block;grid-column:1/-1;margin-top:-4px'; lab.insertAdjacentElement('afterend', nota); }
+  if (nota) nota.innerHTML = `Mostrando só os clientes da <b>${esc(parcNome(pid))}</b> (${n}). Para ver todos, deixe a parceira em branco (×). Cliente novo cadastrado aqui já fica ligado a ela.`;
+}
+document.addEventListener('change', e => { const el = e.target; if (!el || !el.name) return; const f = el.closest('form'); if (!f || !f.querySelector('.terc-box')) return;
+  if (el.name === 'tercId') { const b = f.querySelector('.terc-rec'); f.querySelectorAll('.terc-rec').forEach(b => { b.hidden = !el.value; }); if (!el.value) { ['tercOs', 'tercValor'].forEach(n => { const o = f.querySelector(`[name="${n}"]`); if (o) o.value = ''; }); } tercFiltraClientes(f); }
+  if (el.name === 'envId') f.querySelectorAll('.terc-env').forEach(b => { b.hidden = !el.value; });
+});
+/* põe o bloco nos formulários (OS, orçamento, aluguel) logo depois do cliente */
+function tercInserir(form, x, col) {
+  if (!form || form.querySelector('.terc-box')) return; const c = form.querySelector('select[name="clienteId"]'), lab = c && c.closest('label'); const box = document.createElement('div'); box.style.cssText = 'grid-column:1/-1'; box.innerHTML = tercBlocoHTML(x, col);
+  const ref = form.querySelector('#os-prv') || lab; if (ref) ref.insertAdjacentElement('afterend', box); else form.prepend(box);
+  try { cbMelhorar(box); } catch { } if (x && x.terc && x.terc.id) tercFiltraClientes(form);
+  if (!x || !x.id) { const cl = c && get('clientes', c.value); if (cl && cl.parceiraId) tercPreencher(form, cl.parceiraId); }
+}
+document.addEventListener('change', e => { const t = e.target; if (t && t.name === 'clienteId') { const f = t.closest('form'); const cl = get('clientes', t.value); if (f && cl && cl.parceiraId && !f.dataset.id) tercPreencher(f, cl.parceiraId); } });
+for (const [fn, col, form] of [['osForm', 'os', 'os'], ['orcForm', 'orcamentos', 'orcamento'], ['alugForm', 'alugueis', 'aluguel']]) {
+  const orig = window[fn]; if (typeof orig !== 'function') continue;
+  window[fn] = function (id, ...r) { const out = orig.call(this, id, ...r); setTimeout(() => { const f = document.querySelector(`#modals .ov:last-child form[data-form="${form}"]`) || document.querySelector(`form[data-form="${form}"]`); tercInserir(f, id ? get(col, id) : null, col); }, 60); return out; };
+}
+/* salvar: junta terc/env ao documento salvo pelo formulário e lembra a parceira no cadastro do cliente */
+let TERC_PEND = null;
+const _tercSave = save;
+save = async function (col, id, data) { if (TERC_PEND && col === TERC_PEND.col && data && !data.__terc) { const P = TERC_PEND; TERC_PEND = null; data = { ...data, terc: P.extra.terc || null, ...(P.extra.env !== undefined ? { env: P.extra.env } : {}) }; const r = await _tercSave(col, id, data); if (r && P.extra.terc && data.clienteId) { const cl = get('clientes', data.clienteId); if (cl && cl.parceiraId !== P.extra.terc.id) await _tercSave('clientes', cl.id, { ...cl, parceiraId: P.extra.terc.id, _agSync: 1 }); } return r; } return _tercSave(col, id, data); };
+for (const [k, col] of [['os', 'os'], ['orcamento', 'orcamentos'], ['aluguel', 'alugueis']]) { const orig = FORMS[k]; if (!orig) continue; FORMS[k] = async function (f, d) { const extra = tercLer(f); if (extra) { TERC_PEND = { col, extra }; } try { return await orig.call(this, f, d); } finally { TERC_PEND = null; } }; }
+Object.assign(ACT, {
+  'terc-liga': el => { const f = el.closest('fieldset'); const b = f && f.querySelector(el.name === 'envOn' ? '.terc-env' : '.terc-rec'); if (b) b.hidden = !el.checked; },
+  'terc-nova': () => { fornForm(null, ['parceira']); },
+  'terc-filtro': el => { S.tercF = S.tercF || {}; S.tercF[el.dataset.k] = el.value; render(); },
+  'parc-abrir': el => parcAbrir(el.dataset.id, el.dataset.v || 'rec')
+});
+/* filtros das listas */
+const tercSelHTML = k => { const v = (S.tercF || {})[k] || '', P = parceiras(); return `<select class="terc-f" data-act-change="terc-filtro" data-k="${k}" aria-label="Empresas parceiras" title="Filtrar por empresa parceira: o que veio dela ou o que foi enviado para ela">${[['', 'Parceiras: todos'], ['rec', 'Vindos de parceira'], ...(k === 'os' ? [['env', 'Enviados para parceira'], ['envAb', 'Na parceira agora']] : []), ...P.map(p => ['rec:' + p.id, 'Vindos de ' + p.nome]), ...(k === 'os' ? P.map(p => ['env:' + p.id, 'Enviados para ' + p.nome]) : [])].map(([a, b]) => `<option value="${a}"${a === v ? ' selected' : ''}>${esc(b)}</option>`).join('')}</select>`; };
+document.addEventListener('change', e => { const t = e.target; if (t && t.classList && t.classList.contains('terc-f')) ACT['terc-filtro'](t); });
+const tercFiltra = (k, L) => { const v = (S.tercF || {})[k] || ''; if (!v) return L; const [m, id] = v.split(':'); return L.filter(x => { const t = tercDe(x), e = envDe(x); if (m === 'rec') return t && (!id || t.id === id); if (m === 'env') return e && (!id || e.id === id); if (m === 'envAb') return e && !e.volta; return true; }); };
+/* tela Empresas parceiras */
+IC.parceiras = '<path d="M7 11l3-3 4 4 3-3"/><path d="M3 12l4-4 3 3"/><path d="M21 12l-4-4"/><path d="M8 15l2 2 2-2 2 2"/>';
+(() => { const i = NAV.findIndex(n => n[0] === 'clientes'); NAV.splice(i >= 0 ? i + 1 : NAV.length, 0, ['parceiras', 'Empresas parceiras']); })();
+INI_ATALHOS['ir-parceiras'] = ['Empresas parceiras', () => `<button class="btn" data-act="go" data-r="parceiras">${ic('parceiras')}Empresas parceiras</button>`];
+setTimeout(() => { try { if (!PLANO_FIXAS.includes('parceiras')) PLANO_FIXAS.push('parceiras'); } catch { } }, 0);
+function parcDocs(pid) {
+  const rec = [], env = [];
+  for (const [col, nm] of [['os', 'OS'], ['orcamentos', 'Orçamento'], ['alugueis', 'Aluguel']]) for (const x of S[col] || []) { const t = x.terc; if (t && t.id === pid) rec.push({ col, nm, x }); if (col === 'os' && x.env && x.env.id === pid) env.push({ col, nm, x }); }
+  rec.sort((a, b) => (b.x.at || 0) - (a.x.at || 0)); env.sort((a, b) => (b.x.at || 0) - (a.x.at || 0)); return { rec, env };
+}
+V.parceiras = () => {
+  const P = parceiras(), q = norm(S.q.parceiras || '');
+  const rows = P.filter(p => !q || norm(p.nome).includes(q)).map(p => { const D = parcDocs(p.id), recAb = D.rec.filter(d => d.col === 'os' ? osAberta(d.x) : d.col === 'orcamentos' ? d.x.status === 'aberto' : d.x.status === 'ativo').length, envAb = D.env.filter(d => !d.x.env.volta).length;
+    return `<div class="row"><div class="grow" style="min-width:0"><b>${esc(p.nome)}</b><div class="muted" style="font-size:.85rem">${esc([p.contato, p.telefone].filter(Boolean).join(' · ') || 'sem contato')}</div></div><button type="button" class="btn sm" data-act="parc-abrir" data-id="${p.id}" data-v="rec" title="Equipamentos que esta parceira me trouxe">📥 Recebidos ${D.rec.length}${recAb ? ` <span class="pill">${recAb} abertos</span>` : ''}</button><button type="button" class="btn sm" data-act="parc-abrir" data-id="${p.id}" data-v="env" title="Equipamentos que eu mandei para esta parceira">📤 Enviados ${D.env.length}${envAb ? ` <span class="pill">${envAb} lá</span>` : ''}</button></div>`; }).join('');
+  return `<div class="page-head"><div><p class="eyebrow">Assistências terceirizadas</p><h1>Empresas parceiras</h1></div><div class="actions"><button class="btn primary" data-act="terc-nova">${ic('plus')}Nova empresa parceira</button></div></div>
+  <div class="toolbar"><div class="search">${ic('search')}<input id="q-parc" data-q="parceiras" placeholder="Buscar empresa parceira" value="${esc(S.q.parceiras || '')}"></div></div>
+  <p class="muted" style="margin:6px 0 10px">📥 <b>Recebidos</b>: equipamentos que a parceira trouxe para você consertar (com o nº da OS dela). 📤 <b>Enviados</b>: equipamentos que você mandou para ela consertar. Cadastre a parceira em Fornecedores marcando “Empresa parceira”.</p>
+  <section class="panel"><div class="list">${rows || emptyBox('Nenhuma empresa parceira', 'Cadastre a assistência terceirizada que traz equipamentos para você ou que conserta para você.', '<button class="btn sm" data-act="terc-nova">Nova empresa parceira</button>')}</div></section>`;
+};
+function parcAbrir(pid, v) {
+  const D = parcDocs(pid), L = v === 'env' ? D.env : D.rec, nome = parcNome(pid);
+  const linha = d => { const x = d.x, t = v === 'env' ? x.env : x.terc, act = d.col === 'os' ? 'os-view' : d.col === 'orcamentos' ? 'orc-open' : 'alug-view', st = d.col === 'os' ? osSt(x).t : x.status || ''; return `<div class="row click" data-act="${act}" data-id="${x.id}" role="button" style="cursor:pointer"><div class="grow" style="min-width:0"><b>${d.nm} ${pad(x.numero)}${t.os ? ` · OS da parceira nº ${esc(t.os)}` : ''}</b><div class="muted" style="font-size:.85rem">${esc(cliNome(x.clienteId))} · ${esc(d.col === 'os' ? osEquip(x) : x.equipamento || (x.itens || []).map(i => i.nome).join(', '))} · ${esc(st)}${v === 'env' ? ` · enviado ${t.data ? dBR(t.data) : '—'}${t.prev ? ' · volta prevista ' + dBR(t.prev) : ''}${t.volta ? ' · voltou ' + dBR(t.volta) : ' · <b>ainda lá</b>'}${t.custo ? ' · custo ' + brl(t.custo) : ''}` : ''}</div></div></div>`; };
+  openModal(`${v === 'env' ? '📤 Enviados para' : '📥 Recebidos de'} ${nome}`, `<div class="seg" style="margin-bottom:8px"><button type="button" class="${v === 'rec' ? 'on' : ''}" data-act="parc-abrir" data-id="${pid}" data-v="rec">Recebidos (${D.rec.length})</button><button type="button" class="${v === 'env' ? 'on' : ''}" data-act="parc-abrir" data-id="${pid}" data-v="env">Enviados (${D.env.length})</button></div><div class="list">${L.map(linha).join('') || emptyBox('Nada aqui', v === 'env' ? 'Nenhum equipamento enviado para esta parceira.' : 'Nenhum equipamento recebido desta parceira.')}</div>`, `<button type="button" class="btn primary" data-act="close">Fechar</button>`);
+}
+/* documentos e avisos: OS vinda de parceira → vai para a PARCEIRA; para o cliente final, só com autorização superior */
+const TERC_CLI = new Set();
+function tercDest(x) { const t = tercDe(x); if (!t || TERC_CLI.has(x.id)) return null; return { id: t.id, nome: parcNome(t.id), tel: parcTel(t.id), os: t.os }; }
+function tercTxt(x, txt) { const d = tercDest(x); if (!d || !txt) return txt; const pn = String(cliNome(x.clienteId)).split(' ')[0]; let t = String(txt).replace(new RegExp('Olá, ' + pn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '!'), `Olá, ${d.nome}!`); const ref = `Referente ao seu cliente *${cliNome(x.clienteId)}*${d.os ? ` · sua OS nº *${d.os}*` : ''}.`; const i = t.indexOf('\n'); return i > 0 ? t.slice(0, i + 1) + ref + '\n' + t.slice(i + 1) : ref + '\n' + t; }
+const tercBoxDoc = x => { const t = tercDe(x); if (!t) return ''; if (TERC_DOC_CLI) return `<div style="border:1px solid #999;border-radius:6px;padding:6px 10px;margin:0 0 8px;font-size:.9em">Atendimento por intermédio de <b>${esc(parcNome(t.id))}</b>${t.os ? ` · OS nº ${esc(t.os)}` : ''}. Valores informados pela empresa parceira.</div>`; return `<div style="border:1px solid #999;border-radius:6px;padding:6px 10px;margin:0 0 8px;font-size:.9em"><b>Serviço para a empresa parceira:</b> ${esc(parcNome(t.id))}${t.os ? ` · <b>OS da parceira nº ${esc(t.os)}</b>` : ''} · Cliente final: ${esc(cliNome(x.clienteId))}</div>`; };
+function tercNoDoc(html, box) { try { const t = document.createElement('template'); t.innerHTML = html; const dh = t.content.querySelector('.dh'); if (!dh) return box + html; dh.insertAdjacentHTML('afterend', box); return t.innerHTML; } catch { return box + html; } }
+function tercAvisoDoc(kind, x) { if (kind === 'envparc') { const ee = envDe(x) || {}; return `<p class="banner info" style="font-size:.85rem;margin:6px 0"><span class="grow">📤 Vai para <b>${esc(parcNome(ee.id))}</b>${parcTel(ee.id) ? '' : ' (<b>sem telefone no cadastro</b>)'}. Sem nenhum dado do cliente: só o equipamento e o nº da nossa OS.</span></p>`; } const t = tercDe(x); if (!t) return ''; const d = tercDest(x); return `<p class="banner info" style="font-size:.85rem;margin:6px 0"><span class="grow">${d ? `📤 O WhatsApp vai para a empresa parceira <b>${esc(d.nome)}</b>${d.tel ? '' : ' (<b>sem telefone no cadastro</b>)'}.` : `📤 O WhatsApp vai para o <b>cliente final</b> (autorizado).`}</span>${d ? `<button type="button" class="btn sm" data-act="terc-paracli" data-k="${kind}" data-id="${x.id}" title="Mandar ao cliente final em vez da parceira (pede autorização superior)">Mandar ao cliente final 🔒</button>` : ''}</p>`; }
+ACT['terc-paracli'] = el => { const k = el.dataset.k, id = el.dataset.id; pedirSenha('parceiraCliente', 'Mandar ao cliente final (serviço de empresa parceira)', () => { TERC_CLI.add(id); const col = { orc: 'orcamentos', venda: 'vendas', contrato: 'alugueis', devolucao: 'alugueis', recibo: 'alugueis', prorrog: 'alugueis' }[k] || 'os'; const x = get(col, id) || (M.doc && M.doc.ref); closeModal(); if (x) showDoc(k, x); toast('Este documento vai para o cliente final.'); }); };
+setTimeout(() => { try { Object.assign(ACT_PERM, { 'terc-liga': '', 'terc-nova': '', 'terc-filtro': '', 'parc-abrir': '', 'terc-paracli': '' }); Object.assign(AJUDA, { 'terc-liga': 'Marca que o equipamento veio de uma empresa parceira (ou foi enviado para uma) e mostra os campos.', 'terc-nova': 'Cadastra uma empresa parceira (assistência terceirizada). Ex.: System Soluções.', 'parc-abrir': 'Mostra os equipamentos recebidos desta parceira ou enviados para ela.', 'terc-paracli': 'Manda este documento ao cliente final em vez da empresa parceira. Pede autorização superior.' }); } catch { } }, 0);
+document.addEventListener('change', e => { const el = e.target; if (el && (el.name === 'tercOn' || el.name === 'envOn')) { const f = el.closest('fieldset'); const b = f && f.querySelector(el.name === 'envOn' ? '.terc-env' : '.terc-rec'); if (b) b.hidden = !el.checked; } });
+document.addEventListener('focusin', e => { const s = e.target; if (s && s.classList && s.classList.contains('terc-sel')) { const v = s.value, P = parceiras(); if (s.options.length - 1 !== P.length) { s.innerHTML = `<option value="">Escolha a empresa parceira</option>${P.map(p => `<option value="${p.id}">${esc(p.nome)}</option>`).join('')}`; s.value = v; } } });
+/* janela de mensagem (lembretes e avisos de situação): mesmo destino da parceira */
+const _tercIWA = indWaAbrir;
+indWaAbrir = function (tipo, id, linha) { _tercIWA(tipo, id, linha); const x = tipo === 'orc-cobranca' ? get('orcamentos', id) : get('os', id); if (!x || !tercDe(x)) return; const b = document.querySelector('#modals .ov:last-child .sheet-b'); if (b) { const d = tercDest(x); b.insertAdjacentHTML('afterbegin', `<p class="banner info" style="font-size:.85rem;margin:0 0 8px"><span class="grow">${d ? `📤 Vai para a empresa parceira <b>${esc(d.nome)}</b>${d.tel ? '' : ' (sem telefone no cadastro)'}, citando o cliente final e o nº da OS dela.` : '📤 Vai para o <b>cliente final</b> (autorizado).'}</span>${d ? `<button type="button" class="btn sm" data-act="terc-iwa-cli" data-tipo="${tipo}" data-id="${id}">Mandar ao cliente final 🔒</button>` : ''}</p>`); } };
+ACT['terc-iwa-cli'] = el => { const { tipo, id } = el.dataset; pedirSenha('parceiraCliente', 'Mandar ao cliente final (serviço de empresa parceira)', () => { TERC_CLI.add(id); closeModal(); indWaAbrir(tipo, id); }); };
+const _tercIWT = indWaTexto;
+indWaTexto = function () { _tercIWT(); const w = IND_WA; if (!w) return; const x = w.orc ? get('orcamentos', w.id) : get('os', w.id), t = $('#iw-txt'); if (x && t && tercDest(x) && t.value && !/^Preparando/.test(t.value) && !/Referente ao seu cliente/.test(t.value)) t.value = tercTxt(x, t.value); };
+setTimeout(() => { try { ACT_PERM['terc-iwa-cli'] = ''; AJUDA['terc-iwa-cli'] = 'Manda esta mensagem ao cliente final em vez da empresa parceira. Pede autorização superior.'; } catch { } }, 0);
+/* b396: no cadastro do cliente aparece que ele vem de empresa parceira e os serviços feitos em nome dele, com o nº da OS da parceira */
+const _tercCliTab = cliTabHTML;
+cliTabHTML = function (c, tab) {
+  const h = _tercCliTab(c, tab); if (tab !== 'dados') return h;
+  const L = []; for (const [col, nm, act] of [['os', 'OS', 'os-view'], ['orcamentos', 'Orçamento', 'orc-open'], ['alugueis', 'Aluguel', 'alug-view']]) for (const x of S[col] || []) if (x.clienteId === c.id && x.terc && x.terc.id) L.push({ nm, act, x });
+  if (!L.length && !c.parceiraId) return h; L.sort((a, b) => (b.x.at || 0) - (a.x.at || 0));
+  const nomes = [...new Set([c.parceiraId, ...L.map(z => z.x.terc.id)].filter(Boolean).map(parcNome).filter(Boolean))];
+  return `<div class="banner info" style="display:block;margin-bottom:10px"><b>🤝 Cliente vindo de empresa parceira:</b> ${esc(nomes.join(', ') || '—')}${L.length ? `<div class="list" style="margin-top:6px">${L.map(z => `<div class="row click" data-act="${z.act}" data-id="${z.x.id}" role="button" style="cursor:pointer;padding:6px 0"><span class="grow" style="min-width:0">${z.nm} ${pad(z.x.numero)} · ${esc(parcNome(z.x.terc.id))}${z.x.terc.os ? ` · <b>OS da parceira nº ${esc(z.x.terc.os)}</b>` : ''}<br><small class="muted">${dBR(dayISO(z.x.at))} · ${esc(z.nm === 'OS' ? osEquip(z.x) + ' · ' + osSt(z.x).t : z.x.equipamento || (z.x.itens || []).map(i => i.nome).join(', '))}</small></span></div>`).join('')}</div>` : ''}</div>` + h;
+};
+setTimeout(() => { try { REG_TESTES.push({ id: 'ex-parceiras-v396', titulo: 'Exemplos de empresas parceiras: equipamento recebido de uma parceira (com o nº da OS dela) e equipamento enviado para outra parceira consertar', fn: async () => {
+  const D = 864e5, at = Date.now(), por = OPID(), X = { exemplo: true, por };
+  const parc = async (nome, tel) => { let f = (S.fornecedores || []).find(x => x.exemplo && x.nome === nome); if (!f) { f = { id: uid(), nome, tipos: ['parceira'], telefone: tel, contato: 'Atendimento', cidade: 'Recife', uf: 'PE', ...X, at }; await save('fornecedores', f.id, f); } return f.id; };
+  const p1 = await parc('System Soluções (exemplo)', '(81) 3333-4444'), p2 = await parc('Conserta Tudo Eletrônicos (exemplo)', '(81) 3222-1111');
+  let cli = S.clientes.find(c => c.exemplo && /Ana Maria/.test(c.nome)); if (!cli) { cli = { id: uid(), nome: 'Ana Maria Souza (exemplo)', tipo: 'PF', doc: '529.982.247-25', whatsapp: '(81) 99812-3456', cidade: 'Recife', uf: 'PE', parceiraId: p1, ...X, at }; await save('clientes', cli.id, cli); }
+  const os = d => save('os', uid(), { numero: nextNum('os'), clienteId: cli.id, itens: [], subtotal: 0, desconto: 0, total: 0, ...X, ...d });
+  await os({ at: at - 3 * D, tipoEquip: 'Notebook', marca: 'Lenovo', modelo: 'IdeaPad 3 (exemplo)', serie: 'LNEX000010', defeito: 'Não liga (veio da System Soluções)', status: 'analise', previsao: addDays(today(), 2), historico: [{ st: 'recebido', at: at - 3 * D, por, obs: 'EXEMPLO: equipamento trazido pela empresa parceira System Soluções — OS da parceira nº 4587. Laudo, recibo e avisos vão para a parceira.' }, { st: 'analise', at: at - 2 * D, por }], terc: { id: p1, os: '4587' }, itens: [{ nome: 'Reparo na placa (exemplo)', qtd: 1, preco: 180, precoCli: 250 }, { nome: 'Mão de obra (exemplo)', qtd: 1, preco: 70, precoCli: 100 }], subtotal: 250, total: 250 });
+  await os({ at: at - 8 * D, tipoEquip: 'Monitor', marca: 'Samsung', modelo: 'S24 (exemplo)', serie: 'SMEX000011', defeito: 'Sem imagem — placa enviada para a parceira', status: 'execucao', previsao: addDays(today(), 4), historico: [{ st: 'recebido', at: at - 8 * D, por }, { st: 'execucao', at: at - 6 * D, por, obs: 'EXEMPLO: enviado para a Conserta Tudo Eletrônicos consertar a placa (OS deles nº C-77).' }], env: { id: p2, os: 'C-77', data: addDays(today(), -6), prev: addDays(today(), 3), custo: 150, volta: '' } });
+} }); } catch (e) { console.warn('exparc', e); } }, 0);
+/* b396: documento para o CLIENTE FINAL de serviço vindo de parceira: só os valores que a parceira cobra dele (proporcional nos itens), sem o Pix da empresa */
+let TERC_DOC_CLI = false;
+function tercVista(kind, x) {
+  const t = tercDe(x); if (!t) return x; const fin = (x.itens || []).length || num(x.total) > 0;
+  if (!fin) return { ...x };
+  const L = tercPcItens(x).filter(i => String(i.nome || '').trim()), falta = L.filter(i => !pcTem(i)); let itens;
+  if (L.length && !falta.length) itens = L.map(i => ({ ...i, preco: r2(num(i.precoCli)), atac: false, precoAtac: undefined }));
+  else if (!L.some(pcTem) && num(t.valorCli) > 0) itens = [{ nome: 'Serviço (valor da empresa parceira)', qtd: 1, preco: num(t.valorCli) }];
+  else { toast(L.length ? `Preencha o valor que a empresa parceira cobra do cliente final em todos os itens (falta em: ${falta.slice(0, 3).map(i => i.nome).join(', ')}${falta.length > 3 ? '…' : ''}). Só esse valor pode ir para o cliente.` : 'Lance as peças e serviços com o valor que a empresa parceira cobra do cliente final. Só esse valor pode ir para o cliente.', 8000); return null; }
+  const V = r2(sum(itens, i => num(i.qtd || 1) * num(i.preco)));
+  const y = { ...x, itens, subtotal: V, desconto: 0, descAtacado: 0, acrescimo: 0, frete: 0, total: V, carneId: null };
+  if (kind === 'venda') Object.assign(y, { pagamentos: [{ forma: 'Conforme combinado com a empresa parceira', valor: V }], recebido: V, troco: 0 });
+  return y;
+}
+const _tercPix = pixDocBloco; pixDocBloco = function (...a) { return TERC_DOC_CLI ? '' : _tercPix.apply(this, a); }; const _tercPixCC = pixCopiaCola; pixCopiaCola = function (...a) { return TERC_DOC_CLI ? '' : _tercPixCC.apply(this, a); };
+const _tercVars = indVarsOS; indVarsOS = function (o, extra) { const v = _tercVars(o, extra); if (tercDe(o) && TERC_CLI.has(o.id)) { const V = tercValorCli(o); v.valor = V > 0 ? brl(V) : ''; } return v; };
+/* b396: SERVIÇO DE EMPRESA PARCEIRA — duas colunas de preço nos itens: o MEU valor (que eu cobro da parceira) e o valor que a PARCEIRA cobra do cliente final.
+   Tudo que vai para o cliente final (orçamento, laudo, recibo, venda, mensagens) usa só a coluna da parceira. */
+const tercItAtivo = () => { try { const f = document.querySelector('#modals .ov:last-child form'), s = f && f.querySelector('select[name="tercId"]'); if (s && f.querySelector('#m-itens')) return !!s.value;
+  if (M && M.id) { const col = { os: 'os', orc: 'orcamentos', alug: 'alugueis' }[M.kind]; if (col) return !!tercDe(get(col, M.id)); } } catch { } return false; };
+const pcTem = i => i && i.precoCli != null && i.precoCli !== '';
+const _tercIR = itemRows;
+itemRows = function () {
+  const h = _tercIR.apply(this, arguments); if (!M || !M.itens || !tercItAtivo()) return h;
+  const t = document.createElement('template'); t.innerHTML = h;
+  t.content.querySelectorAll('.irow').forEach(r => r.classList.add('pc'));
+  const hd = t.content.querySelector('.irow.head'); if (hd && hd.children[2]) { hd.children[2].textContent = 'Meu valor unit.'; hd.children[2].insertAdjacentHTML('afterend', '<span title="Valor que a empresa parceira cobra do cliente final, por unidade">Parceira cobra (unit.)</span>'); }
+  t.content.querySelectorAll('.irow:not(.head) > .ir-val').forEach(v => { const i = +v.dataset.i, it = M.itens[i] || {}; v.setAttribute('aria-label', 'Meu valor unitário (o que eu cobro da parceira)');
+    v.insertAdjacentHTML('afterend', `<label class="ir-pc-w" title="Valor que a empresa parceira cobra do cliente final por este item. Só este valor aparece nos documentos para o cliente final."><span class="ir-pc-l">Parceira cobra do cliente (unit.)</span><input class="ir-pc" id="ir-pc-${i}" data-i="${i}" data-money="1" inputmode="decimal" value="${pcTem(it) ? fmtNum(it.precoCli) : ''}" placeholder="0,00" aria-label="Valor que a parceira cobra do cliente final"></label>`); });
+  return `<p class="muted ir-pc-nota">🤝 <b>Serviço de empresa parceira:</b> em cada item, “Meu valor” é o que você cobra da parceira e “Parceira cobra” é o que ela cobra do cliente final. Documentos para o cliente final mostram só o valor da parceira.</p>` + t.innerHTML;
+};
+document.addEventListener('input', e => { const t = e.target; if (!t || !t.classList || !t.classList.contains('ir-pc') || !M || !M.itens) return; const it = M.itens[+t.dataset.i]; if (!it) return; it.precoCli = String(t.value).trim() === '' ? null : num(t.value); mTotals(); });
+const _tercMT = mTotals;
+mTotals = function () { const r = _tercMT.apply(this, arguments); try { const el = $('#m-tot'); if (el && M && M.itens && tercItAtivo()) { const L = M.itens.filter(i => String(i.nome || '').trim()), falta = L.filter(i => !pcTem(i)).length, v = r2(sum(L, i => num(i.qtd) * num(i.precoCli)));
+  el.insertAdjacentHTML('beforeend', `<div class="l ir-pc-tot"><span>🤝 Cliente final paga (valor da parceira)</span><span class="mono">${falta ? `falta em ${falta} ite${falta === 1 ? 'm' : 'ns'}` : brl(v)}</span></div>`); } } catch { } return r; };
+/* trocar a parceira no formulário redesenha os itens (aparece ou some a coluna da parceira) */
+document.addEventListener('change', e => { const el = e.target; if (!el || el.name !== 'tercId') return; const f = el.closest('form'); if (f && f.querySelector('#m-itens')) setTimeout(() => { try { refreshRows(); } catch { } }, 0); });
+/* itens de venda/orçamento criados a partir da OS: busca o valor da parceira na OS de origem */
+function tercPcItens(x) {
+  let L = (x.itens || []).map(i => ({ ...i })); const o = x.osId && get('os', x.osId);
+  if (o && L.some(i => !pcTem(i))) { const src = (o.itens || []).map(i => ({ ...i })); L = L.map(i => { if (pcTem(i)) return i; const k = src.findIndex(s => (i.produtoId && s.produtoId === i.produtoId) || s.nome === i.nome); if (k < 0) return i; const s = src.splice(k, 1)[0]; return pcTem(s) ? { ...i, precoCli: s.precoCli } : i; }); }
+  return L;
+}
+const tercValorCli = x => { const L = tercPcItens(x).filter(i => String(i.nome || '').trim()); if (L.length && L.every(pcTem)) return r2(sum(L, i => num(i.qtd || 1) * num(i.precoCli))); const t = tercDe(x); return t && num(t.valorCli) > 0 ? num(t.valorCli) : 0; };
+
+/* b396: CLIENTE NOVO — ao digitar o nome, telefone ou CPF, mostra quem já está cadastrado (cliente direto ou de qualquer empresa parceira) para usar o mesmo cadastro */
+const cliTelsDig = c => [c.telefone, c.whatsapp, c.celular, c.contatoTel, ...(c.contatos || []).map(x => x.tel)].map(t => String(t || '').replace(/\D/g, '')).filter(t => t.length >= 8);
+const cliOrigem = c => { const ps = new Set([c.parceiraId, ...['os', 'orcamentos', 'alugueis'].flatMap(col => (S[col] || []).filter(x => x.clienteId === c.id && x.terc && x.terc.id).map(x => x.terc.id))].filter(Boolean)); return ps.size ? 'cliente da parceira ' + [...ps].map(parcNome).filter(Boolean).join(', ') : 'cliente direto'; };
+function cliJaAchar(nome, tel, doc, eu) {
+  const n = norm(nome || '').trim(), ws = n.split(/\s+/).filter(w => w.length >= 2), td = String(tel || '').replace(/\D/g, ''), dd = String(doc || '').replace(/\D/g, ''), R = [];
+  for (const c of S.clientes || []) { if (c.id === eu) continue; let por = '';
+    if (dd.length >= 11 && String(c.doc || '').replace(/\D/g, '') === dd) por = 'CPF/CNPJ';
+    else if (td.length >= 8 && cliTelsDig(c).some(t => t.slice(-8) === td.slice(-8))) por = 'telefone';
+    else if (n.length >= 3 && ws.length) { const cp = norm(c.nome || '').split(/\s+/); if (ws.every(w => cp.some(p => p.startsWith(w)))) por = 'nome'; }
+    if (por) R.push({ c, por }); }
+  const o = { 'CPF/CNPJ': 0, telefone: 1, nome: 2 }; return R.sort((a, b) => o[a.por] - o[b.por] || String(a.c.nome).localeCompare(b.c.nome));
+}
+function cliJaMostrar(f, campo) {
+  const v = id => ((f.querySelector('#' + id) || {}).value || ''), R = cliJaAchar(v('c-nome'), v('c-tel'), v('c-doc'), f.dataset.id); let b = f.querySelector('.cli-ja');
+  if (!R.length) { if (b) b.remove(); return; }
+  if (!b) { b = document.createElement('div'); b.className = 'banner info cli-ja'; b.style.cssText = 'display:block;grid-column:1/-1;margin:2px 0 4px'; }
+  const lab = campo.closest('label') || campo; if (b.previousElementSibling !== lab) lab.insertAdjacentElement('afterend', b);
+  const alvo = (f.closest('.ov') || { dataset: {} }).dataset.target, mx = 5;
+  b.innerHTML = `<b>Já existe no cadastro${R.length > 1 ? ` (${R.length})` : ''}:</b> use o mesmo cadastro em vez de criar outro.<div class="list">${R.slice(0, mx).map(({ c, por }) => `<div class="row" style="padding:6px 0;gap:8px;flex-wrap:wrap"><span class="grow" style="min-width:0;overflow-wrap:anywhere"><b>${esc(c.nome)}</b><br><small class="muted">${esc([c.whatsapp || c.telefone, c.doc].filter(Boolean).join(' · '))}${c.whatsapp || c.telefone || c.doc ? ' · ' : ''}${esc(cliOrigem(c))} · mesmo ${por}</small></span><button type="button" class="btn sm" data-act="cli-ja-usar" data-id="${esc(c.id)}">${alvo ? 'Usar este cliente' : 'Abrir este cadastro'}</button></div>`).join('')}</div>${R.length > mx ? `<small class="muted">e mais ${R.length - mx}: continue digitando para achar.</small>` : ''}`;
+}
+let CLI_JA_T = 0;
+document.addEventListener('input', e => { const t = e.target; if (!t || !['c-nome', 'c-tel', 'c-doc'].includes(t.id)) return; const f = t.closest('form[data-form="cliente"]'); if (!f || f.dataset.id) return; clearTimeout(CLI_JA_T); CLI_JA_T = setTimeout(() => { try { cliJaMostrar(f, t); } catch (er) { console.warn('cli-ja', er); } }, 220); });
+ACT['cli-ja-usar'] = el => { const id = el.dataset.id, ov = el.closest('.ov'), alvo = ov && ov.dataset.target, c = get('clientes', id); if (!c) return; closeModal();
+  if (alvo === 'pdv') { S.cart.clienteId = id; refreshCart(); }
+  else if (alvo) { const sel = document.getElementById(alvo); if (sel) { if (![...sel.options].some(o => o.value === id)) sel.insertAdjacentHTML('beforeend', `<option value="${esc(id)}">${esc(c.nome)}${c.doc ? ' · ' + esc(c.doc) : ''}</option>`); sel.value = id; sel.dispatchEvent(new Event('change', { bubbles: true })); try { sel._ssSync && sel._ssSync(); } catch { } } }
+  else { editarCliente(id); }
+  toastOk(`Usando o cadastro que já existe: ${c.nome}.`); };
+setTimeout(() => { try { ACT_PERM['cli-ja-usar'] = ''; AJUDA['cli-ja-usar'] = 'Usa o cliente que já está cadastrado (seu ou vindo de qualquer empresa parceira) em vez de criar um cadastro repetido.'; } catch { } }, 0);
+
+/* b396 REGRA: equipamento ENVIADO para conserto numa empresa parceira — vai com todas as informações do EQUIPAMENTO, mas NADA do cliente
+   (sem nome, telefone, e-mail, endereço, CPF). Só o nº da NOSSA OS: a parceira fala com a gente sempre por ele. */
+function docEnvParc(o) {
+  const e = envDe(o) || {}, E = S.empresa, L = o.laudo || {}, fs = fotosDe(o.id).filter(f => f.etapa === 'entrada').slice(0, 6), pn = parcNome(e.id) || 'Empresa parceira';
+  return `<div class="doc">${docHead('Envio para conserto', 'Nossa OS nº ' + pad(o.numero), 'Enviado em ' + (e.data ? dBR(e.data) : dBR(today())), null)}
+    <div class="box grid" style="margin-top:8px"><div><span>Para</span><b>${esc(pn)}</b></div><div><span>Nossa OS nº</span><b>${pad(o.numero)}</b></div>${e.os ? `<div><span>OS na ${esc(pn)}</span>${esc(e.os)}</div>` : ''}${e.prev ? `<div><span>Previsão de volta</span>${dBR(e.prev)}</div>` : ''}${num(e.custo) ? `<div><span>Valor combinado</span>${brl(e.custo)}</div>` : ''}</div>
+    ${docEquip(o).replace('Defeito relatado pelo cliente', 'Defeito relatado')}
+    ${L.diagnostico ? `<h3>Nosso diagnóstico</h3><div class="box">${esc(L.diagnostico)}</div>` : ''}
+    ${fs.length ? `<h3>Fotos na entrada</h3><div class="ph${docCompacto() ? ' ph-c' : ''}">${figs(fs)}</div>` : ''}
+    <div class="box" style="margin-top:10px"><b>Importante:</b> qualquer contato sobre este equipamento deve ser feito com ${esc(E.fantasia || 'a nossa empresa')}, citando a <b>nossa OS nº ${pad(o.numero)}</b>.</div>
+    <p class="cl" style="margin-top:14px">${cidadeData()}</p>
+    <div class="sig"><div>${empAss()}${esc(E.fantasia || 'Empresa')}<br>Enviado por</div><div>${esc(pn)}<br>Recebido por</div></div>
+    ${docFoot()}</div>`;
+}
+const txtEnvParc = o => { const e = envDe(o) || {}, E = S.empresa; return `Olá, ${parcNome(e.id) || 'parceiro'}! Aqui é da *${E.fantasia || 'nossa empresa'}*.\nEstamos enviando para conserto: *${osEquip(o)}*${o.serie ? ` (nº de série ${o.serie})` : ''}.\n*Nossa OS nº ${pad(o.numero)}*${e.os ? ` · sua OS nº ${e.os}` : ''}\nDefeito: ${o.defeito || '—'}${o.acessorios ? `\nAcessórios: ${o.acessorios}` : ''}${e.prev ? `\nPrevisão de volta combinada: ${dBR(e.prev)}` : ''}${num(e.custo) ? `\nValor combinado: ${brl(e.custo)}` : ''}\nPor favor, fale com a gente sempre citando a nossa OS nº ${pad(o.numero)}.`; };
+const _tercOB = osBody;
+osBody = function (o) { const h = _tercOB.apply(this, arguments); const e = envDe(o); if (!e) return h; return `<p class="banner info" style="font-size:.88rem;margin:0 0 8px"><span class="grow">📤 Enviado para <b>${esc(parcNome(e.id))}</b>${e.os ? ` (OS deles nº ${esc(e.os)})` : ''}${e.data ? ` em ${dBR(e.data)}` : ''}${e.volta ? ` · voltou em ${dBR(e.volta)}` : e.prev ? ` · volta prevista ${dBR(e.prev)}` : ''}. O que vai para a parceira leva só o equipamento e o nº da nossa OS, sem dados do cliente.</span><button type="button" class="btn sm" data-act="env-guia" data-id="${o.id}" title="Guia de envio para a parceira: equipamento, defeito, checklist e o nº da nossa OS. Não leva nome, telefone nem e-mail do cliente.">📄 Guia de envio</button></p>` + h; };
+ACT['env-guia'] = el => { const o = get('os', el.dataset.id); if (o && envDe(o)) showDoc('envparc', o); };
+setTimeout(() => { try { ACT_PERM['env-guia'] = 'os'; AJUDA['env-guia'] = 'Abre a guia de envio para a empresa parceira (imprimir ou WhatsApp para ela): equipamento, defeito, checklist e o nº da nossa OS, sem nenhum dado do cliente.'; } catch { } }, 0);
+
 /* v371 REGRA: janela aberta a partir de outra abre POR CIMA; Cancelar/Fechar/× volta para a de baixo (igual a Ajustar estoque no produto).
    refazPai (opcional): quando a de cima fecha, a de baixo é refeita com os dados novos (ex.: ficha do cliente depois de editar). */
 function subJan(abrir, refazPai) {
