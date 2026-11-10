@@ -2173,10 +2173,10 @@ function avisoSemNuvem() {
 /* Versão: APP_VER é o número que aparece para as pessoas (uma versão por dia de atualizações: 15/10 = 1 … 01/11 = 12).
    APP_BUILD sobe a cada publicação e é o que os aparelhos comparam para baixar a versão nova.
    Compatibilidade com aparelhos que ainda estão nas versões antigas (que procuram o texto "const APP_VER = número;"): const APP_VER = 99999; */
-const APP_VER = 19, APP_BUILD = 438;
+const APP_VER = 19, APP_BUILD = 441;
 /* v415: número que as pessoas veem = versão do DIA + ponto + nº da atualização do dia (ex.: 18.1, 18.2…; no dia seguinte 19.1).
    APP_BUILD continua só por dentro (os aparelhos comparam por ele para baixar a versão nova). */
-const APP_SUB = 5, APP_ROT = APP_VER + '.' + APP_SUB;
+const APP_SUB = 6, APP_ROT = APP_VER + '.' + APP_SUB;
 /* v281: versão nova — janela com “Atualizar agora” e “Lembrar depois”; escondida, volta sozinha depois de alguns minutos
    (quando não há janela aberta nem campo sendo digitado) e fica um botão no canto para atualizar quando quiser */
 let VER_NOVA = 0, VER_LEMBRAR = 0, VER_NOVA_ROT = '';
@@ -6283,7 +6283,7 @@ function osMsg(o) {
 }
 
 V.os = () => `<div class="page-head"><div><p class="eyebrow">Assistência técnica</p><h1>Ordens de serviço</h1></div><div class="actions"><button class="btn" data-act="rel-filtro" data-t="os"${['aguard', 'aut', 'semlaudo', 'semorc'].includes(S.filt.os) ? ` data-f="${S.filt.os}"` : ''}>${ic('print')}Imprimir relatório</button><button class="btn primary" data-act="os-new">${ic('plus')}Nova OS</button></div></div>
-  <div class="toolbar"><div class="search">${ic('search')}<input id="q-os" data-q="os" placeholder="Buscar por cliente, nº, equipamento ou série" value="${esc(S.q.os || '')}"></div>${ordSel('os', { prio: 'Urgentes e previsão de entrega', prioaut: 'Urgentes e autorizadas' })}${tercSelHTML('os')}<button class="btn" data-act="cam-scan" data-target="q-os" title="Ler o QR code da etiqueta da OS com a câmera">${ic('camera')}Ler QR code</button>
+  <div class="toolbar"><div class="search">${ic('search')}<input id="q-os" data-q="os" placeholder="Buscar por cliente, nº, equipamento ou série" value="${esc(S.q.os || '')}"></div>${ordSel('os', { prio: 'Urgentes e previsão de entrega', prioaut: 'Urgentes e autorizadas', priotudo: 'Urgentes, autorizadas e previsão de entrega' })}${tercSelHTML('os')}<button class="btn" data-act="cam-scan" data-target="q-os" title="Ler o QR code da etiqueta da OS com a câmera">${ic('camera')}Ler QR code</button>
   <div class="seg">${[['abertas', 'Na bancada'], ['aguard', 'Aguardando autorização'], ['aut', 'Autorizadas (fila)'], ['semlaudo', 'Sem laudo'], ['semorc', 'Sem orçamento'], ['pronto', 'Prontas'], ['entregue', 'Entregues'], ['todas', 'Todas']].map(([k, l]) => `<button data-act="filt" data-k="os" data-v="${k}" class="${S.filt.os === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
   <div id="list">${osList()}</div>`;
 /* v407: desde quando a OS espera a autorização do cliente (última vez que entrou em “Aguardando aprovação”) */
@@ -6300,7 +6300,9 @@ function osList() {
   if (f === 'abertas') os = os.filter(osAberta);
   /* v407: “Urgentes e autorizadas”: 1º urgentes autorizadas, depois urgentes, depois autorizadas (Aprovado — aguardando início); dentro de cada grupo, a autorizada há mais tempo primeiro e depois a previsão de entrega */
   const osAut = o => o.status === 'aprovado', osUrg = o => o.prioridade === 'urgente', osGrp = o => osUrg(o) && osAut(o) ? 0 : osUrg(o) ? 1 : osAut(o) ? 2 : 3;
-  if ((S.ord.os || 'rec') === 'prioaut') os = os.sort((a, b) => osGrp(a) - osGrp(b) || (osAut(a) && osAut(b) ? String(stxAprovEm(a) || '').localeCompare(String(stxAprovEm(b) || '')) : 0) || (a.previsao || '9').localeCompare(b.previsao || '9') || String(b.at || '').localeCompare(String(a.at || '')));
+  /* v440: “Urgentes, autorizadas e previsão de entrega”: mesmos grupos (urgente autorizada → urgente → autorizada → demais) e, dentro de cada grupo, a previsão de entrega mais próxima (ou vencida) primeiro; empate: autorizada há mais tempo */
+  if ((S.ord.os || 'rec') === 'priotudo') os = os.sort((a, b) => osGrp(a) - osGrp(b) || (a.previsao || '9').localeCompare(b.previsao || '9') || (osAut(a) && osAut(b) ? String(stxAprovEm(a) || '').localeCompare(String(stxAprovEm(b) || '')) : 0) || String(b.at || '').localeCompare(String(a.at || '')));
+  else if ((S.ord.os || 'rec') === 'prioaut') os = os.sort((a, b) => osGrp(a) - osGrp(b) || (osAut(a) && osAut(b) ? String(stxAprovEm(a) || '').localeCompare(String(stxAprovEm(b) || '')) : 0) || (a.previsao || '9').localeCompare(b.previsao || '9') || String(b.at || '').localeCompare(String(a.at || '')));
   else os = (S.ord.os || 'rec') === 'prio' ? os.sort((a, b) => (b.prioridade === 'urgente') - (a.prioridade === 'urgente') || (a.previsao || '9').localeCompare(b.previsao || '9')) : ordenar('os', os, o => cliNome(o.clienteId));
   if (f === 'pronto') os = os.filter(o => o.status === 'pronto');
   /* v407: filtro “Aguardando autorização”: só as OS esperando o cliente aprovar, a que espera há mais tempo em cima */
@@ -15172,8 +15174,13 @@ async function entOS(osId, E, vendaNum) { const o = get('os', osId); if (!o || !
 { const _pf = payFinish; payFinish = async function () {
   const q = M.entQ, E = q && M.ent ? { ...M.ent } : null;
   if (E && !E.agora && E.quem === 'outro' && !E.nome.trim()) { toast('Informe o nome de quem vem buscar.'); const i = document.getElementById('ent-nome'); if (i) { try { i.scrollIntoView({ block: 'start' }); } catch { } i.focus(); } return; }
-  const ctx = M.payCtx, osId = !ctx ? (S.cart.osId || (S.cart.orcamentoId && (get('orcamentos', S.cart.orcamentoId) || {}).osId)) : null, antes = !ctx ? new Set((S.vendas || []).map(v => v.id)) : null;
-  const r = await _pf.apply(this, arguments); if (!E) return r;
+  const ctx = M.payCtx, osId = !ctx ? (S.cart.osId || (S.cart.orcamentoId && (get('orcamentos', S.cart.orcamentoId) || {}).osId)) : null, orcId = !ctx ? S.cart.orcamentoId : null, antes = !ctx ? new Set((S.vendas || []).map(v => v.id)) : null;
+  const r = await _pf.apply(this, arguments);
+  /* v439: recebimento que começou na OS (ou no orçamento) volta para ela depois de pago — não para o PDV vazio; o comprovante fica por cima */
+  try { if (!ctx && (osId || orcId)) { const v = (S.vendas || []).find(x => !antes.has(x.id)); if (v) setTimeout(() => { try { const comp = [...document.querySelectorAll('#modals .ov h2')].some(h => /Comprovante/.test(h.textContent));
+      closeAll(); if (osId && get('os', osId)) { go('os'); osView(osId); } else if (orcId && get('orcamentos', orcId)) { go('orcamentos'); orcForm(orcId); }
+      if (comp) setTimeout(() => showDoc('venda', get('vendas', v.id)), 60); } catch { } }, E ? 900 : 300); } } catch { }
+  if (!E) return r;
   try {
     if (!ctx) { const v = (S.vendas || []).find(x => !antes.has(x.id)); if (!v) return r; await save('vendas', v.id, { ...get('vendas', v.id), entrega: entReg(E) }); if (osId) await entOS(osId, E, v.numero); if (!E.agora) toastOk(`Venda nº ${pad(v.numero)}: ${entTxt(E)}. Fica em “Aguardando retirada” até registrar a entrega.`, 6000); return r; }
     if (document.getElementById('pay-b')) return r; /* não concluiu */
@@ -15203,6 +15210,12 @@ function cliNISync(f) { const sel = f.querySelector('select.cli-sel[name="client
   lab.classList.toggle('cli-ni-on', on); }
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.closest) return; const f = t.closest('form'); if (!f) return; if (t.classList.contains('cli-ni-ck') || t.name === 'tercId') setTimeout(() => cliNISync(f), 0); }, true);
 try { new MutationObserver(L => { if (L.some(m => m.addedNodes.length)) cliNIPrep(document.getElementById('modals')); }).observe(document.getElementById('modals'), { childList: true, subtree: true }); } catch { }
+/* v439 REGRA DO APLICATIVO: busca usada para abrir um item (nome, telefone, nº, QR) é limpa quando a tela aberta fecha — a lista volta inteira */
+let BUSCA_ABERTA = null;
+try { new MutationObserver(() => { const tem = !!document.querySelector('#modals .ov');
+  if (tem && !BUSCA_ABERTA) { const i = document.querySelector('#view input[data-q]'); if (i && String(i.value || S.q[i.dataset.q] || '').trim()) BUSCA_ABERTA = { k: i.dataset.q, r: S.route }; }
+  else if (!tem && BUSCA_ABERTA) { const B = BUSCA_ABERTA; BUSCA_ABERTA = null; if (S.q) S.q[B.k] = ''; const i = document.querySelector(`#view input[data-q="${B.k}"]`); if (i && i.value) { i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); } else if (S.route === B.r) scheduleRender(true); } })
+  .observe(document.getElementById('modals'), { childList: true }); } catch { }
 /* v408: cada janela lembra a ação que a abriu (para reabrir igual se o Android fechar o Bancada) */
 { const _omW = openModal; openModal = function () { const r = _omW.apply(this, arguments); try { const ov = document.querySelector('#modals').lastElementChild; if (ov && !ov._act && ULT_ACT) ov._act = { act: ULT_ACT.act, ds: { ...(ULT_ACT.ds || {}) } }; } catch { } return r; }; }
 /* v405: no bloco novo de fotos (#pf-cont) os botões antigos ✕/✎ da foto ficam escondidos (apareciam como duas barras vazias) */
