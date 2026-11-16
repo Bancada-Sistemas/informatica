@@ -1,15 +1,16 @@
-/* Bancada — PONTE DE BUSCA (pesquisa de produtos SEM IA) — versão 1.2
+/* Bancada — PONTE DE BUSCA (pesquisa de produtos SEM IA) — versão 1.3
    Cloudflare Worker. Rotas:
      POST /busca  { q }            → pesquisa na web (Brave, se houver BRAVE_KEY; Firecrawl, se houver FIRECRAWL_KEY; depois DuckDuckGo, DuckDuckGo Lite, Bing e Mojeek,
                                      um depois do outro até achar resultados) e devolve o diagnóstico de cada fonte (diag),
                                      abre as primeiras páginas de lojas/fabricantes e lê os dados do produto
                                      (nome, marca, modelo, código de barras, fotos e preços) direto das páginas.
+     POST /creditos {}             → (v1.3) créditos do Firecrawl: restantes, do plano e o período do mês.
      POST /lens   { imagem }       → (opcional) Google Cloud Vision "Web Detection" — o Lens automático.
                                      Só funciona com a variável VISION_KEY (1.000 consultas grátis por mês no Google Cloud).
    Segurança: o aplicativo manda o cabeçalho X-Chave; ele tem que ser igual à variável CHAVE da ponte.
    Variáveis (Settings → Variables and Secrets): CHAVE (obrigatória), FIRECRAWL_KEY (opcional, recomendada: firecrawl.dev, plano grátis sem cartão),
    BRAVE_KEY (opcional, pago), VISION_KEY (opcional). */
-const VER = '1.2';
+const VER = '1.3';
 const UA = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36';
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, X-Chave' };
 const json = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { ...CORS, 'Content-Type': 'application/json; charset=utf-8' } });
@@ -75,9 +76,17 @@ function produtoDaPagina(html, url) {
   if (!out.ean) { const m = /\b(?:EAN|GTIN|C[óo]digo de barras)\D{0,20}(\d{12,14})\b/i.exec(desHtml(html).slice(0, 200000)); if (m) out.ean = m[1]; }
   return out;
 }
+/* v1.3: créditos do Firecrawl (consultar não gasta crédito) */
+async function creditosFc(env) {
+  if (!env.FIRECRAWL_KEY) return null;
+  try { const r = await fetch('https://api.firecrawl.dev/v2/team/credit-usage', { headers: { 'Authorization': 'Bearer ' + env.FIRECRAWL_KEY } }); const j = await r.json().catch(() => ({})); const d = j.data || {};
+    if (!r.ok || d.remainingCredits == null) return { ok: false, status: r.status };
+    return { ok: true, restantes: d.remainingCredits, plano: d.planCredits || 0, inicio: d.billingPeriodStart || '', fim: d.billingPeriodEnd || '', em: Date.now() }; }
+  catch { return { ok: false, status: 'erro' }; }
+}
 async function pesquisar(q, env, extraPags = []) {
   const diag = { fontes: [], paginas_tentadas: 0, paginas_lidas: 0, paginas_com_produto: 0, lojas_recusaram: [] };
-  const { fonte, L } = await buscarLinks(q, env, diag);
+  const { fonte, L } = await buscarLinks(q, env, diag); const usou = fonte.split('+');
   const urls = [...extraPags, ...L.map(x => x.url)].filter((u, i, a) => u && !PULA.test(u) && a.indexOf(u) === i).slice(0, 6);
   diag.paginas_tentadas = urls.length;
   const pags = await Promise.all(urls.map(async u => { const r = await pegarSt(u); if (!r.ok || !r.tx) { try { diag.lojas_recusaram.push(new URL(u).hostname.replace(/^www\./, '') + ' (' + r.st + ')'); } catch { } return null; } diag.paginas_lidas++; return produtoDaPagina(r.tx, u); }));
@@ -91,7 +100,8 @@ async function pesquisar(q, env, extraPags = []) {
   const best = P.find(x => x.ean || x.marca) || P[0] || null;
   const precos = P.filter(x => x.preco).map(x => ({ loja: x.loja, preco: x.preco, url: x.url }));
   const imagens = [...new Set(P.flatMap(x => x.imagens || []))].slice(0, 8);
-  return { ok: true, ver: VER, fonte, q, diag, produto: best ? { nome: best.nome, marca: best.marca || '', modelo: best.modelo || '', codigo_barras: best.ean || '', caracteristicas: best.descricao || '', fonte_url: best.url } : null, precos, imagens, paginas: P.map(x => ({ url: x.url, loja: x.loja, nome: x.nome })), resultados: L.slice(0, 8) };
+  const creditos = usou.includes('firecrawl') || diag.firecrawl_paginas ? await creditosFc(env) : null;
+  return { ok: true, ver: VER, fonte, q, diag, creditos, produto: best ? { nome: best.nome, marca: best.marca || '', modelo: best.modelo || '', codigo_barras: best.ean || '', caracteristicas: best.descricao || '', fonte_url: best.url } : null, precos, imagens, paginas: P.map(x => ({ url: x.url, loja: x.loja, nome: x.nome })), resultados: L.slice(0, 8) };
 }
 export default {
   async fetch(req, env) {
@@ -101,6 +111,7 @@ export default {
     if (!env.CHAVE || req.headers.get('X-Chave') !== env.CHAVE) return json({ ok: false, erro: 'chave' }, 401);
     let b = {}; try { b = await req.json(); } catch { }
     if (u.pathname === '/busca') { const q = String(b.q || '').trim().slice(0, 200); if (q.length < 3) return json({ ok: false, erro: 'q' }, 400); return json(await pesquisar(q, env)); }
+    if (u.pathname === '/creditos') return json({ ok: true, ver: VER, firecrawl: !!env.FIRECRAWL_KEY, creditos: await creditosFc(env) });
     if (u.pathname === '/lens') {
       if (!env.VISION_KEY) return json({ ok: false, erro: 'sem_vision' }, 404);
       const img = String(b.imagem || '').replace(/^data:[^,]+,/, ''); if (img.length < 100) return json({ ok: false, erro: 'imagem' }, 400);
