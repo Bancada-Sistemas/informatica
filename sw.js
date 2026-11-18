@@ -1,4 +1,4 @@
-/* Bancada — abre sem internet (v17, 06/11/2026).
+/* Bancada — abre sem internet (v18, 18/11/2026: toque no alerta abre o aplicativo na pendência).
    Página e cadastro da empresa: busca na internet primeiro (versão nova chega na hora); sem internet, usa a cópia guardada.
    Programas do Firebase e bibliotecas (endereços com versão fixa): cópia guardada primeiro.
    Conferência de versão (?vchk, ?_v) e tudo do Firebase/Google (dados, login, IA, ponte) passam direto, sem cópia. */
@@ -26,4 +26,15 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (/^https:\/\/www\.gstatic\.com\/firebasejs\/\d/.test(req.url) || /^https:\/\/(cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|unpkg\.com)\/.*\d+\.\d+/.test(req.url) || /^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(req.url)) { e.respondWith(guardadoPrimeiro(req)); return; }
+});
+
+/* v18: alerta do aplicativo (pendência nova) — tocar abre o aplicativo já aberto (ou abre de novo) e vai direto para a pendência */
+self.addEventListener('notificationclick', e => {
+  e.notification.close(); const k = (e.notification.data || {}).k || '';
+  e.waitUntil((async () => {
+    const L = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const c = L.find(x => x.url.startsWith(self.registration.scope)) || L[0];
+    if (c) { try { await c.focus(); } catch (er) { } c.postMessage({ tipo: 'bancada-notif', k }); return; }
+    await self.clients.openWindow(self.registration.scope);
+  })());
 });
