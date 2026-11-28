@@ -1,16 +1,20 @@
-/* Bancada — PONTE DE BUSCA (pesquisa de produtos SEM IA) — versão 1.3
+/* Bancada — PONTE DE BUSCA (pesquisa de produtos SEM IA) — versão 1.4
    Cloudflare Worker. Rotas:
      POST /busca  { q }            → pesquisa na web (Brave, se houver BRAVE_KEY; Firecrawl, se houver FIRECRAWL_KEY; depois DuckDuckGo, DuckDuckGo Lite, Bing e Mojeek,
                                      um depois do outro até achar resultados) e devolve o diagnóstico de cada fonte (diag),
                                      abre as primeiras páginas de lojas/fabricantes e lê os dados do produto
                                      (nome, marca, modelo, código de barras, fotos e preços) direto das páginas.
+     POST /nfce   { url }          → (v1.4) abre a consulta da NFC-e na SEFAZ (o link do QR code) e devolve emitente, CNPJ e os itens
+                                     (descrição, código, quantidade, unidade, valor unitário e total). Se a página tiver outro formato,
+                                     devolve o texto da página para o aplicativo ler. Só aceita endereços .gov.br (SEFAZ).
+     POST /cnpj   { cnpj }         → (v1.4) dados públicos da empresa pelo CNPJ (BrasilAPI; se falhar, CNPJ.ws): razão social, fantasia, endereço, telefone.
      POST /creditos {}             → (v1.3) créditos do Firecrawl: restantes, do plano e o período do mês.
      POST /lens   { imagem }       → (opcional) Google Cloud Vision "Web Detection" — o Lens automático.
                                      Só funciona com a variável VISION_KEY (1.000 consultas grátis por mês no Google Cloud).
    Segurança: o aplicativo manda o cabeçalho X-Chave; ele tem que ser igual à variável CHAVE da ponte.
    Variáveis (Settings → Variables and Secrets): CHAVE (obrigatória), FIRECRAWL_KEY (opcional, recomendada: firecrawl.dev, plano grátis sem cartão),
    BRAVE_KEY (opcional, pago), VISION_KEY (opcional). */
-const VER = '1.3';
+const VER = '1.4';
 const UA = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36';
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, X-Chave' };
 const json = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { ...CORS, 'Content-Type': 'application/json; charset=utf-8' } });
@@ -103,6 +107,42 @@ async function pesquisar(q, env, extraPags = []) {
   const creditos = usou.includes('firecrawl') || diag.firecrawl_paginas ? await creditosFc(env) : null;
   return { ok: true, ver: VER, fonte, q, diag, creditos, produto: best ? { nome: best.nome, marca: best.marca || '', modelo: best.modelo || '', codigo_barras: best.ean || '', caracteristicas: best.descricao || '', fonte_url: best.url } : null, precos, imagens, paginas: P.map(x => ({ url: x.url, loja: x.loja, nome: x.nome })), resultados: L.slice(0, 8) };
 }
+/* v1.4: NFC-e pelo QR code — a página de consulta da SEFAZ (layout nacional: tabResult / txtTit / Rqtd / RUN / RvlUnit / valor) */
+const numBR = s => { s = String(s || '').replace(/[^\d,.-]/g, ''); if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.'); const n = parseFloat(s); return isFinite(n) ? n : 0; };
+function nfceItens(h) {
+  const it = []; const linhas = h.split(/<tr[^>]*id=["']?Item/i).slice(1);
+  const blocos = linhas.length ? linhas : h.split(/<span[^>]+class=["']txtTit2?["']/i).slice(1).map(x => '<span class="txtTit">' + x);
+  for (const b0 of blocos) { const b = b0.split(/<\/tr>/i)[0] || b0;
+    const g = re => { const m = re.exec(b); return m ? desHtml(m[1]) : ''; };
+    const descricao = g(/class=["']txtTit2?["'][^>]*>([\s\S]*?)<\/span>/i); if (!descricao) continue;
+    const codigo = (g(/class=["']RCod["'][^>]*>([\s\S]*?)<\/span>/i).match(/[\w.-]+(?=\s*\)?\s*$)/) || [''])[0];
+    const qtd = numBR(g(/class=["']Rqtd["'][^>]*>([\s\S]*?)<\/span>/i).replace(/qtde\.?:?/i, ''));
+    const un = g(/class=["']RUN["'][^>]*>([\s\S]*?)<\/span>/i).replace(/UN:?/i, '').trim();
+    const vu = numBR(g(/class=["']RvlUnit["'][^>]*>([\s\S]*?)<\/span>/i).replace(/vl\.?\s*unit\.?:?/i, ''));
+    const vt = numBR(g(/class=["']valor["'][^>]*>([\s\S]*?)<\/span>/i));
+    it.push({ descricao, codigo, ean: '', qtd: qtd || 1, unidade: un, valor_unit: vu || (vt && qtd ? vt / qtd : 0), valor_total: vt || vu * (qtd || 1) }); }
+  return it;
+}
+async function nfce(url) {
+  let u; try { u = new URL(String(url || '')); } catch { return { ok: false, erro: 'url' }; }
+  if (!/^https?:$/.test(u.protocol) || !/(^|\.)gov\.br$/i.test(u.hostname)) return { ok: false, erro: 'url_nao_sefaz' };
+  const r = await pegarSt(u.href, 15000); if (!r.ok || !r.tx) return { ok: false, erro: 'sefaz', st: r.st };
+  if (/captcha|recaptcha|hcaptcha/i.test(r.tx) && !/txtTit/i.test(r.tx)) return { ok: false, erro: 'captcha' };
+  const h = r.tx, itens = nfceItens(h);
+  const emitente = desHtml((/id=["']u20["'][^>]*>([\s\S]*?)<\/div>/i.exec(h) || /class=["']txtTopo["'][^>]*>([\s\S]*?)<\/div>/i.exec(h) || [])[1] || '');
+  const cnpj = ((/CNPJ:?\s*([\d./-]{14,18})/i.exec(desHtml(h)) || [])[1] || '').replace(/\D/g, '');
+  const total = numBR((/Valor\s+a\s+pagar\s*R\$:?[\s\S]{0,80}?class=["']totalNumb[^"']*["'][^>]*>([\d.,]+)/i.exec(h) || [])[1]);
+  const texto = itens.length ? '' : desHtml(h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ')).slice(0, 12000);
+  return { ok: true, ver: VER, emitente, cnpj, total, itens, texto };
+}
+async function cnpjDados(cnpj) {
+  cnpj = String(cnpj || '').replace(/\D/g, ''); if (cnpj.length !== 14) return { ok: false, erro: 'cnpj' };
+  const a = await pegarSt('https://brasilapi.com.br/api/cnpj/v1/' + cnpj, 10000);
+  if (a.ok) { try { const d = JSON.parse(a.tx); return { ok: true, fonte: 'brasilapi', nome: d.razao_social || '', fantasia: d.nome_fantasia || '', cep: String(d.cep || ''), logradouro: [d.descricao_tipo_de_logradouro, d.logradouro].filter(Boolean).join(' '), numero: d.numero || '', complemento: d.complemento || '', bairro: d.bairro || '', cidade: d.municipio || '', uf: d.uf || '', tel: String(d.ddd_telefone_1 || '').replace(/\D/g, ''), email: d.email || '' }; } catch { } }
+  const b = await pegarSt('https://publica.cnpj.ws/cnpj/' + cnpj, 10000);
+  if (b.ok) { try { const d = JSON.parse(b.tx), e = d.estabelecimento || {}; return { ok: true, fonte: 'cnpj.ws', nome: d.razao_social || '', fantasia: e.nome_fantasia || '', cep: String(e.cep || ''), logradouro: [e.tipo_logradouro, e.logradouro].filter(Boolean).join(' '), numero: e.numero || '', complemento: e.complemento || '', bairro: e.bairro || '', cidade: (e.cidade || {}).nome || '', uf: (e.estado || {}).sigla || '', tel: String((e.ddd1 || '') + (e.telefone1 || '')).replace(/\D/g, ''), email: e.email || '' }; } catch { } }
+  return { ok: false, erro: 'cnpj_fonte', st: [a.st, b.st] };
+}
 export default {
   async fetch(req, env) {
     if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
@@ -111,6 +151,8 @@ export default {
     if (!env.CHAVE || req.headers.get('X-Chave') !== env.CHAVE) return json({ ok: false, erro: 'chave' }, 401);
     let b = {}; try { b = await req.json(); } catch { }
     if (u.pathname === '/busca') { const q = String(b.q || '').trim().slice(0, 200); if (q.length < 3) return json({ ok: false, erro: 'q' }, 400); return json(await pesquisar(q, env)); }
+    if (u.pathname === '/nfce') return json(await nfce(b.url));
+    if (u.pathname === '/cnpj') return json(await cnpjDados(b.cnpj));
     if (u.pathname === '/creditos') return json({ ok: true, ver: VER, firecrawl: !!env.FIRECRAWL_KEY, creditos: await creditosFc(env) });
     if (u.pathname === '/lens') {
       if (!env.VISION_KEY) return json({ ok: false, erro: 'sem_vision' }, 404);
